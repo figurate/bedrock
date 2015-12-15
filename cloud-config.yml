@@ -1,0 +1,36 @@
+#cloud-config
+packages:
+    # firewall
+    - ufw
+    # monitor logs for suspicious behaviour
+    - logwatch
+    # process accounting
+    - acct
+    # block repeated failed attempts to ssh
+    - fail2ban
+#    - unzip
+#    - git
+#    - gradle
+#    - avahi-daemon
+    # auto-install updates
+    - unattended-upgrades
+
+timezone: Australia/Melbourne
+
+users:
+    - name: fortuna
+      ssh-authorized-keys:
+      sudo: ['ALL=(ALL) NOPASSWD:ALL']
+      groups: sudo
+      shell: /bin/bash
+
+runcmd:
+    # customise SSH daemon
+    - sed -i -e '/^Port/s/^.*$/Port 2277/' /etc/ssh/sshd_config
+    - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+    - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+#    - sed -i -e '$aAllowUsers fortuna' /etc/ssh/sshd_config
+    - restart ssh
+    # enable firewall
+    - ufw allow to any port 2277 proto tcp
+    - ufw --force enable
