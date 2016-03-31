@@ -1,0 +1,15 @@
+sonar:
+  image: sonarqube
+  ports:
+    - "9092:9092"
+  mem_limit: 1073741824
+haproxy:
+  image: eeacms/haproxy
+  links:
+    - sonar
+  environment:
+    - BACKENDS_PORT=9000
+  ports:
+    - "80:5000"
+    - "1936:1936"
+  mem_limit: 134217728
