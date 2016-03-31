@@ -1,5 +1,5 @@
 letsencrypt:
-  image: benfortuna/letsencrypt
+  image: benfortuna/letsencrypt-aws
   mem_limit: 134217728
   environment:
     - AWS_DEFAULT_REGION=ap-southeast-2
