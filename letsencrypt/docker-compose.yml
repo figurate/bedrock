@@ -1,0 +1,9 @@
+letsencrypt:
+  image: benfortuna/letsencrypt
+  mem_limit: 134217728
+  environment:
+    - AWS_DEFAULT_REGION=ap-southeast-2
+    - LETSENCRYPT_AWS_CONFIG=
+    - AWS_ACCESS_KEY_ID=
+    - AWS_SECRET_ACCESS_KEY=
+
