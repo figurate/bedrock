@@ -1,0 +1,19 @@
+sonar:
+  image: sonarqube
+  mem_limit: 1073741824
+  volumes_from:
+    - plugins
+plugins:
+  image: tianon/true
+  volumes:
+   - /opt/sonarqube/extensions
+   - /opt/sonarqube/lib/bundled-plugins
+haproxy:
+  image: tutum/haproxy
+  links:
+    - sonar
+  ports:
+    - "80:80"
+    - "443:443"
+    - "1936:1936"
+  mem_limit: 134217728
