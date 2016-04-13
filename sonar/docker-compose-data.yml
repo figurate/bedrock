@@ -1,0 +1,9 @@
+sonar:
+  volumes_from:
+    - plugins
+plugins:
+  image: cogniteev/echo
+  mem_limit: 8388608
+  volumes:
+   - /opt/sonarqube/extensions:/opt/sonarqube/extensions
+   - /opt/sonarqube/lib/bundled-plugins:/opt/sonarqube/lib/bundled-plugins
