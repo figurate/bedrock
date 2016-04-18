@@ -1,0 +1,12 @@
+wordpress:
+  image: wordpress
+  mem_limit: 256m
+  links:
+    - db:mysql
+  ports:
+    - 8081:80
+
+db:
+  image: mariadb
+  environment:
+    MYSQL_ROOT_PASSWORD: example
