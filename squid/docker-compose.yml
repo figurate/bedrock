@@ -2,6 +2,10 @@ squid:
   image: sameersbn/squid
   ports:
     - "3128:3128"
-  volumes:
-    - /srv/docker/squid/cache:/var/spool/squid3
+  volumes_from:
+    - squid-cache
   restart: always
+squid-cache:
+  image: tianon/true
+  volumes:
+   - /var/spool/squid3
