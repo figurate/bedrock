@@ -1,0 +1,10 @@
+webmin:
+  image: chsliu/docker-webmin
+  ports:
+    - "10000:10000"
+  volumes_from:
+    - webmin-data
+webmin-data:
+  image: tianon/true
+  volumes:
+    - /var/webmin
