@@ -1,0 +1,8 @@
+cntlm:
+  image: dacr/cntlm
+  ports:
+    - "3128:3128"
+  volumes:
+    - cntlm/defaults.conf:/defaults.conf
+  command: $PROXY_HOST:$PROXY_PORT
+  restart: always
