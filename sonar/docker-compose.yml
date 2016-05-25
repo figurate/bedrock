@@ -1,13 +1,6 @@
 sonar:
   image: sonarqube
-  mem_limit: 1073741824
-  volumes_from:
-    - plugins
-plugins:
-  image: tianon/true
-  volumes:
-   - /opt/sonarqube/extensions
-   - /opt/sonarqube/lib/bundled-plugins
+  mem_limit: 2097152000
 haproxy:
   image: tutum/haproxy
   links:
