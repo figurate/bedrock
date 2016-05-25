@@ -1,0 +1,19 @@
+sling:
+  image: apachesling/sling
+  mem_limit: 512m
+  volumes:
+    - "./sling.properties:/opt/sling/sling.properties"
+  volumes_from:
+    - sling-data
+sling-data:
+  image: tianon/true
+  volumes:
+    - /opt/sling/sling
+haproxy:
+  image: tutum/haproxy
+  links:
+    - sling
+  ports:
+    - "80:80"
+    - "1936:1936"
+  mem_limit: 128m
