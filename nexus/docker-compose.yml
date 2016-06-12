@@ -1,0 +1,16 @@
+nexus:
+  image: sonatype/nexus3
+  volumes_from:
+    - nexus-data
+haproxy:
+  image: tutum/haproxy
+  links:
+    - nexus
+  ports:
+    - "80:80"
+    - "443:443"
+    - "1936:1936"
+  mem_limit: 134217728
+nexus-data:
+  image: sonatype/nexus3
+  command: echo "data-only container for Nexus"
