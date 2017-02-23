@@ -1,0 +1,23 @@
+sling:
+  image: apachesling/sling
+  mem_limit: 402653184
+  cpu_shares: 1024
+  #volumes:
+  #  - "./sling.properties:/opt/sling/sling.properties"
+  volumes_from:
+    - sling-data
+sling-data:
+  image: tianon/true
+  volumes:
+    - /opt/sling/sling:/opt/sling/sling
+  mem_limit: 8388608
+  cpu_shares: 1024
+haproxy:
+  image: tutum/haproxy
+  links:
+    - sling
+  ports:
+    - "80:80"
+    - "1936:1936"
+  mem_limit: 134217728
+  cpu_shares: 1024
