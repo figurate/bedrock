@@ -19,7 +19,5 @@ haproxy:
   ports:
     - "80:80"
     - "1936:1936"
-  environment:
-    - "RSYSLOG_DESTINATION=logs4.papertrailapp.com:51501"
   mem_limit: 134217728
   cpu_shares: 1024
