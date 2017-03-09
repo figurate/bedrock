@@ -1,0 +1,37 @@
+#cloud-config
+packages:
+    # firewall
+    - ufw
+    # monitor logs for suspicious behaviour
+    - logwatch
+    # process accounting
+    - acct
+    # block repeated failed attempts to ssh
+    - fail2ban
+#    - unzip
+#    - git
+#    - gradle
+#    - avahi-daemon
+    # auto-install updates
+    - unattended-upgrades
+
+timezone: Australia/Melbourne
+
+users:
+    - name: fortuna
+      ssh-authorized-keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQcFKek1gfYbHA+Is0Z+8LPynIqOfwBuZh3ywyx0MbEkNH4uokp91zFRmE3NSQqplnt9RMWLzcwfYIPB38d48NiemF60ApZZQAx4kVBvsIkM7UElvhCZEkrbmCwi0c6yV6/JJfDZu/CxdKEC6q+lNjzmfYp+6Uhdkwb4ea+3xPnjwlK4xUKM4RUoyQtrJFYssAiLP1wY94IP8Ksw87OqFz9vn4u/HZ2zSIVwywTgg6xaEfAhRsm50rnLmMGchbzDYsWy7ZSxncaB8xjB46fq+v2wSpSBCUJsWDVY2yQ4YlV7ETfuGRB2K5hXbrN8HjCTpe1qHB1NLrX+jn0Y+ohpHd fortuna@Fortuna-Villa.local
+      sudo: ['ALL=(ALL) NOPASSWD:ALL']
+      groups: sudo
+      shell: /bin/bash
+
+runcmd:
+    # customise SSH daemon
+#    - sed -i -e '/^Port/s/^.*$/Port 2277/' /etc/ssh/sshd_config
+    - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+    - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+#    - sed -i -e '$aAllowUsers fortuna' /etc/ssh/sshd_config
+    - restart ssh
+    # enable firewall
+    - ufw allow to any port 22 proto tcp
+    - ufw --force enable
