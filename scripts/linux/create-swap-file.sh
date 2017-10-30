@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # run as superuser...
+# source: https://askubuntu.com/questions/33697/how-do-i-add-a-swap-partition-after-system-installation
 
 mkdir -v /var/cache/swap && cd /var/cache/swap/
 
