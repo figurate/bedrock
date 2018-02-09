@@ -21,11 +21,35 @@ region = ap-southeast-2' >> .aws/config
 chown -R vagrant:vagrant .aws/
 
 # Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update && sudo apt-get install -y docker-ce
+echo '{
+      "debug" : true,
+      "experimental" : true
+}' | sudo tee /etc/docker/daemon.json
+sudo usermod -a -G docker vagrant
+sudo systemctl daemon-reload && sudo service docker restart
 
 # Terraform
+wget -P /tmp/install "https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+sudo unzip "/tmp/install/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -d /usr/bin
 
 # Packer
+wget -P /tmp/install "https://releases.hashicorp.com/packer/$PACKER_VERSION/packer_${PACKER_VERSION}_linux_amd64.zip"
+sudo unzip "/tmp/install/packer_${PACKER_VERSION}_linux_amd64.zip" -d /usr/bin
 
 # Puppet
+wget -P /tmp/install https://apt.puppetlabs.com/puppet5-release-xenial.deb
+sudo dpkg -i /tmp/install/puppet5-release-xenial.deb
+sudo apt-get update && sudo apt-get install -y puppet-agent
 
 # Git
+echo "[credential]
+        helper = !aws codecommit credential-helper $@
+        UseHttpPath = true
+[user]
+        name = $GIT_USERNAME
+        email = $GIT_EMAIL" >> .gitconfig
+        
