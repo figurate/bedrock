@@ -12,7 +12,7 @@ start-stop-daemon --start --nicelevel "-5" --exec $1 -- $2' | sudo tee /etc/init
 
 # Install packages
 sudo apt-get update && sudo apt-get install -y curl git python3-pip apt-transport-https \
-  ca-certificates software-properties-common corkscrew unzip
+  ca-certificates software-properties-common corkscrew unzip jq
 
 # AWS CLI
 pip3 install awscli --upgrade
