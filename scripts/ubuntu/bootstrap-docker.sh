@@ -2,6 +2,7 @@
 
 TERRAFORM_VERSION="0.11.1"
 PACKER_VERSION="1.1.3"
+VAULT_VERSION="0.9.3"
 
 GIT_USERNAME="Ben Fortuna"
 GIT_EMAIL="fortuna@micronode.com"
@@ -23,6 +24,10 @@ unzip "/tmp/install/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -d /usr/bin
 # Packer
 wget -P /tmp/install "https://releases.hashicorp.com/packer/$PACKER_VERSION/packer_${PACKER_VERSION}_linux_amd64.zip"
 unzip "/tmp/install/packer_${PACKER_VERSION}_linux_amd64.zip" -d /usr/bin
+
+# Vault
+wget -P /tmp/install "https://releases.hashicorp.com/vault/$VAULT_VERSION/vault_${VAULT_VERSION}_linux_amd64.zip"
+unzip "/tmp/install/vault_${VAULT_VERSION}_linux_amd64.zip" -d /usr/bin
 
 # Puppet
 wget -P /tmp/install https://apt.puppetlabs.com/puppet5-release-xenial.deb
