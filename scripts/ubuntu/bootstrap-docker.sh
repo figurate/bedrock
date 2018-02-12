@@ -9,7 +9,7 @@ GIT_EMAIL="fortuna@micronode.com"
 
 # Install packages
 apt-get update && apt-get install -y curl git python3-pip apt-transport-https \
- ca-certificates software-properties-common corkscrew unzip wget ssh
+ ca-certificates software-properties-common corkscrew unzip wget ssh jq
 
 # AWS CLI
 pip3 install awscli --upgrade
