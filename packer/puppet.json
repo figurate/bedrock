@@ -1,0 +1,28 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "",
+          "root-device-type": "ebs"
+        },
+        "owners": [],
+        "most_recent": true
+      },
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "ami_name": "bedrock-puppet-{{timestamp}}",
+      "security_group_ids": [],
+      "subnet_id": "",
+      "ssh_interface": "private_ip"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "puppet-masterless",
+      "manifest_file": "puppet/manifests/site.pp"
+    }
+  ]
+}
