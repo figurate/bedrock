@@ -1,0 +1,6 @@
+moduledir 'thirdparty'
+
+mod 'gene1wood-credstash'
+mod 'stankevich-python'
+mod 'stahnma-epel'
+mod 'puppetlabs-stdlib'
