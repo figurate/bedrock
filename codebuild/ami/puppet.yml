@@ -1,0 +1,19 @@
+version 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Installing packer.."
+      - curl -qL -o packer.zip -C - https://releases.hashicorp.com/ && unzip packer.zip
+      - echo "Installing jq.."
+      - curl -qL -o jq -C - https://stedolan.github.io/jq/download/linux64/jq && chmod +x ./jq
+      - echo "Validating packer templates.."
+      - ./packer validate packer-templates/puppet.json
+  build:
+    commands:
+      - echo "Configuring AWS credentials"
+      - ..
+      - ./packer build packer-templates/puppet.json
+  post_build:
+    commands:
+      - echo 'Build completed at `date`"
