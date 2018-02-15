@@ -12,7 +12,7 @@ start-stop-daemon --start --nicelevel "-5" --exec $1 -- $2' | sudo tee /etc/init
 
 # Install packages
 sudo apt-get update && sudo apt-get install -y curl git python3-pip apt-transport-https \
-  ca-certificates software-properties-common corkscrew unzip jq
+  ca-certificates software-properties-common corkscrew unzip jq ruby
 
 # AWS CLI
 pip3 install awscli --upgrade
@@ -49,6 +49,7 @@ sudo unzip "/tmp/install/vault_${VAULT_VERSION}_linux_amd64.zip" -d /usr/bin
 wget -P /tmp/install https://apt.puppetlabs.com/puppet5-release-xenial.deb
 sudo dpkg -i /tmp/install/puppet5-release-xenial.deb
 sudo apt-get update && sudo apt-get install -y puppet-agent
+sudo gem install r10k
 
 # Git
 echo "[credential]
