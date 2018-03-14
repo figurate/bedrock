@@ -1,0 +1,30 @@
+{
+  "builders": [{
+    "type": "amazon-ebs",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "name": "Windows_Server-2016-English-Full-Base-*",
+        "root-device-type": "ebs"
+      },
+      "owners": ["801119661308"],
+      "most_recent": true
+    },
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user",
+    "ami_name": "bedrock-windows-{{timestamp}}",
+    "security_group_ids": [],
+    "subnet_id": "",
+    "ssh_interface": "private_ip"
+  }],
+  "provisioners": [
+    {
+      "type": "windows-shell",
+      "inline": [
+        "powershell Invoke-WebRequest -OutFile python-installer.exe https://www.python.org/ftp/python/3.6.3/python-3.6.3-amd64.exe",
+        "python-installer.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=0",
+        "pip install awscli"
+      ]
+    }
+  ]
+}
