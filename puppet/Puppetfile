@@ -1,6 +1,10 @@
 moduledir 'thirdparty'
 
 mod 'gene1wood-credstash'
-mod 'stankevich-python'
+mod 'stankevich-python', '1.9.8'
 mod 'stahnma-epel'
 mod 'puppetlabs-stdlib'
+mod 'puppetlabs-rancher'
+mod 'puppetlabs-apt', '3.0.0'
+mod 'puppetlabs-translate'
+mod 'garethr-docker', '5.3.0'

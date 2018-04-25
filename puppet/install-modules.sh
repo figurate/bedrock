@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-r10k puppetfile install
-
+r10k -t puppetfile install
