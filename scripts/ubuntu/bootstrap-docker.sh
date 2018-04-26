@@ -15,7 +15,7 @@ apt-get update && apt-get install -y curl git python3-pip apt-transport-https \
 pip3 install awscli --upgrade
 mkdir .aws && touch .aws/credentials
 echo '[default]
-region = ap-southeast-2' >> .aws/config
+region = ap-southeast-2' > .aws/config
 
 # Terraform
 wget -P /tmp/install "https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
