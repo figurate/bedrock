@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+USER="vagrant"
 TERRAFORM_VERSION="0.11.1"
 PACKER_VERSION="1.1.3"
 VAULT_VERSION="0.9.3"
@@ -18,8 +19,8 @@ sudo apt-get update && sudo apt-get install -y curl git python3-pip apt-transpor
 pip3 install awscli --upgrade
 mkdir .aws && touch .aws/credentials
 echo '[default]
-region = ap-southeast-2' >> .aws/config
-chown -R vagrant:vagrant .aws/
+region = ap-southeast-2' > .aws/config
+chown -R $USER:$USER .aws/
 
 # Docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -30,7 +31,7 @@ echo '{
       "debug" : true,
       "experimental" : true
 }' | sudo tee /etc/docker/daemon.json
-sudo usermod -a -G docker vagrant
+sudo usermod -a -G docker $USER
 sudo systemctl daemon-reload && sudo service docker restart
 
 # Terraform
