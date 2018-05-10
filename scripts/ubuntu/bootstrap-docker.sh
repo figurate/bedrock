@@ -7,10 +7,6 @@ VAULT_VERSION="0.9.3"
 GIT_USERNAME="Ben Fortuna"
 GIT_EMAIL="fortuna@micronode.com"
 
-# Install packages
-apt-get update && apt-get install -y curl git python3-pip apt-transport-https \
- ca-certificates software-properties-common corkscrew unzip wget ssh jq ruby
-
 # AWS CLI
 pip3 install awscli --upgrade
 mkdir .aws && touch .aws/credentials
@@ -33,7 +29,7 @@ unzip "/tmp/install/vault_${VAULT_VERSION}_linux_amd64.zip" -d /usr/bin
 wget -P /tmp/install https://apt.puppetlabs.com/puppet5-release-xenial.deb
 dpkg -i /tmp/install/puppet5-release-xenial.deb
 apt-get update && apt-get install -y puppet-agent
-gem install r10k
+gem install r10k hiera-eyaml
 
 # Git
 echo "[credential]
