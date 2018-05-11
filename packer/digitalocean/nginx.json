@@ -33,11 +33,17 @@
       "destination": "/root"
     },
     {
+      "type": "file",
+      "source": "puppet/keys",
+      "destination": "/root"
+    },
+    {
       "type": "puppet-masterless",
       "puppet_bin_dir": "/opt/puppetlabs/bin",
       "manifest_file": "puppet/manifests/nginx.pp",
       "module_paths": ["puppet/modules", "puppet/thirdparty"],
       "hiera_config_path": "puppet/hieradata/hiera.yaml",
+      "extra_arguments": ["--debug"],
       "working_directory": "/root"
     }
   ]
