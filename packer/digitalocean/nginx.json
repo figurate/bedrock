@@ -1,0 +1,44 @@
+{
+  "variables": {
+    "do_api_token": "",
+    "do_region": ""
+  },
+  "builders": [
+    {
+      "type": "digitalocean",
+      "api_token": "{{user `do_api_token`}}",
+      "image": "ubuntu-16-04-x64",
+      "region": "{{user `do_region`}}",
+      "size": "512mb",
+      "ssh_username": "root",
+      "snapshot_name": "bedrock-nginx-{{timestamp}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "puppet/Puppetfile",
+      "destination": "/root/Puppetfile"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/debian/puppet-install.sh",
+        "puppet/install-modules.sh"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "puppet/hieradata",
+      "destination": "/root"
+    },
+    {
+      "type": "puppet-masterless",
+      "puppet_bin_dir": "/opt/puppetlabs/bin",
+      "manifest_file": "puppet/manifests/nginx.pp",
+      "module_paths": ["puppet/modules", "puppet/thirdparty"],
+      "hiera_config_path": "puppet/hieradata/hiera.yaml",
+      "working_directory": "/root"
+    }
+  ]
+}
