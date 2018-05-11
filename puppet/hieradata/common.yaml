@@ -1,0 +1,4 @@
+
+# deny all incoming/outgoing, allow dns, http, https, ssh
+#ufw::deny:
+# -
