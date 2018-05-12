@@ -1,4 +1,26 @@
+profile::ufw::allow:
+  allow-ssh-from-all:
+    port: 22
+  allow-dns-over-udp:
+    port: 53
+    proto: "udp"
+  http:
+    port: 80
+  https:
+    port: 443
+
+profile::ufw::limit:
+  ssh:
+    proto: tcp
 
 # deny all incoming/outgoing, allow dns, http, https, ssh
 #ufw::deny:
 # -
+
+profile::letsencrypt::server: https://acme-staging.api.letsencrypt.org/directory
+
+profile::reverseproxy::vhosts:
+  feedhabit.com:
+    ssl: true
+    ssl_cert: false
+    ssl_key: false
