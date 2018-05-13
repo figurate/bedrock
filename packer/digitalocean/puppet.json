@@ -16,9 +16,18 @@
   ],
   "provisioners": [
     {
+      "type": "shell",
+      "inline": "mkdir -p /opt/bedrock"
+    },
+    {
       "type": "file",
       "source": "puppet",
-      "destination": "/opt/bedrock"
+      "destination": "/opt/bedrock/puppet"
+    },
+    {
+      "type": "file",
+      "source": "scripts/puppet/apply.sh",
+      "destination": "/var/lib/cloud/scripts/per-instance/puppet-apply.sh"
     },
     {
       "type": "shell",
