@@ -13,4 +13,6 @@ mod 'puppetlabs-concat'
 mod 'puppet-letsencrypt'
 mod 'puppetlabs-inifile'
 mod 'puppetlabs-vcsrepo'
-mod 'attachmentgenie-ufw'
+mod 'puppetlabs/ntp', :latest
+
+mod 'attachmentgenie-ufw', :git => 'https://github.com/attachmentgenie/attachmentgenie-ufw.git'
