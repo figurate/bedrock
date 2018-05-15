@@ -1,13 +1,23 @@
+profile::ufw::deny_outgoing: true
+
 profile::ufw::allow:
-  allow-ssh-from-all:
-    port: 22
+  allow-ssh:
+    port: "ssh"
   allow-dns-over-udp:
-    port: 53
+    port: "domain"
     proto: "udp"
-  http:
-    port: 80
-  https:
-    port: 443
+    direction: "OUT"
+  allow-http:
+    port: "http"
+  allow-https:
+    port: "https"
+  allow-https-out:
+    port: "https"
+    direction: "OUT"
+  allow-ntp-out:
+    port: "ntp"
+    proto: "udp"
+    direction: "OUT"
 
 profile::ufw::limit:
   ssh:
@@ -16,6 +26,13 @@ profile::ufw::limit:
 # deny all incoming/outgoing, allow dns, http, https, ssh
 #ufw::deny:
 # -
+
+profile::ntp::enable: true
+profile::ntp::servers:
+  - 0.au.pool.ntp.org
+  - 1.au.pool.ntp.org
+  - 2.au.pool.ntp.org
+  - 3.au.pool.ntp.org
 
 profile::letsencrypt::server: https://acme-staging.api.letsencrypt.org/directory
 
