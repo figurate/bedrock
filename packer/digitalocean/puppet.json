@@ -26,13 +26,13 @@
     },
     {
       "type": "file",
-      "source": "scripts/puppet/apply.sh",
+      "source": "orchestration/scripts/puppet/apply.sh",
       "destination": "/var/lib/cloud/scripts/per-instance/puppet-apply.sh"
     },
     {
       "type": "shell",
       "scripts": [
-        "scripts/debian/puppet-install.sh"
+        "orchestration/scripts/debian/puppet-install.sh"
       ]
     }
   ]
