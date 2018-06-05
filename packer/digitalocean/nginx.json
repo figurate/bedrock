@@ -23,7 +23,7 @@
     {
       "type": "shell",
       "scripts": [
-        "scripts/debian/puppet-install.sh",
+        "orchestration/scripts/debian/puppet-install.sh",
         "puppet/install-modules.sh"
       ]
     },

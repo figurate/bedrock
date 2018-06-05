@@ -23,14 +23,14 @@
     {
       "type": "shell",
       "scripts": [
-        "scripts/debian/puppet-install.sh",
+        "orchestration/scripts/debian/puppet-install.sh",
         "puppet/install-modules.sh"
       ]
     },
     {
       "type": "puppet-masterless",
       "puppet_bin_dir": "/opt/puppetlabs/bin",
-      "manifest_file": "puppet/manifests/rancher.pp",
+      "manifest_file": "puppet/manifests/rancher_server.pp",
       "module_paths": ["puppet/modules", "puppet/thirdparty"]
     }
   ]
