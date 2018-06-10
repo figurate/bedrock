@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 
-# NOTE: Script requires root privileges.
+sudo apt-get remove docker docker-engine docker.io
 
 # 1. Installation instructions from: https://docs.docker.com/engine/installation/linux/debian/#/install-using-the-repository
-apt-get install -y --no-install-recommends \
+sudo apt-get install -y --no-install-recommends \
      apt-transport-https \
      ca-certificates \
      curl \
+     gnupg2 \
      software-properties-common
 
-curl -fsSL https://apt.dockerproject.org/gpg | apt-key add -
+curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -
 
-add-apt-repository \
+sudo add-apt-repository \
        "deb https://apt.dockerproject.org/repo/ \
        debian-$(lsb_release -cs) \
        main"
