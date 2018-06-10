@@ -13,4 +13,6 @@ hierarchy:
   - name: "Unencrypted"
     data_hash: yaml_data # Standard yaml backend
     paths:
+      - "node/%{trusted.hostname}.yaml"
+      - "group/%{facts.group}.yaml"
       - "common.yaml"

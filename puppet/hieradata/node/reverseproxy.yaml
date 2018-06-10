@@ -1,0 +1,175 @@
+profile::ufw::allow:
+  allow-http:
+    port: "http"
+  allow-https:
+    port: "https"
+  allow-httpalt-out:
+    port: "8080"
+    direction: "OUT"
+    ip: "any"
+
+profile::swap::enable: true
+
+profile::papertrail::files:
+  - "/var/log/nginx/access.log"
+  - "/var/log/nginx/error.log"
+
+profile::letsencrypt::server: https://acme-staging.api.letsencrypt.org/directory
+
+profile::reverseproxy::hosts:
+  rancher.internal:
+    ip: "%{facts.host_rancher}"
+  wnews.internal:
+    ip: "%{facts.host_wnews}"
+  tzurl.internal:
+    ip: "%{facts.host_tzurl}"
+
+profile::reverseproxy::vhosts:
+  stub_status:
+    listen_ip: '127.0.0.1'
+    server_name:
+      - '127.0.0.1'
+    use_default_location: false
+    locations:
+      nginx_status:
+        location: '/nginx_status'
+        stub_status: true
+        location_allow:
+          - '127.0.0.1'
+        location_deny:
+          - 'all'
+  rancher.mnode.org:
+    server_name:
+      - 'rancher.mnode.org'
+    ssl: false
+    use_default_location: false
+    locations:
+      rancherserver:
+        location: '/'
+        proxy: 'http://rancher.internal:8080'
+  feedhabit.com:
+    server_name:
+      - 'www.feedhabit.com'
+      - 'feedhabit.com'
+    ssl: false
+  wnews.org.au:
+    server_name:
+      - 'www.wnews.org.au'
+      - 'beta.wnews.org.au'
+      - 'wnews.org.au'
+    ssl: true
+    ssl_redirect: true
+    ssl_cert: /etc/ssl/web/reverseproxy.%{facts.environment}.crt
+    ssl_key: /etc/ssl/web/reverseproxy.%{facts.environment}.key
+    error_pages:
+      404: '/404.html'
+    use_default_location: false
+    locations:
+      404:
+        location: '/404.html'
+        www_root: '/var/www/html/error/'
+        internal: true
+      railway_bridge_image:
+        location: '/images/railway-bridge.jpeg'
+        www_root: '/var/www/'
+      seo_site_auth:
+        location: '~ /(BingSiteAuth.xml|google3c16f371b7d30131.html)'
+        www_root: '/var/www/html/'
+      about_us:
+        location: '~ /about-us.*'
+        location_cfg_append:
+          return: '301 /about.html'
+      regular_advertisers:
+        location: '~ /regular-advertisers.*'
+        location_cfg_append:
+          return: '301 /advertisements.html'
+      advertising:
+        location: '~ /advertising.*'
+        location_cfg_append:
+          return: '301 https://www.wnews.org.au/contact.html#advertising'
+      past_issues:
+        location: '~ /(tag/front-page|category/past-issues).*'
+        location_cfg_append:
+          return: '301 https://www.wnews.org.au/past-issues.html'
+      criterion:
+        location: '/advertisements/list/criterion-hotel-accommodation.html'
+        location_cfg_append:
+          return: '301 /advertisements/list/criterion-hotel.html'
+      media_lib:
+        location: '~ /wp/media/s3./(.*)'
+        location_cfg_append:
+          return: '302 https://s3-ap-southeast-2.amazonaws.com/wp-media-lib/$1'
+      trailing_slash:
+        location: '~ /(articles|gardening|home-hints|past-issues|recipes|related-sites|wildlife|trades-and-services|accommodation|about)(.*)/$'
+        location_cfg_append:
+          return: '302 /$1$2.html'
+      system_paths:
+        location: '~ /system/.*(?<!sling\.js)(?<!\/sling\/info.sessionInfo.json)$'
+        location_cfg_append:
+          return: '403'
+      wnews_root:
+        location: '/'
+        rewrite_rules:
+          - '/(articles|gardening|home-hints|past-issues|recipes|related-sites|wildlife)/(?!list/)(.*) /$1/list/$2 break'
+        proxy: 'http://wnews.internal'
+        proxy_cache: 'd2'
+        proxy_cache_valid: '200 1d'
+        proxy_cache_use_stale: 'error timeout invalid_header updating http_500 http_502 http_503 http_504'
+        proxy_cache_bypass: '$cookie_nocache $arg_nocache'
+    format_log: 'custom_metrics'
+    access_log: '/var/log/nginx/stub_status.access.log'
+    error_log: '/var/log/nginx/stub_status.error.log warn'
+  miniki.org:
+    server_name:
+      - 'www.miniki.org'
+      - 'miniki.org'
+    ssl: false
+  localdesigner.com.au:
+    server_name:
+      - 'www.localdesigner.com.au'
+      - 'localdesigner.com.au'
+    ssl: false
+  coucou.im:
+    server_name:
+      - 'www.coucou.im'
+      - 'coucou.im'
+    ssl: false
+  coucou.land:
+    server_name:
+      - 'www.coucou.land'
+      - 'coucou.land'
+    ssl: false
+  whistlepost.net:
+    server_name:
+      - 'www.whistlepost.net'
+      - 'whistlepost.net'
+    ssl: false
+  tzurl.org:
+    server_name:
+      - 'www.tzurl.org'
+      - 'tzurl.org'
+    ssl: false
+    use_default_location: false
+    locations:
+      tzurl_root:
+        location: '/'
+        proxy: 'http://tzurl.internal'
+        proxy_cache: 'd2'
+        proxy_cache_valid: '200 1d'
+        proxy_cache_use_stale: 'error timeout invalid_header updating http_500 http_502 http_503 http_504'
+        proxy_cache_bypass: '$cookie_nocache $arg_nocache'
+  elbento.com:
+    server_name:
+      - 'www.elbento.com'
+      - 'elbento.com'
+    ssl: false
+  micronode.com:
+    server_name:
+      - 'www.micronode.com'
+      - 'micronode.com'
+    ssl: false
+  basepatterns.org:
+    server_name:
+      - 'www.basepatterns.org'
+      - 'basepatterns.org'
+    ssl: false

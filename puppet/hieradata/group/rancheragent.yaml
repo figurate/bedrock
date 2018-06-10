@@ -1,0 +1,27 @@
+profile::ufw::allow:
+  allow-http:
+    port: "http"
+  allow-http-local:
+    port: "8080"
+    proto: "tcp"
+  allow-https:
+    port: "https"
+  allow-ipsec-over-udp:
+    port: "500,4500"
+    proto: "udp"
+    ip: "any"
+  allow-ipsec-over-udp-out:
+    port: "500,4500"
+    proto: "udp"
+    direction: "OUT"
+    ip: "any"
+  allow-httpalt-out:
+    port: "8080"
+    direction: "OUT"
+    ip: "any"
+
+profile::rancheragent::hosts:
+  rancher.internal:
+    ip: "%{facts.host_rancher}"
+
+profile::rancheragent::registration_url: "http://rancher.internal:8080/v1/scripts/A1B3E3FC9B99453984E9:1514678400000:aXxoRRKQoEeLgiqdXqfYQK3lZuU"

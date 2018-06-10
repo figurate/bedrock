@@ -1,0 +1,31 @@
+profile::ufw::allow:
+  allow-http:
+    port: "http"
+  allow-http-local:
+    port: "8080"
+    proto: "tcp"
+    ip: "any"
+  allow-http-local-2:
+    port: "8114"
+    proto: "tcp"
+    ip: "any"
+  allow-https:
+    port: "https"
+  allow-ipsec-over-udp:
+    port: "500,4500"
+    proto: "udp"
+    ip: "any"
+  allow-ipsec-over-udp-out:
+    port: "500,4500"
+    proto: "udp"
+    direction: "OUT"
+    ip: "any"
+  allow-httpalt-out:
+    port: "8080"
+    direction: "OUT"
+    ip: "any"
+
+profile::swap::enable: true
+
+profile::papertrail::files:
+  - "/var/log/haproxy"
