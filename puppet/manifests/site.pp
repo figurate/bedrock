@@ -1,3 +1,3 @@
 node default {
-  class { 'credstash': }
+  include role::default
 }
