@@ -1,5 +1,17 @@
-class profile::rancheragent {
+class profile::rancheragent(
+  $hosts,
+  $registration_url,
+) {
 
-  include docker
-  include rancher
+  include profile::docker
+
+  $hosts.each |String $host_name, $values| {
+    host { $host_name:
+      * => $values,
+    }
+  }
+
+  class { '::rancher':
+    registration_url => $registration_url,
+  }
 }

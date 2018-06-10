@@ -14,5 +14,11 @@ mod 'puppet-letsencrypt'
 mod 'puppetlabs-inifile'
 mod 'puppetlabs-vcsrepo'
 mod 'puppetlabs/ntp', :latest
+mod 'papertrail-papertrail', '1.1.2'
+mod 'lwf-remote_file', '1.1.3'
+mod 'petems-swap_file', '4.0.0'
 
 mod 'attachmentgenie-ufw', :git => 'https://github.com/attachmentgenie/attachmentgenie-ufw.git'
+mod 'puppet-acct', :git => 'https://github.com/benfortuna/puppet-acct.git'
+mod 'puppet-ssl', :git => 'https://github.com/fnerdwq/puppet-ssl.git'
+mod 'puppet-rsyslog', :git => 'https://github.com/voxpupuli/puppet-rsyslog.git'

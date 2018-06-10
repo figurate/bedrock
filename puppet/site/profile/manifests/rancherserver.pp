@@ -1,5 +1,5 @@
 class profile::rancherserver {
 
-  include docker
+  include profile::docker
   include rancher::server
 }
