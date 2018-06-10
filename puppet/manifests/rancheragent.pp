@@ -1,4 +1,3 @@
-node /rancheragent/ {
-
+node /rancheragent.*/ {
   include role::rancheragent
 }

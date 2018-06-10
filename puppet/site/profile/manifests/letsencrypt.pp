@@ -11,9 +11,11 @@ class profile::letsencrypt(
   }
 
   class { ::letsencrypt:
+    manage_install => false,
+    manage_config => false,
     config => {
       email => $email,
       server => $server,
-    }
+    },
   }
 }

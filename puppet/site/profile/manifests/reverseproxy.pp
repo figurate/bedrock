@@ -1,9 +1,18 @@
 class profile::reverseproxy(
+  $hosts,
   $vhosts,
 ) {
 
   include profile::nginx
+  include profile::ssl
   include profile::letsencrypt
+  include www_static
+
+  $hosts.each |String $host_name, $values| {
+    host { $host_name:
+      * => $values,
+    }
+  }
 
   $vhosts.each |String $vhost_name, $values| {
     nginx::resource::server { $vhost_name:
