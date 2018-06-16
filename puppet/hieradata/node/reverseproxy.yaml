@@ -47,6 +47,11 @@ profile::reverseproxy::vhosts:
       rancherserver:
         location: '/'
         proxy: 'http://rancher.internal:8080'
+        proxy_http_version: '1.1'
+        proxy_set_header:
+          - Host $host
+          - Upgrade $http_upgrade
+          - Connection "upgrade"
   feedhabit.com:
     server_name:
       - 'www.feedhabit.com'
