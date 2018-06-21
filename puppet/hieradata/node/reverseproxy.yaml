@@ -19,10 +19,18 @@ profile::letsencrypt::server: https://acme-staging.api.letsencrypt.org/directory
 profile::reverseproxy::hosts:
   rancher.internal:
     ip: "%{facts.host_rancher}"
-  wnews.internal:
-    ip: "%{facts.host_wnews}"
-  tzurl.internal:
+  whistlepost-host-1:
+    ip: "%{facts.host_whistlepost}"
+  tzurl-host-1:
     ip: "%{facts.host_tzurl}"
+
+profile::reverseproxy::upstreams:
+  tzurl.internal:
+    members:
+      - 'tzurl-host-1'
+  whistlepost.internal:
+    members:
+      - 'whistlepost-host-1:8080'
 
 profile::reverseproxy::vhosts:
   stub_status:
@@ -38,6 +46,7 @@ profile::reverseproxy::vhosts:
           - '127.0.0.1'
         location_deny:
           - 'all'
+
   rancher.mnode.org:
     server_name:
       - 'rancher.mnode.org'
@@ -52,11 +61,13 @@ profile::reverseproxy::vhosts:
           - Host $host
           - Upgrade $http_upgrade
           - Connection "upgrade"
+
   feedhabit.com:
     server_name:
       - 'www.feedhabit.com'
       - 'feedhabit.com'
     ssl: false
+
   wnews.org.au:
     server_name:
       - 'www.wnews.org.au'
@@ -108,7 +119,7 @@ profile::reverseproxy::vhosts:
         location: '~ /(articles|gardening|home-hints|past-issues|recipes|related-sites|wildlife|trades-and-services|accommodation|about)(.*)/$'
         location_cfg_append:
           return: '302 /$1$2.html'
-      system_paths:
+      wnews_system_paths:
         location: '~ /system/.*(?<!sling\.js)(?<!\/sling\/info.sessionInfo.json)$'
         location_cfg_append:
           return: '403'
@@ -116,43 +127,19 @@ profile::reverseproxy::vhosts:
         location: '/'
         rewrite_rules:
           - '/(articles|gardening|home-hints|past-issues|recipes|related-sites|wildlife)/(?!list/)(.*) /$1/list/$2 break'
-        proxy: 'http://wnews.internal'
+        proxy: 'http://whistlepost.internal'
         proxy_cache: 'd2'
+        proxy_cache_key: '$scheme$host$request_uri'
         proxy_cache_valid: '200 1d'
         proxy_cache_use_stale: 'error timeout invalid_header updating http_500 http_502 http_503 http_504'
         proxy_cache_bypass: '$cookie_nocache $arg_nocache'
     format_log: 'custom_metrics'
     access_log: '/var/log/nginx/stub_status.access.log'
     error_log: '/var/log/nginx/stub_status.error.log warn'
-  miniki.org:
-    server_name:
-      - 'www.miniki.org'
-      - 'miniki.org'
-    ssl: false
-  localdesigner.com.au:
-    server_name:
-      - 'www.localdesigner.com.au'
-      - 'localdesigner.com.au'
-    ssl: false
-  coucou.im:
-    server_name:
-      - 'www.coucou.im'
-      - 'coucou.im'
-    ssl: false
-  coucou.land:
-    server_name:
-      - 'www.coucou.land'
-      - 'coucou.land'
-    ssl: false
-  whistlepost.net:
-    server_name:
-      - 'www.whistlepost.net'
-      - 'whistlepost.net'
-    ssl: false
+
   tzurl.org:
     server_name:
-      - 'www.tzurl.org'
-      - 'tzurl.org'
+      - '~^.*tzurl\.org$'
     ssl: false
     use_default_location: false
     locations:
@@ -160,21 +147,46 @@ profile::reverseproxy::vhosts:
         location: '/'
         proxy: 'http://tzurl.internal'
         proxy_cache: 'd2'
+        proxy_cache_key: '$scheme$host$request_uri'
         proxy_cache_valid: '200 1d'
         proxy_cache_use_stale: 'error timeout invalid_header updating http_500 http_502 http_503 http_504'
         proxy_cache_bypass: '$cookie_nocache $arg_nocache'
-  elbento.com:
+
+  whistlepost.net:
     server_name:
-      - 'www.elbento.com'
-      - 'elbento.com'
+      - '~^.*whistlepost\.net$'
+      - '~^.*elbento\.com$'
+      - '~^.*micronode\.com$'
+      - '~^.*basepatterns\.org$'
+      - '~^.*localdesigner\.com\.au$'
     ssl: false
-  micronode.com:
+    use_default_location: false
+    locations_defaults:
+      proxy: 'http://whistlepost.internal'
+      proxy_cache: 'd2'
+      proxy_cache_key: '$scheme$host$request_uri'
+      proxy_cache_valid: '200 1d'
+      proxy_cache_use_stale: 'error timeout invalid_header updating http_500 http_502 http_503 http_504'
+      proxy_cache_bypass: '$cookie_nocache $arg_nocache'
+    locations:
+      system_paths:
+        location: '~ /system/.*(?<!sling\.js)(?<!\/sling\/info.sessionInfo.json)$'
+        location_cfg_append:
+          return: '403'
+      whistlepost_root:
+        location: '/'
+
+  miniki.org:
     server_name:
-      - 'www.micronode.com'
-      - 'micronode.com'
+      - '~^.*miniki\.org$'
     ssl: false
-  basepatterns.org:
+
+  coucou.im:
     server_name:
-      - 'www.basepatterns.org'
-      - 'basepatterns.org'
+      - '~^.*coucou\.im$'
+    ssl: false
+
+  coucou.land:
+    server_name:
+      - '~^.*coucou\.land$'
     ssl: false

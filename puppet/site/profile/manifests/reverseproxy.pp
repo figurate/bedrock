@@ -1,5 +1,6 @@
 class profile::reverseproxy(
   $hosts,
+  $upstreams,
   $vhosts,
 ) {
 
@@ -10,6 +11,12 @@ class profile::reverseproxy(
 
   $hosts.each |String $host_name, $values| {
     host { $host_name:
+      * => $values,
+    }
+  }
+
+  $upstreams.each |String $upstream_name, $values| {
+    nginx::resource::upstream { $upstream_name:
       * => $values,
     }
   }
