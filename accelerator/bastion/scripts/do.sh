@@ -4,4 +4,8 @@ docker run --privileged -it --rm \
   --volume "$HOME/.aws:/root/.aws" \
   --volume "$HOME/.ssh:/root/.ssh" \
   -e TF_BACKEND_KEY=${TF_BACKEND_KEY:-$(basename $PWD)} \
-  bedrock/bastion:do
+  -e http_proxy=${http_proxy:-} \
+  -e https_proxy=${https_proxy:-} \
+  -e no_proxy=${no_proxy:-} \
+  --net=host \
+  bedrock/bastion:do $@
