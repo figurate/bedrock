@@ -1,12 +1,17 @@
 FROM hashicorp/terraform:light
 
-RUN apk add --update jq python py-pip && pip install awscli
+MAINTAINER Ben Fortuna
+
+RUN apk add --update jq python py-pip bash groff && pip install awscli
 
 WORKDIR /work
 
 ADD *.sh *.tf /bootstrap/
 
-ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT []
+
+# aws cli help doesn't work with busybox less
+ENV PAGER="cat"
 
 ENV AWS_DEFAULT_REGION="ap-southeast-2"
 
