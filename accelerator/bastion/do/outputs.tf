@@ -14,6 +14,11 @@ output "ssh_key" {
   value = "${var.ssh_key}"
 }
 
+output "ssh_key_name" {
+  description = "Name of key for SSH access to droplets"
+  value = "${var.ssh_key_name}"
+}
+
 output "bastion_image" {
   description = "Digital Ocean image for bastion droplet"
   value = "${var.bastion_image}"
