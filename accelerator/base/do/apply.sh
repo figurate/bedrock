@@ -8,4 +8,7 @@ sh /bootstrap/backend_tf.sh > /bootstrap/backend.tf && \
 terraform init -backend-config backend.tfvars -upgrade /bootstrap
 
 # Provision resources
-terraform apply /bootstrap
+terraform apply $TF_APPLY_ARGS /bootstrap
+
+# Additional commands to run after terraform apply
+/bootstrap/post-apply.sh $@

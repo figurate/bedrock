@@ -17,4 +17,4 @@ ENV AWS_DEFAULT_REGION="ap-southeast-2"
 
 ENV TF_BACKEND_KEY="__UNDEFINED__"
 
-CMD ["/bootstrap/run.sh"]
+CMD ["/bootstrap/apply.sh"]
