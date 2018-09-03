@@ -14,17 +14,20 @@ output "ssh_key" {
   value = "${var.ssh_key}"
 }
 
-output "ssh_key_name" {
-  description = "Name of key for SSH access to droplets"
-  value = "${var.ssh_key_name}"
-}
-
-output "bastion_image" {
-  description = "Digital Ocean image for bastion droplet"
-  value = "${var.bastion_image}"
+output "rancher_image" {
+  description = "Digital Ocean image for rancher droplet"
+  value = "${var.rancher_image}"
 }
 
 output "enabled" {
-  description = "Start/stop the bastion host"
+  description = "Start/stop the rancher host"
   value = "${var.enabled}"
+}
+
+output "rancherserver_ip" {
+  value = "${digitalocean_droplet.rancherserver.*.ipv4_address}"
+}
+
+output "rancheragent_ip" {
+  value = "${digitalocean_droplet.rancheragent.*.ipv4_address}"
 }
