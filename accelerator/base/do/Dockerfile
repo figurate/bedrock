@@ -15,4 +15,4 @@ ENV PAGER="cat"
 
 ENV TF_BACKEND_KEY="__UNDEFINED__"
 
-CMD ["/bootstrap/run.sh"]
+CMD ["/bootstrap/apply.sh"]
