@@ -36,6 +36,7 @@ ntp:
     - 3.au.pool.ntp.org
 
 runcmd:
-  - API_KEY="${var.amplify_key}" bash <(curl -L https://github.com/nginxinc/nginx-amplify-agent/raw/master/packages/install.sh)
+  - export API_KEY="${var.amplify_key}"
+  - curl -L https://github.com/nginxinc/nginx-amplify-agent/raw/master/packages/install.sh | bash
 EOF
 }
