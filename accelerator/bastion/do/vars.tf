@@ -7,11 +7,7 @@ variable "do_region" {
 }
 
 variable "ssh_key" {
-  description = "Location of public key file for SSH access to droplets"
-}
-
-variable "ssh_key_name" {
-  description = "Name of key for SSH access to droplets"
+  description = "Identifier of public key file for SSH access to droplets"
 }
 
 variable "bastion_image" {
@@ -21,4 +17,8 @@ variable "bastion_image" {
 
 variable "enabled" {
   description = "Start/stop the bastion host"
+}
+
+locals {
+  uuid = "bastion"
 }

@@ -6,22 +6,22 @@ output "do_token" {
 
 output "do_region" {
   description = "Digital Ocean region"
-  value = "${var.do_region}"
-}
-
-output "ssh_key" {
-  description = "Location of public key file for SSH access to droplets"
-  value = "${var.ssh_key}"
-}
-
-output "ssh_key_name" {
-  description = "Name of key for SSH access to droplets"
-  value = "${var.ssh_key_name}"
+  value = "${digitalocean_droplet.bastion.*.region}"
 }
 
 output "bastion_image" {
   description = "Digital Ocean image for bastion droplet"
-  value = "${var.bastion_image}"
+  value = "${digitalocean_droplet.bastion.*.image}"
+}
+
+output "monthly_cost" {
+  description = "Monthly cost for bastion droplet"
+  value = "${digitalocean_droplet.bastion.*.price_monthly}"
+}
+
+output "ssh_key" {
+  description = "Name of key for SSH access to droplets"
+  value = "${var.ssh_key}"
 }
 
 output "enabled" {
