@@ -16,4 +16,27 @@ resource "digitalocean_droplet" "reverseproxy" {
   monitoring = true
   tags = ["${digitalocean_tag.reverseproxy.name}"]
   ssh_keys = ["${var.ssh_key}"]
+  user_data = <<EOF
+#cloud-config
+packages:
+  - nginx
+  - unattended-upgrades
+  - curl
+  - ntpdate
+  - python
+
+timezone: Australia/Melbourne
+
+ntp:
+  enabled: true
+  servers:
+    - 0.au.pool.ntp.org
+    - 1.au.pool.ntp.org
+    - 2.au.pool.ntp.org
+    - 3.au.pool.ntp.org
+
+runcmd:
+  - export API_KEY="${var.amplify_key}"
+  - curl -L https://github.com/nginxinc/nginx-amplify-agent/raw/master/packages/install.sh | bash
+EOF
 }
