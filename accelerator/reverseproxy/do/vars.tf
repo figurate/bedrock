@@ -21,11 +21,3 @@ variable "enabled" {
 variable "environment" {
   description = "Environment identifier for the reverseproxy host"
 }
-
-variable "amplify_key" {
-  description = "API key for nginx amplify"
-}
-
-locals {
-  uuid = "${var.environment}-reverseproxy"
-}
