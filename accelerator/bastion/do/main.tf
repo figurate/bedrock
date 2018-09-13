@@ -3,7 +3,7 @@ provider "digitalocean" {
 }
 
 resource "digitalocean_tag" "bastion" {
-  name = "${local.uuid}-host"
+  name = "${local.uuid}"
 }
 
 resource "digitalocean_droplet" "bastion" {
@@ -21,7 +21,17 @@ resource "digitalocean_droplet" "bastion" {
 packages:
   - fail2ban
   - unattended-upgrades
+  - ntpdate
 
 timezone: Australia/Melbourne
+
+ntp:
+  enabled: true
+  servers:
+    - 0.au.pool.ntp.org
+    - 1.au.pool.ntp.org
+    - 2.au.pool.ntp.org
+    - 3.au.pool.ntp.org
+
 EOF
 }

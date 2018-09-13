@@ -1,5 +1,5 @@
-resource "digitalocean_firewall" "ssh" {
-  name = "${local.uuid}-ssh"
+resource "digitalocean_firewall" "default" {
+  name = "${local.uuid}"
 
   tags = [
     "${digitalocean_tag.bastion.id}",
@@ -26,6 +26,21 @@ resource "digitalocean_firewall" "ssh" {
       protocol = "tcp"
       port_range = "443"
       destination_addresses = ["0.0.0.0/0", "::/0"]
+    },
+    {
+      protocol                = "tcp"
+      port_range              = "53"
+      destination_addresses   = ["0.0.0.0/0", "::/0"]
+    },
+    {
+      protocol                = "udp"
+      port_range              = "53"
+      destination_addresses   = ["0.0.0.0/0", "::/0"]
+    },
+    {
+      protocol                = "udp"
+      port_range              = "123"
+      destination_addresses   = ["0.0.0.0/0", "::/0"]
     },
   ]
 }
