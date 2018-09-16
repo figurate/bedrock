@@ -14,11 +14,6 @@ output "ssh_key" {
   value = "${var.ssh_key}"
 }
 
-output "rancher_image" {
-  description = "Digital Ocean image for rancher droplet"
-  value = "${var.rancher_image}"
-}
-
 output "enabled" {
   description = "Start/stop the rancher host"
   value = "${var.enabled}"
@@ -26,8 +21,4 @@ output "enabled" {
 
 output "rancherserver_ip" {
   value = "${digitalocean_droplet.rancherserver.*.ipv4_address}"
-}
-
-output "rancheragent_ip" {
-  value = "${digitalocean_droplet.rancheragent.*.ipv4_address}"
 }
