@@ -12,6 +12,7 @@ variable "ssh_key" {
 
 variable "reverseproxy_image" {
   description = "Digital Ocean image for reverseproxy droplet"
+  default = "ubuntu-18-04-x64"
 }
 
 variable "enabled" {
