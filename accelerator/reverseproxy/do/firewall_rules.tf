@@ -61,22 +61,6 @@ resource "digitalocean_firewall" "papertrail" {
   ]
 }
 
-//resource "digitalocean_firewall" "hkp" {
-//  name = "hkp"
-//
-//  tags = [
-//    "${digitalocean_tag.reverseproxy.id}",
-//  ]
-//
-//  outbound_rule = [
-//    {
-//      protocol           = "tcp"
-//      port_range         = "11371"
-//      destination_addresses   = ["0.0.0.0/0", "::/0"]
-//    },
-//  ]
-//}
-
 resource "digitalocean_firewall" "reverseproxy" {
   name = "${local.uuid}-reverseproxy"
 
@@ -96,4 +80,10 @@ resource "digitalocean_firewall" "reverseproxy" {
       source_addresses   = ["0.0.0.0/0", "::/0"]
     },
   ]
+
+  outbound_rule {
+    protocol = "tcp"
+    port_range = "8080"
+    destination_tags = ["rancherserver"]
+  }
 }
