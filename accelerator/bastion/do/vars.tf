@@ -12,7 +12,7 @@ variable "ssh_key" {
 
 variable "bastion_image" {
   description = "Digital Ocean image for bastion droplet"
-  default = "ubuntu-16-04-x64"
+  default = "ubuntu-18-04-x64"
 }
 
 variable "enabled" {
