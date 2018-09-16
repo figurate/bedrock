@@ -18,12 +18,18 @@ resource "digitalocean_droplet" "reverseproxy" {
   ssh_keys = ["${var.ssh_key}"]
   user_data = <<EOF
 #cloud-config
+apt:
+  sources:
+    certbot:
+      source: ppa:certbot/certbot
+
 packages:
   - nginx
   - unattended-upgrades
   - curl
   - ntpdate
   - python
+  - python-certbot-nginx
 
 timezone: Australia/Melbourne
 
@@ -35,8 +41,26 @@ ntp:
     - 2.au.pool.ntp.org
     - 3.au.pool.ntp.org
 
+write_files:
+  - content: |
+      server {
+          listen 127.0.0.1:80;
+          server_name 127.0.0.1;
+          location /nginx_status {
+              stub_status on;
+              allow 127.0.0.1;
+              deny all;
+          }
+      }
+    path: /etc/nginx/conf.d/stub_status.conf
+
 runcmd:
   - export API_KEY="${var.amplify_key}"
   - curl -L https://github.com/nginxinc/nginx-amplify-agent/raw/master/packages/install.sh | bash
 EOF
+}
+
+resource "digitalocean_floating_ip" "reverseproxy" {
+  droplet_id = "${digitalocean_droplet.reverseproxy.id}"
+  region     = "${digitalocean_droplet.reverseproxy.region}"
 }
