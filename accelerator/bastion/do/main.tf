@@ -33,5 +33,8 @@ ntp:
     - 2.au.pool.ntp.org
     - 3.au.pool.ntp.org
 
+runcmd:
+  - printf '\nClientAliveInterval 100\nClientAliveCountMax 0' >> /etc/ssh/sshd_config
+  - service ssh restart
 EOF
 }
