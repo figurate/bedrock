@@ -9,9 +9,9 @@ output "do_region" {
   value = "${digitalocean_droplet.bastion.*.region}"
 }
 
-output "bastion_image" {
-  description = "Digital Ocean image for bastion droplet"
-  value = "${digitalocean_droplet.bastion.*.image}"
+output "bastion_ip" {
+  description = "IP address for bastion droplet"
+  value = "${digitalocean_droplet.bastion.*.ipv4_address}"
 }
 
 output "monthly_cost" {
