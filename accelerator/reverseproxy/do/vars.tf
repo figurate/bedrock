@@ -12,6 +12,7 @@ variable "ssh_key" {
 
 variable "reverseproxy_image" {
   description = "Digital Ocean image for reverseproxy droplet"
+  default = "ubuntu-18-04-x64"
 }
 
 variable "enabled" {
@@ -20,4 +21,12 @@ variable "enabled" {
 
 variable "environment" {
   description = "Environment identifier for the reverseproxy host"
+}
+
+variable "amplify_key" {
+  description = "API key for nginx amplify"
+}
+
+locals {
+  uuid = "${var.environment}-reverseproxy"
 }
