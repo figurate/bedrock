@@ -38,3 +38,21 @@ runcmd:
   - service ssh restart
 EOF
 }
+
+resource "null_resource" "bastion_ssh_key" {
+  depends_on = ["digitalocean_droplet.bastion"]
+
+  provisioner "local-exec" {
+    command = "scp ${var.ssh_private_key} root@${digitalocean_droplet.bastion.ipv4_address}:/root/.ssh"
+  }
+
+  provisioner "remote-exec" {
+    inline = ["chmod 600 /root/.ssh/id_rsa"]
+    connection {
+      type     = "ssh"
+      user     = "root"
+      host = "${digitalocean_droplet.bastion.ipv4_address}"
+      private_key = "${file(var.ssh_private_key)}"
+    }
+  }
+}
