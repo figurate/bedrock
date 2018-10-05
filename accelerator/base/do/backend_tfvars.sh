@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+BACKEND_KEY=${1:-$TF_BACKEND_KEY}
 cat <<EOF
-key="$1/terraform.tfstate"
+key="$BACKEND_KEY/terraform.tfstate"
 EOF
