@@ -8,5 +8,8 @@ docker build -t bedrock/bastion:aws -f base/do/Dockerfile.do bastion/aws
 docker build -t bedrock/user:aws -f base/do/Dockerfile.do user/aws
 docker build -t bedrock/reverseproxy:do -f base/do/Dockerfile.do reverseproxy/do
 docker build -t bedrock/rancher:do -f base/do/Dockerfile.do rancher/do
+docker build -t bedrock/rancherenv:do -f base/do/Dockerfile.do rancherenv/do
+docker build -t bedrock/rancherstack:do -f base/do/Dockerfile.do rancherstack/do
+docker build -t bedrock/whistlepost:do -f base/do/Dockerfile.do whistlepost/do
 
 docker build -t bedrock/accelerator .
