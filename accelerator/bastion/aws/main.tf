@@ -18,7 +18,7 @@ resource "aws_security_group" "bastion_sg" {
 }
 
 resource "aws_instance" "bastion" {
-  count = "${replace(replace(var.enabled, "/false/", 0), "/true", 1)}"
+  count = "${replace(replace(var.enabled, "/false/", 0), "/true/", 1)}"
   ami = "${var.bastion_image}"
   instance_type = "${var.instance_type}"
   security_groups = ["${aws_security_group.bastion_sg.id}"]
