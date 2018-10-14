@@ -23,6 +23,12 @@ variable "environment" {
   description = "Environment identifier for the reverseproxy host"
 }
 
+variable "upstream_ports" {
+  type = "list"
+  description = "A list of ports to route upstream traffic"
+  default = ["8080"]
+}
+
 variable "amplify_key" {
   description = "API key for nginx amplify"
 }
