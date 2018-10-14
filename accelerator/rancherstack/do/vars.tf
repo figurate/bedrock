@@ -44,8 +44,14 @@ variable "bastion_host" {
   description = "Bastion host used to access reverse proxy"
 }
 
-variable "target_url" {
-  description = "Target URL for vhost configuration"
+variable "target_hosts" {
+  type = "list"
+  description = "List of target hosts for vhost configuration"
+}
+
+variable "target_port" {
+  description = "Target port for vhost configuration"
+  default = "8080"
 }
 
 variable "catalog_id" {
@@ -55,14 +61,18 @@ variable "catalog_id" {
 
 variable "docker_compose" {
   description = "Location of docker-compose file"
-  default = ""
+  default = "docker-compose.yml"
 }
 
 variable "rancher_compose" {
   description = "Location of rancher-compose file"
-  default = ""
+  default = "rancher-compose.yml"
+}
+
+variable "ssl_enabled" {
+  description = "Enable SSL with Let's Encrypt"
 }
 
 locals {
-  uuid = "${var.environment}-rancherstack"
+  uuid = "${var.environment}-${substr(sha256(var.hostname), -10, -1)}"
 }

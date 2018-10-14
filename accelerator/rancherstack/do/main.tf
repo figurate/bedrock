@@ -9,7 +9,7 @@ data "rancher_environment" "environment" {
 }
 
 resource "rancher_stack" "catalog_stack" {
-  count = "${length(var.catalog_id) > 0}"
+  count = "${replace(replace(length(var.catalog_id) > 0, "/true/", 1), "/false/", 0)}"
   environment_id = "${data.rancher_environment.environment.id}"
   name = "${var.stack_name}"
   catalog_id = "${var.catalog_id}"
@@ -17,7 +17,7 @@ resource "rancher_stack" "catalog_stack" {
 }
 
 resource "rancher_stack" "stack" {
-  count = "${length(var.catalog_id) <= 0}"
+  count = "${replace(replace(length(var.catalog_id) > 0, "/false/", 1), "/true/", 0)}"
   environment_id = "${data.rancher_environment.environment.id}"
   name = "${var.stack_name}"
   docker_compose = "${file(var.docker_compose)}"
