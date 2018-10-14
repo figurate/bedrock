@@ -124,12 +124,18 @@ resource "digitalocean_firewall" "rancheragent" {
     {
       protocol           = "udp"
       port_range         = "4500"
-      source_tags        = ["${digitalocean_tag.rancherserver.id}"]
+      source_tags        = [
+        "${digitalocean_tag.rancherserver.id}",
+        "${digitalocean_tag.rancheragent.id}"
+      ]
     },
     {
       protocol           = "udp"
       port_range         = "500"
-      source_tags        = ["${digitalocean_tag.rancherserver.id}"]
+      source_tags        = [
+        "${digitalocean_tag.rancherserver.id}",
+        "${digitalocean_tag.rancheragent.id}"
+      ]
     },
     {
       protocol           = "tcp"
@@ -143,7 +149,7 @@ resource "digitalocean_firewall" "rancheragent" {
     },
     {
       protocol           = "tcp"
-      port_range         = "8080"
+      port_range         = "8080-8082"
       source_tags        = ["reverseproxy", "${digitalocean_tag.rancherserver.id}"]
     },
   ]
@@ -152,12 +158,18 @@ resource "digitalocean_firewall" "rancheragent" {
     {
       protocol           = "udp"
       port_range         = "4500"
-      destination_tags        = ["${digitalocean_tag.rancherserver.id}"]
+      destination_tags        = [
+        "${digitalocean_tag.rancherserver.id}",
+        "${digitalocean_tag.rancheragent.id}"
+      ]
     },
     {
       protocol           = "udp"
       port_range         = "500"
-      destination_tags        = ["${digitalocean_tag.rancherserver.id}"]
+      destination_tags        = [
+        "${digitalocean_tag.rancherserver.id}",
+        "${digitalocean_tag.rancheragent.id}"
+      ]
     },
     {
       protocol                = "tcp"
