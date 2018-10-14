@@ -87,3 +87,18 @@ resource "digitalocean_firewall" "reverseproxy" {
     destination_tags = ["rancherserver"]
   }
 }
+
+resource "digitalocean_firewall" "reverseproxy_upstream" {
+  name = "${local.uuid}-upstream-${count.index}"
+  count = "${length(var.upstream_ports)}"
+
+  tags = [
+    "${digitalocean_tag.reverseproxy.id}",
+  ]
+
+  outbound_rule {
+    protocol = "tcp"
+    port_range = "${var.upstream_ports[count.index]}"
+    destination_tags = ["rancheragent"]
+  }
+}
