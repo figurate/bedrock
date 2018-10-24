@@ -18,7 +18,22 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name ${var.hostname};
+    server_name ${join(" ", var.hostnames)};
+
+    error_page 404 /404.html;
+
+    location = /404.html {
+        root /var/www/html/error/;
+        internal;
+    }
+
+    location /images/railway-bridge.jpeg {
+        root /var/www/;
+    }
+
+    location ~ /system/.* {
+		return 403;
+	}
 
 	location / {
         proxy_pass http://${local.uuid}.internal;
@@ -29,7 +44,7 @@ server {
     }
 }
 EOF
-    destination = "/etc/nginx/sites-available/${var.hostname}"
+    destination = "/etc/nginx/sites-available/${var.hostnames[0]}"
 
     connection {
       type     = "ssh"
@@ -42,7 +57,7 @@ EOF
 
   provisioner "remote-exec" {
     inline = [
-      "ln -fs /etc/nginx/sites-available/${var.hostname} /etc/nginx/sites-enabled/",
+      "ln -fs /etc/nginx/sites-available/${var.hostnames[0]} /etc/nginx/sites-enabled/",
       "nginx -t",
       "nginx -s reload"
     ]
