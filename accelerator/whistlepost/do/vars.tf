@@ -33,9 +33,10 @@ variable "stack_name" {
   default = "whistlepost"
 }
 
-variable "hostname" {
+variable "hostnames" {
+  type = "list"
   description = "Hostname to configure in virtual host"
-  default = "wp.mnode.org"
+  default = ["wp.mnode.org"]
 }
 
 variable "reverseproxy_host" {
@@ -70,6 +71,10 @@ variable "ssl_enabled" {
   description = "Enable SSL with Let's Encrypt"
 }
 
+variable "error_bg_image" {
+  description = "Path to background image used for error pages"
+}
+
 locals {
-  uuid = "${var.environment}-${substr(sha256(var.hostname), -10, -1)}"
+  uuid = "${var.environment}-${substr(sha256(var.hostnames[0]), -10, -1)}"
 }
