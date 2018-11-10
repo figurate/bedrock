@@ -11,6 +11,7 @@ docker build -t bedrock/rancher:do -f base/do/Dockerfile.do rancher/do
 docker build -t bedrock/rancherenv:do -f base/do/Dockerfile.do rancherenv/do
 docker build -t bedrock/rancherstack:do -f base/do/Dockerfile.do rancherstack/do
 docker build -t bedrock/swap:do -f base/do/Dockerfile.do swap/do
+docker build -t bedrock/storage:aws -f base/do/Dockerfile.do storage/aws
 docker build -t bedrock/whistlepost:do -f base/do/Dockerfile.do whistlepost/do
 
 docker build -t bedrock/accelerator .
