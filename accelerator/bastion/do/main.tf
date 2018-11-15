@@ -1,3 +1,8 @@
+/**
+ * # Digital Ocean Bastion host configuration
+ *
+ * Provision a droplet with SSH ingress authenticated with the specified public key.
+ */
 provider "digitalocean" {
   token = "${var.do_token}"
 }
