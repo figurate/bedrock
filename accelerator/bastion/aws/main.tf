@@ -1,3 +1,8 @@
+/**
+ * # AWS Bastion host configuration
+ *
+ * Provision an EC2 instance with SSH ingress authenticated with the specified public key.
+ */
 provider "aws" {
   region = "${var.region}"
 }
