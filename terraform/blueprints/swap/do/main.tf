@@ -23,6 +23,7 @@ resource "null_resource" "target_host" {
       host = "${var.target_host}"
       private_key = "${file(var.ssh_private_key)}"
       bastion_host = "${var.bastion_host}"
+      bastion_private_key = "${file(var.bastion_private_key)}"
     }
   }
 }
