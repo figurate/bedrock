@@ -1,3 +1,7 @@
+# AWS IAM user configuration
+
+Provision an IAM user in AWS.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |

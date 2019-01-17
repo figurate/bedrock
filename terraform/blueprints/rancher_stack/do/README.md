@@ -1,3 +1,7 @@
+# Rancher stack configuration
+
+Provision a stack on a Rancher server instance.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
