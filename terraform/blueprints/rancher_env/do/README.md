@@ -1,3 +1,7 @@
+# Rancher environment configuration
+
+Provision an environment on a Rancher server instance.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |

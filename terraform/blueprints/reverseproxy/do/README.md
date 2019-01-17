@@ -1,3 +1,7 @@
+# Digital Ocean Reverse Proxy host configuration
+
+Provision a droplet with NGINX and letsencrypt installed.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |

@@ -1,3 +1,7 @@
+# Linux swap configuration
+
+Configure a swap file on a Linux host.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
