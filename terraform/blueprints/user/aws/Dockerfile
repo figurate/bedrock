@@ -1,3 +1,3 @@
-FROM bedrock/base:do
+FROM bedrock/base
 
 ADD *.tf /bootstrap/
