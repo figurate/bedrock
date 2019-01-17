@@ -8,6 +8,8 @@ Provision a stack on a Rancher server instance.
 |------|-------------|:----:|:-----:|:-----:|
 | bastion\_host | Bastion host used to access reverse proxy | string | - | yes |
 | catalog\_id | ID of predefined stack in Rancher catalog | string | `` | no |
+| do\_region | Digital Ocean region | string | - | yes |
+| do\_token | Digital Ocean API token | string | - | yes |
 | docker\_compose | Location of docker-compose file | string | `docker-compose.yml` | no |
 | enabled | Start/stop the rancher stack | string | - | yes |
 | environment | Environment identifier for the rancher hosts | string | - | yes |

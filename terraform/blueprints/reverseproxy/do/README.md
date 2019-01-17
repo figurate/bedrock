@@ -8,9 +8,13 @@ Provision a droplet with NGINX and letsencrypt installed.
 |------|-------------|:----:|:-----:|:-----:|
 | amplify\_key | API key for nginx amplify | string | - | yes |
 | do\_region | Digital Ocean region | string | - | yes |
+| do\_region | Digital Ocean region | string | - | yes |
+| do\_token | Digital Ocean API token | string | - | yes |
 | do\_token | Digital Ocean API token | string | - | yes |
 | enabled | Start/stop the reverseproxy host | string | - | yes |
 | environment | Environment identifier for the reverseproxy host | string | - | yes |
+| papertrail\_host | Target URL for Papertrail logs | string | - | yes |
+| papertrail\_port | Target port for Papertrail logs | string | - | yes |
 | reverseproxy\_image | Digital Ocean image for reverseproxy droplet | string | `ubuntu-18-04-x64` | no |
 | ssh\_key | Identifier of public key file for SSH access to droplets | string | - | yes |
 | upstream\_ports | A list of ports to route upstream traffic | list | `<list>` | no |

@@ -12,4 +12,5 @@ Provision an environment on a Rancher server instance.
 | rancher\_access\_key | Rancher API access key | string | - | yes |
 | rancher\_secret\_key | Rancher API secret key | string | - | yes |
 | rancher\_url | Base URL of Rancher API | string | `http://rancher.mnode.org` | no |
+| region | Digitalocean region of the rancher environment | string | - | yes |
 
