@@ -1,3 +1,7 @@
+# Digital Ocean Rancher host configuration
+
+Provision a droplet with Rancher server.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |

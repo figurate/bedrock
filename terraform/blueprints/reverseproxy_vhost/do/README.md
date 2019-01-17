@@ -1,3 +1,7 @@
+# NGINX vhost configuration
+
+Configure a vhost on an existing NGINX installation.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
