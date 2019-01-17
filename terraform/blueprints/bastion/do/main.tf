@@ -3,10 +3,6 @@
  *
  * Provision a droplet with SSH ingress authenticated with the specified public key.
  */
-provider "digitalocean" {
-  token = "${var.do_token}"
-}
-
 resource "digitalocean_tag" "bastion" {
   name = "${local.uuid}"
 }
@@ -39,8 +35,10 @@ ntp:
     - 3.au.pool.ntp.org
 
 runcmd:
-  - printf '\nClientAliveInterval 100\nClientAliveCountMax 0' >> /etc/ssh/sshd_config
+  - "printf '\nClientAliveInterval 100\nClientAliveCountMax 0' >> /etc/ssh/sshd_config"
   - service ssh restart
+  - "wget --header='X-Papertrail-Token: QHS89ESNb9Q0OGPK9Hu2' https://papertrailapp.com/destinations/2465304/setup.sh"
+  - bash setup.sh
 EOF
 }
 
