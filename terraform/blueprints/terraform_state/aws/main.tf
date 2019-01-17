@@ -1,3 +1,8 @@
+/**
+ * # Terraform state (AWS) configuration
+ *
+ * Provision an S3 bucket for terraform state in AWS.
+ */
 provider "aws" {}
 
 data "aws_caller_identity" "current" {}
