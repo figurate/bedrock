@@ -6,12 +6,16 @@ RUN apk add --update jq python py-pip bash groff && pip install awscli
 
 WORKDIR /work
 
-ADD *.sh *.tf /bootstrap/
+ADD *.sh /bootstrap/
+ADD environment /bootstrap/environment
+ADD stack /bootstrap/stack
 
 ENTRYPOINT []
 
 # aws cli help doesn't work with busybox less
 ENV PAGER="cat"
+
+ENV AWS_DEFAULT_REGION="ap-southeast-2"
 
 ENV TF_BACKEND_KEY="__UNDEFINED__"
 
