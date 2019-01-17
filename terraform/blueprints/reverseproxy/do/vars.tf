@@ -33,6 +33,14 @@ variable "amplify_key" {
   description = "API key for nginx amplify"
 }
 
+variable "papertrail_host" {
+  description = "Target URL for Papertrail logs"
+}
+
+variable "papertrail_port" {
+  description = "Target port for Papertrail logs"
+}
+
 locals {
   uuid = "${var.environment}-reverseproxy"
 }

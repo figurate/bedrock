@@ -3,10 +3,6 @@
  *
  * Provision a droplet with Rancher server.
  */
-provider "digitalocean" {
-  token = "${var.do_token}"
-}
-
 resource "digitalocean_tag" "rancherserver" {
   name = "rancherserver"
 }
@@ -55,8 +51,25 @@ ntp:
     - 2.au.pool.ntp.org
     - 3.au.pool.ntp.org
 
+write_files:
+  - path: /etc/log_files.yml
+    content: |
+      files:
+        - /var/log/nginx/access.log
+        - /var/log/nginx/error.log
+      destination:
+        host: ${var.papertrail_host}
+        port: ${var.papertrail_port}
+        protocol: tls
+      pid_file: /var/run/remote_syslog.pid
+
 runcmd:
   - docker run -d --restart=unless-stopped -p 8080:8080 rancher/server
+  - "wget --header='X-Papertrail-Token: QHS89ESNb9Q0OGPK9Hu2' https://papertrailapp.com/destinations/2465304/setup.sh"
+  - bash setup.sh
+  - curl -O https://github.com/papertrail/remote_syslog2/releases/download/v0.20/remote-syslog2_0.20_amd64.deb
+  - dpkg --install remote-syslog2_0.20_amd64.deb
+  - remote_syslog
 EOF
 }
 

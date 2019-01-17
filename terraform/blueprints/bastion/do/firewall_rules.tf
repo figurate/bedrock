@@ -44,3 +44,24 @@ resource "digitalocean_firewall" "default" {
     },
   ]
 }
+
+resource "digitalocean_firewall" "papertrail" {
+  name = "${local.uuid}-papertrail"
+
+  tags = [
+    "${digitalocean_tag.bastion.id}",
+  ]
+
+  outbound_rule = [
+    {
+      protocol                = "tcp"
+      port_range              = "51501"
+      destination_addresses   = ["0.0.0.0/0", "::/0"]
+    },
+    {
+      protocol                = "udp"
+      port_range              = "51501"
+      destination_addresses   = ["0.0.0.0/0", "::/0"]
+    },
+  ]
+}
