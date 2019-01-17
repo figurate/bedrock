@@ -3,12 +3,6 @@
  *
  * Provision an environment on a Rancher server instance.
  */
-provider "rancher" {
-  api_url = "${var.rancher_url}"
-  access_key = "${var.rancher_access_key}"
-  secret_key = "${var.rancher_secret_key}"
-}
-
 resource "rancher_environment" "environment" {
   name = "${var.environment}"
   orchestration = "cattle"
@@ -23,7 +17,7 @@ resource "rancher_host" "host" {
 
 resource "digitalocean_floating_ip" "rancheragent" {
   droplet_id = "${rancher_host.host.id}"
-  region     = "${digitalocean_droplet.rancherserver.region}"
+  region     = "${var.region}"
 }
 
 resource "rancher_stack" "cowcheck" {
