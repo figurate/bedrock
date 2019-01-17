@@ -1,7 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
+.vagrant/
 .terraform/
 packer/env.json
 terraform.tfstate*
 puppet/keys/
 *.tfvars
+.depends.mk
