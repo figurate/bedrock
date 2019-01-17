@@ -1,7 +1,3 @@
-variable "region" {
-  description = "AWS default region"
-}
-
 variable "bastion_user" {
   description = "Username for bastion SSH user"
 }

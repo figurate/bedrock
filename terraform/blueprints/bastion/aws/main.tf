@@ -3,10 +3,6 @@
  *
  * Provision an EC2 instance with SSH ingress authenticated with the specified public key.
  */
-provider "aws" {
-  region = "${var.region}"
-}
-
 resource "aws_iam_user_ssh_key" "aws_ssh_key" {
   encoding = "SSH"
   public_key = "${file(var.ssh_key)}"

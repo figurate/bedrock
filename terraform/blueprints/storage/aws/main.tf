@@ -3,10 +3,6 @@
  *
  * Provision an S3 bucket in AWS.
  */
-provider "aws" {
-  region = "${var.region}"
-}
-
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "stack_templates" {
