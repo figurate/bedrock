@@ -1,3 +1,7 @@
+# AWS S3 bucket configuration
+
+Provision an S3 bucket in AWS.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |

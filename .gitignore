@@ -6,3 +6,4 @@ packer/env.json
 terraform.tfstate*
 puppet/keys/
 *.tfvars
+.depends.mk
