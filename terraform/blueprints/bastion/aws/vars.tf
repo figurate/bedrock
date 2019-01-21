@@ -6,9 +6,14 @@ variable "ssh_key" {
   description = "Location of public key file for SSH access to droplets"
 }
 
-variable "bastion_image" {
+variable "image_name" {
   description = "AWS image for bastion instance"
-  default = "ami-00e17d1165b9dd3ec"
+  default = "amzn2-ami-hvm-*"
+}
+
+variable "image_owner" {
+  description = "AMI image owner (leave blank for current account)"
+  default = "137112412989"
 }
 
 variable "instance_type" {
