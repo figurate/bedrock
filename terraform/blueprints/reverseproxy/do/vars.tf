@@ -1,11 +1,3 @@
-variable "do_token" {
-  description = "Digital Ocean API token"
-}
-
-variable "do_region" {
-  description = "Digital Ocean region"
-}
-
 variable "ssh_key" {
   description = "Identifier of public key file for SSH access to droplets"
 }
