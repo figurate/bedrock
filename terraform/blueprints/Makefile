@@ -18,6 +18,11 @@ $(DEPENDS): $(DOCKERFILES) Makefile
 sinclude $(DEPENDS)
 
 $(IMAGES): %:
+
+ifeq (clean,$(filter clean,$(MAKECMDGOALS)))
+	docker rmi $(REGISTRY)/$@
+endif
+
 	docker build -t $(REGISTRY)/$@ $(subst :,/,$@)
 
 ifeq (tag,$(filter tag,$(MAKECMDGOALS)))
