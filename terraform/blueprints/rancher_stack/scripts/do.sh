@@ -7,4 +7,4 @@ docker run --privileged -it --rm \
   -e TF_STACK=${TF_STACK} \
   -e TF_ENVIRONMENT=${TF_ENVIRONMENT} \
   -e TF_ENV_SUFFIX=${TF_ENV_SUFFIX} \
-  bedrock/rancherstack:do $@
+  bedrock/rancher_stack:do $@
