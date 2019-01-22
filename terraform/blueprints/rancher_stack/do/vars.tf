@@ -1,16 +1,3 @@
-variable "rancher_url" {
-  description = "Base URL of Rancher API"
-  default = "http://rancher.mnode.org"
-}
-
-variable "rancher_access_key" {
-  description = "Rancher API access key"
-}
-
-variable "rancher_secret_key" {
-  description = "Rancher API secret key"
-}
-
 //variable "ssh_key" {
 //  description = "Identifier of public key file for SSH access to droplets"
 //}
