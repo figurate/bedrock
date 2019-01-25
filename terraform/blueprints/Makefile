@@ -2,6 +2,7 @@ REGISTRY?=bedrock
 DOCKERFILES=$(shell find * -mindepth 1 -type f -name Dockerfile)
 IMAGES=$(subst /,\:,$(subst /Dockerfile,,$(DOCKERFILES)))
 DEPENDS=.depends.mk
+BUILD_ARGS?=
 
 .PHONY: all clean tag push docs $(IMAGES)
 
@@ -23,7 +24,7 @@ ifeq (clean,$(filter clean,$(MAKECMDGOALS)))
 	docker rmi $(REGISTRY)/$@
 endif
 
-	docker build -t $(REGISTRY)/$@ $(subst :,/,$@)
+	docker build ${BUILD_ARGS} -t $(REGISTRY)/$@ $(subst :,/,$@)
 
 ifeq (tag,$(filter tag,$(MAKECMDGOALS)))
 	docker tag $(REGISTRY)/$@ $(REGISTRY)/$@

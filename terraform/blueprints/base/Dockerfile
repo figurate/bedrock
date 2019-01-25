@@ -2,7 +2,9 @@ FROM hashicorp/terraform:light
 
 MAINTAINER Ben Fortuna
 
-RUN apk add --update jq python py-pip bash groff && pip install awscli
+ARG HTTP_PROXY=""
+
+RUN http_proxy=${HTTP_PROXY} apk add --update jq python py-pip bash groff && pip install awscli
 
 WORKDIR /work
 
