@@ -1,6 +1,4 @@
-FROM hashicorp/terraform:light
-
-RUN apk add --update jq python py-pip && pip install awscli
+FROM bedrock/awscli
 
 WORKDIR /work
 
