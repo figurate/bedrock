@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: A Cloudformation template for provisioning an NGINX reverse proxy stack.
+
+Parameters:
+
+Resources:
+  ReverseProxySG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ReverseProxySG
+      GroupDescription: Security group for ReverseProxy
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+      Tags:
+        - Key: Name
+          Value: ReverseProxySG
+
+  ReverseProxyEC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+
+  ReverseProxyInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref ReverseProxyEC2Role
+
+  ReverseProxyLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      InstanceMonitoring: true
+      IamInstanceProfile: !Ref ReverseProxyInstanceProfile
+      SecurityGroups:
+        - !Ref ReverseProxySG
+      AssociatePublicIpAddress: true
+      UserData:
+        Fn::Base64: !Sub |
+
+
+  ReverseProxyAsg:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+
+  ReverseProxyDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: ReverseProxy
+      DashboardBody: !Sub |
+        {}
+
+Outputs:
