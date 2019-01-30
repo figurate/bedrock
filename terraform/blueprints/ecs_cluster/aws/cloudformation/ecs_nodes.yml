@@ -146,7 +146,7 @@ Resources:
           PropagateAtLaunch: true
     UpdatePolicy:
       AutoScalingRollingUpdate:
-        MinInstancesInService: 1
+        MinInstancesInService: !If [SpotClusterEnabled, 0, 1]
         MaxBatchSize: 1
         PauseTime: PT10M
         WaitOnResourceSignals: true
