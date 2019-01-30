@@ -18,7 +18,7 @@ variable "image_owner" {
 
 variable "instance_type" {
   description = "AWS instance type for bastion"
-  default = "t2.micro"
+  default = "t3.micro"
 }
 
 variable "enabled" {
