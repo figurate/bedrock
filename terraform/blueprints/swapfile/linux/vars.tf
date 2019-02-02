@@ -9,7 +9,7 @@ variable "bastion_private_key" {
 }
 
 variable "bastion_host" {
-  description = "Bastion host used to access reverse proxy"
+  description = "Bastion host used to access target host"
 }
 
 variable "target_host" {
