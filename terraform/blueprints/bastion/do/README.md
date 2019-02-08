@@ -18,8 +18,6 @@ Provision a droplet with SSH ingress authenticated with the specified public key
 | Name | Description |
 |------|-------------|
 | bastion\_ip | IP address for bastion droplet |
-| do\_region | Digital Ocean region |
-| do\_token | Digital Ocean API token |
 | enabled | Start/stop the bastion host |
 | monthly\_cost | Monthly cost for bastion droplet |
 | ssh\_key | Name of key for SSH access to droplets |

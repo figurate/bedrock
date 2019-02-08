@@ -10,3 +10,7 @@ variable "do_token" {
 variable "do_region" {
   description = "Digital Ocean region"
 }
+
+provider "null" {
+  version = "~> 1.0"
+}
