@@ -12,7 +12,7 @@ ADD *.sh /bootstrap/
 ADD environment /bootstrap/environment
 ADD stack /bootstrap/stack
 
-ENTRYPOINT []
+ENTRYPOINT ["/bootstrap/terraform.sh"]
 
 # aws cli help doesn't work with busybox less
 ENV PAGER="cat"
@@ -21,4 +21,4 @@ ENV AWS_DEFAULT_REGION="ap-southeast-2"
 
 ENV TF_BACKEND_KEY="__UNDEFINED__"
 
-CMD ["/bootstrap/apply.sh"]
+CMD [""]
