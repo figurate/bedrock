@@ -3,7 +3,7 @@
 function usage() {
   cat << EOF
 
-USAGE: $0 <init|plan|apply|destroy|output|export>
+USAGE: $0 <init|plan|apply|destroy|import|taint|output|export>
 EOF
 }
 
@@ -28,6 +28,16 @@ function apply() {
 # Remove resources
 function destroy() {
 	terraform destroy $TF_DESTROY_ARGS /bootstrap
+}
+
+# Import existing resources
+function import() {
+	terraform import -config=/bootstrap $@
+}
+
+# Taint existing state
+function taint() {
+	terraform taint $@
 }
 
 # Print outputs
@@ -60,6 +70,8 @@ case "$TF_ACTION" in
 	plan) 			plan;;
 	apply) 			apply;;
 	destroy) 		destroy;;
+	import) 		import ${@:2};;
+	taint) 			taint ${@:2};;
 	output) 		output;;
 	export) 		export;;
 	*)				usage;;
