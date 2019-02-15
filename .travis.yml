@@ -1,2 +1,7 @@
 script:
   - cd terraform/blueprints && make all
+deploy:
+  provider: script
+  script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && cd terraform/blueprints && make tag push all
+  on:
+    branch: master
