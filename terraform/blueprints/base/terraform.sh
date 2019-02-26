@@ -61,6 +61,7 @@ elif [ -n "$TF_ENVIRONMENT" ]; then
     sh /bootstrap/environment/terraform_tfvars.sh $TF_ENVIRONMENT > terraform.tfvars
 else
     sh /bootstrap/backend_tfvars.sh $TF_BACKEND_KEY > backend.tfvars
+    sh /bootstrap/terraform_tfvars.sh $TF_ENVIRONMENT > terraform.tfvars
 fi
 
 TF_ACTION=${1:-init}
