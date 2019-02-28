@@ -31,7 +31,10 @@ data "aws_iam_policy_document" "iam_passrole_policy" {
 
 data "aws_iam_policy_document" "cloudformation_create_policy" {
   statement {
-    actions = ["cloudformation:Create*"]
+    actions = [
+      "cloudformation:Create*",
+      "cloudformation:Update*",
+    ]
     resources = ["*"]
   }
 }
