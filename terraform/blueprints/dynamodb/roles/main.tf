@@ -41,11 +41,11 @@ data "aws_iam_policy_document" "iam_access" {
     actions = [
       "lambda:*",
     ]
-    resources = ["arn:aws:lambda:ap-southeast-2:976651329757:function:DynamoDBImportCsv"]
+    resources = ["arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:DynamoDBImportCsv"]
   }
   statement {
     actions = [
-      "logs:*",
+      "logs:CreateLogGroup",
     ]
     resources = ["*"]
   }

@@ -1,9 +1,19 @@
 import csv
+import json
 
 import boto3
 from botocore.exceptions import ClientError
 
-data_types = {'Debit': 'N', 'Credit': 'N', 'Balance': 'N'}
+data_types = {}
+table_name = None
+
+lambdac = boto3.client('lambda')
+try:
+    config = lambdac.get_function_configuration(FunctionName='DynamoDBImportCsv')
+    data_types = json.loads(config['Environment']['Variables']['DataTypes'])
+    table_name = config['Environment']['Variables']['TableName']
+except ClientError as e:
+    print(e)
 
 
 def lambda_handler(event, context):
@@ -42,9 +52,6 @@ def row2map(columns, row):
 
 def import_row(row, client):
     try:
-        client.put_item(
-            TableName='finance-ing_com_au',
-            Item=row
-        )
+        client.put_item(TableName=table_name, Item=row)
     except ClientError as e:
         print(e)
