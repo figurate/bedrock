@@ -52,7 +52,13 @@ resource "aws_lambda_function" "csv_import" {
   role = "${aws_iam_role.import.arn}"
   runtime = "python3.6"
   source_code_hash = "${data.archive_file.import.output_base64sha256}"
-  timeout = 240
+  timeout = "${var.import_timeout}"
+  environment {
+    variables {
+      DataTypes = "${jsonencode(var.data_types)}"
+      TableName = "${var.table_name}"
+    }
+  }
 }
 
 resource "aws_cloudwatch_log_group" "csv_import" {
