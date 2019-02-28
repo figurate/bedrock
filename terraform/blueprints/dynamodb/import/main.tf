@@ -31,8 +31,12 @@ data "aws_iam_policy_document" "lambda_permissions" {
   }
   statement {
     actions = ["s3:Get*"]
-    resources = ["arn:aws:s3:::${aws_s3_bucket.import.bucket}/*"]
+    resources = ["arn:aws:s3:::${data.aws_s3_bucket.source.bucket}/*"]
   }
+}
+
+data "aws_s3_bucket" "source" {
+  bucket = "${var.bucket_name}"
 }
 
 resource "aws_iam_role" "import" {
@@ -66,19 +70,8 @@ resource "aws_cloudwatch_log_group" "csv_import" {
   retention_in_days = 30
 }
 
-resource "aws_s3_bucket" "import" {
-  bucket = "${data.aws_caller_identity.current.account_id}-${var.bucket_name}"
-  acl = "private"
-  lifecycle_rule {
-    enabled = true
-    expiration {
-      days = 90
-    }
-  }
-}
-
 resource "aws_s3_bucket_notification" "import" {
-  bucket = "${aws_s3_bucket.import.id}"
+  bucket = "${data.aws_s3_bucket.source.id}"
   lambda_function {
     lambda_function_arn = "${aws_lambda_function.csv_import.arn}"
     events = ["s3:ObjectCreated:*"]
@@ -91,5 +84,5 @@ resource "aws_lambda_permission" "allow_bucket" {
   action = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.csv_import.function_name}"
   principal = "s3.amazonaws.com"
-  source_arn = "${aws_s3_bucket.import.arn}"
+  source_arn = "${data.aws_s3_bucket.source.arn}"
 }
