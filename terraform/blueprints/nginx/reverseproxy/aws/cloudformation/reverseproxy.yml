@@ -3,6 +3,30 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: A Cloudformation template for provisioning an NGINX reverse proxy stack.
 
 Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC used to provision cluster
+  ImageId:
+    Type: AWS::EC2::Image::Id
+    Description: EC2 AMI ID
+  InstanceType:
+    Type: String
+    Description: EC2 instance type
+  KeyPair:
+    Type: String
+    Description: The name of the keypair for accessing the host
+#  BastionSecurityGroupId:
+#    Type: AWS::EC2::SecurityGroup::Id
+#    Description: Subnet to deploy into
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Subnet to deploy into
+  Environment:
+    Type: String
+    Description: The name of the environment to associate with
+  UserData:
+    Type: String
+    Description: Bootstrap configuration to run on EC2 instance
 
 Resources:
   ReverseProxySG:
@@ -15,6 +39,15 @@ Resources:
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+#        - IpProtocol: tcp
+#          FromPort: 22
+#          ToPort: 22
+#          SourceSecurityGroupId: !Ref BastionSecurityGroupId
       Tags:
         - Key: Name
           Value: ReverseProxySG
@@ -31,6 +64,8 @@ Resources:
             Principal:
               Service:
                 - ec2.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
 
   ReverseProxyInstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -38,29 +73,29 @@ Resources:
       Roles:
         - !Ref ReverseProxyEC2Role
 
-  ReverseProxyLaunchConfig:
-    Type: AWS::AutoScaling::LaunchConfiguration
+  ReverseProxyInstance:
+    Type: AWS::EC2::Instance
     Properties:
+      IamInstanceProfile: !Ref ReverseProxyInstanceProfile
       ImageId: !Ref ImageId
       InstanceType: !Ref InstanceType
-      InstanceMonitoring: true
-      IamInstanceProfile: !Ref ReverseProxyInstanceProfile
-      SecurityGroups:
+#      KeyName: !Ref KeyPair
+      Monitoring: true
+      SecurityGroupIds:
         - !Ref ReverseProxySG
-      AssociatePublicIpAddress: true
-      UserData:
-        Fn::Base64: !Sub |
+#      SsmAssociations:
+#        - SSMAssociation
+      SubnetId: !Ref SubnetId
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+      UserData: !Ref UserData
 
-
-  ReverseProxyAsg:
-    Type: AWS::AutoScaling::AutoScalingGroup
-    Properties:
-
-  ReverseProxyDashboard:
-    Type: AWS::CloudWatch::Dashboard
-    Properties:
-      DashboardName: ReverseProxy
-      DashboardBody: !Sub |
-        {}
-
-Outputs:
+#  ReverseProxyDashboard:
+#    Type: AWS::CloudWatch::Dashboard
+#    Properties:
+#      DashboardName: ReverseProxy
+#      DashboardBody: !Sub |
+#        {}
+#
+#Outputs:
