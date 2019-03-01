@@ -42,9 +42,33 @@ data "aws_iam_policy_document" "ec2_subnet_fullaccess" {
   }
 }
 
+data "aws_iam_policy_document" "ec2_instance_profile_fullaccess" {
+  statement {
+    actions = [
+      "iam:Create*",
+      "iam:AttachRolePolicy",
+      "iam:DetachRolePolicy",
+      "iam:Delete*",
+    ]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/bedrock-*"]
+  }
+  statement {
+    actions = [
+      "iam:AddRoleToInstanceProfile",
+      "iam:RemoveRoleFromInstanceProfile",
+    ]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:instance-profile/bedrock-*"]
+  }
+}
+
 resource "aws_iam_policy" "ec2_subnet_fullaccess" {
   name = "bedrock-ec2-subnet-fullaccess"
   policy = "${data.aws_iam_policy_document.ec2_subnet_fullaccess.json}"
+}
+
+resource "aws_iam_policy" "ec2_instance_profile_fullaccess" {
+  name = "bedrock-ec2-instance-profile-fullaccess"
+  policy = "${data.aws_iam_policy_document.ec2_instance_profile_fullaccess.json}"
 }
 
 resource "aws_iam_policy" "iam_passrole" {
