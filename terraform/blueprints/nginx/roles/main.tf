@@ -22,23 +22,6 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "iam_passrole_policy" {
-  statement {
-    actions = ["iam:PassRole"]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/bedrock-nginx-cloudformation"]
-  }
-}
-
-data "aws_iam_policy_document" "cloudformation_create_policy" {
-  statement {
-    actions = [
-      "cloudformation:Create*",
-      "cloudformation:Update*",
-    ]
-    resources = ["*"]
-  }
-}
-
 resource "aws_iam_role" "nginx_admin" {
   name = "bedrock-nginx-admin"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
@@ -59,12 +42,12 @@ resource "aws_iam_role_policy_attachment" "cloudformation_readonly" {
   role = "${aws_iam_role.nginx_admin.name}"
 }
 
-resource "aws_iam_role_policy" "iam_passrole" {
-  policy = "${data.aws_iam_policy_document.iam_passrole_policy.json}"
+resource "aws_iam_role_policy_attachment" "iam_passrole" {
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-passrole"
   role = "${aws_iam_role.nginx_admin.id}"
 }
 
-resource "aws_iam_role_policy" "cloudformation_create" {
-  policy = "${data.aws_iam_policy_document.cloudformation_create_policy.json}"
+resource "aws_iam_role_policy_attachment" "cloudformation_create" {
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-cloudformation-create"
   role = "${aws_iam_role.nginx_admin.id}"
 }
