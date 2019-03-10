@@ -23,7 +23,8 @@ def get_instance_ids(event):
             "Name": "tag:Environment",
             "Values": [event['Environment']]
         }])
-        return list(map(lambda i: i['InstanceId'], result['Reservations'][0]['Instances']))
+        instances = [i for r in result['Reservations'] for i in r['Instances']]
+        return list(map(lambda i: i['InstanceId'], instances))
 
     try:
         lambda_config = ec2.get_function_configuration(
