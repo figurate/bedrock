@@ -3,6 +3,15 @@
  *
  * Provision a droplet with SSH ingress authenticated with the specified public key.
  */
+data "template_file" "userdata" {
+  template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
+  vars {
+    AuthorizedUserName = "${var.bastion_user}"
+    AuthorizedUserSSHKey = "${var.ssh_key}"
+    ShutdownDelay = "${var.shutdown_delay}"
+  }
+}
+
 resource "digitalocean_tag" "bastion" {
   name = "${local.uuid}"
 }
@@ -17,29 +26,7 @@ resource "digitalocean_droplet" "bastion" {
   monitoring = true
   tags = ["${digitalocean_tag.bastion.name}"]
   ssh_keys = ["${var.ssh_key}"]
-  user_data = <<EOF
-#cloud-config
-packages:
-  - fail2ban
-  - unattended-upgrades
-  - ntpdate
-
-timezone: Australia/Melbourne
-
-ntp:
-  enabled: true
-  servers:
-    - 0.au.pool.ntp.org
-    - 1.au.pool.ntp.org
-    - 2.au.pool.ntp.org
-    - 3.au.pool.ntp.org
-
-runcmd:
-  - "printf '\nClientAliveInterval 100\nClientAliveCountMax 0' >> /etc/ssh/sshd_config"
-  - service ssh restart
-  - "wget --header='X-Papertrail-Token: QHS89ESNb9Q0OGPK9Hu2' https://papertrailapp.com/destinations/2465304/setup.sh"
-  - bash setup.sh
-EOF
+  user_data = "${data.template_file.userdata.rendered}"
 }
 
 resource "null_resource" "bastion_ssh_key" {
