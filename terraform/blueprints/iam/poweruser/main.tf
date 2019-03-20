@@ -41,3 +41,8 @@ resource "aws_iam_user_policy" "iam_assume_role" {
   policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
   user = "${aws_iam_user.poweruser.name}"
 }
+
+resource "aws_iam_user_group_membership" "iam_groups" {
+  user = "${aws_iam_user.poweruser.name}"
+  groups = "${var.iam_groups}"
+}
