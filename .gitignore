@@ -8,3 +8,4 @@ puppet/keys/
 *.tfvars
 .depends.mk
 *.zip
+venv/
