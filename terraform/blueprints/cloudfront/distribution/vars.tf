@@ -17,9 +17,18 @@ variable "price_class" {
   default = "PriceClass_100"
 }
 
+variable "default_ttl" {
+  description = "Default time-to-live (TTL) for objects in cache"
+  default = "86400"
+}
+
 variable "default_root_object" {
   description = "The default page when accessing the root URL of the distribution"
   default = "index.html"
+}
+
+variable "error_page" {
+  description = "Error page returned for 404 errors"
 }
 
 variable "aliases" {
