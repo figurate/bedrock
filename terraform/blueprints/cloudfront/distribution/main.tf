@@ -12,10 +12,20 @@ data "aws_route53_zone" "primary" {
   name = "${var.hosted_zone}."
 }
 
+//Function must live in us-east-1 and Terraform can't lookup across regions
+//data "aws_lambda_function" "url_rewrite" {
+//  function_name = "CloudFrontRewrite"
+//}
+
 resource "aws_cloudfront_distribution" "distribution" {
   enabled = "${var.enabled}"
   price_class = "${var.price_class}"
   default_root_object = "${var.default_root_object}"
+  custom_error_response {
+    error_code = 404
+    response_page_path = "${var.error_page}"
+    response_code = 404
+  }
   aliases = "${var.aliases}"
 
   "origin" {
@@ -34,6 +44,27 @@ resource "aws_cloudfront_distribution" "distribution" {
       query_string = false
     }
     target_origin_id = "S3-${data.aws_s3_bucket.bucket.bucket}"
+    default_ttl = "${var.default_ttl}"
+  }
+
+  ordered_cache_behavior {
+    path_pattern = "*+*"
+    viewer_protocol_policy = "allow-all"
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods = ["GET", "HEAD"]
+    "forwarded_values" {
+      "cookies" {
+        forward = "none"
+      }
+      query_string = false
+    }
+    target_origin_id = "S3-${data.aws_s3_bucket.bucket.bucket}"
+    default_ttl = "${var.default_ttl}"
+    lambda_function_association {
+      event_type = "viewer-request"
+      lambda_arn = "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:CloudFrontRewrite:1"
+      include_body = false
+    }
   }
 
   logging_config {
