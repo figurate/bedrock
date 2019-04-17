@@ -1,5 +1,6 @@
-# bedrock
-Infrastructure configuration for micronode applications
+# Bedrock
+
+Building blocks for composable Cloud architectures 
 
 ## Developer Environment
 
