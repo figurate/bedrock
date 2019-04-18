@@ -2,6 +2,10 @@
 
 [Introduction]: #introduction
 
+Bedrock provides a collection of Terraform-based blueprints for provisioning common use-case infrastructure components. Most
+of the blueprints focus on provisiong infrastructure in public Cloud environments, however some blueprints may also be applied
+to non-Cloud environments.
+
 [Features]: #features
 
 [Getting Started]: #getting-started
