@@ -2,9 +2,9 @@
 
 [Introduction]: #introduction
 
-[Setup]: #setup
+[Features]: #features
 
-[Usage]: #usage
+[Getting Started]: #getting-started
 
 [Examples]: #examples
 
@@ -15,13 +15,17 @@
 #### Table of Contents
 
 1. [Introduction - What is Bedrock?][Introduction]
-2. [Setup - Installation of Bedrock][Setup]
-3. [Usage - The Bedrock architecture and how to use it][Usage]
+2. [Features][Features]
+3. [Getting Started][Getting Started]
     - [Examples - common usage scenarios][Examples]
-7. [Development - Guide for contributing to the Bedrock project][Development]
+4. [Development - Guide for contributing to the Bedrock project][Development]
     - [Contributing to Bedrock][Contributing]
 
 ## Introduction
+
+## Features
+
+## Getting Started
 
 ## Development
 
