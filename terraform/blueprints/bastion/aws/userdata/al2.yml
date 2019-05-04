@@ -1,0 +1,43 @@
+#cloud-config
+yum_repos:
+  epel-testing:
+    baseurl: http://dl.fedoraproject.org/pub/epel/7/$basearch
+    enabled: true
+    failovermethod: priority
+    gpgcheck: true
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL
+    name: Extra Packages for Enterprise Linux 7 - Testing
+
+packages:
+#  - fail2ban
+  - ntpdate
+
+timezone: Australia/Melbourne
+
+ntp:
+  enabled: true
+  servers:
+    - 0.au.pool.ntp.org
+    - 1.au.pool.ntp.org
+    - 2.au.pool.ntp.org
+    - 3.au.pool.ntp.org
+
+users:
+  - name: ${AuthorizedUserName}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ${AuthorizedUserSSHKey}
+
+runcmd:
+  - "printf '\nClientAliveInterval 100\nClientAliveCountMax 0' >> /etc/ssh/sshd_config"
+  - service sshd restart
+  - curl -O https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+  - rpm -U amazon-cloudwatch-agent.rpm
+
+power_state:
+  timeout: 120
+  delay: "${ShutdownDelay}"
+  message: System will shutdown in ${ShutdownDelay} minutes
+  mode: poweroff

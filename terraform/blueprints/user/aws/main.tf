@@ -3,10 +3,6 @@
  *
  * Provision an IAM user in AWS.
  */
-provider "aws" {
-  region = "${var.region}"
-}
-
 resource "aws_iam_user" "users" {
   count = "${length(var.users)}"
   name = "${element(var.users, count.index)}"

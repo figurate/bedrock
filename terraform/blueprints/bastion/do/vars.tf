@@ -1,9 +1,10 @@
-variable "do_token" {
-  description = "Digital Ocean API token"
+variable "userdata_path" {
+  description = "The root path to userdata templates"
+  default = "userdata"
 }
 
-variable "do_region" {
-  description = "Digital Ocean region"
+variable "bastion_user" {
+  description = "Username for bastion SSH user"
 }
 
 variable "ssh_key" {
@@ -20,8 +21,22 @@ variable "bastion_image" {
   default = "ubuntu-18-04-x64"
 }
 
+variable "image_os" {
+  description = <<EOF
+The operating system installed on the selected droplet. Valid values are:
+
+  * ubuntu  = Ubuntu
+EOF
+  default = "ubuntu"
+}
+
 variable "enabled" {
   description = "Start/stop the bastion host"
+}
+
+variable "shutdown_delay" {
+  description = "Number of minutes before the host will automatically shutdown"
+  default = 60
 }
 
 locals {

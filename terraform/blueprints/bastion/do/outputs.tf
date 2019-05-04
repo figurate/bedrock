@@ -1,14 +1,3 @@
-output "do_token" {
-  description = "Digital Ocean API token"
-  value = "${var.do_token}"
-  sensitive = true
-}
-
-output "do_region" {
-  description = "Digital Ocean region"
-  value = "${digitalocean_droplet.bastion.*.region}"
-}
-
 output "bastion_ip" {
   description = "IP address for bastion droplet"
   value = "${digitalocean_droplet.bastion.*.ipv4_address}"
