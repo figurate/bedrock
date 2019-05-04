@@ -1,0 +1,200 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: A Cloudformation template for provisioning an ECS service.
+
+Parameters:
+  ServiceName:
+    Type: String
+    Description: The ECS service identifier
+  ClusterName:
+    Type: String
+    Description: The name of the ECS cluster
+  Environment:
+    Type: String
+    Description: The name of the environment represented by the VPC
+
+Resources:
+  EcsService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Join ['-', [!Ref Environment, !Ref ServiceName]]
+      Cluster: !Ref ClusterName
+      DesiredCount: !Ref AutoScalingDesired
+      HealthCheckGracePeriodSeconds: !Ref HealthCheckGracePeriod
+      LoadBalancers:
+        - ContainerName: !Join ['-', !Split ['/', !Ref ServiceImage]]
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !Ref AlbTargetGroup
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      TaskDefinition: !Ref TaskDefinition
+
+  ServiceTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: ['sts:AssumeRole']
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Join ['-', [!Ref Environment, !Ref ServiceName]]
+      TaskRoleArn: !Ref ServiceTaskRole
+      ContainerDefinitions:
+        - Name: !Join ['-', !Split ['/', !Ref ServiceImage]]
+          Cpu: !Ref CpuUnits
+          Memory: !Ref MemoryUnits
+          Environment:
+            - Name: 'HOSTENV'
+              Value: !Ref Environment
+          Essential: true
+          PortMappings:
+            - HostPort: 0
+              Protocol: tcp
+              ContainerPort: !Ref ServicePort
+          Image: !Join [':', [!Ref ServiceImage, !Ref ServiceTag]]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWSRegion
+              awslogs-group: !Ref TaskLogGroup
+              awslogs-stream-prefix: ecs
+
+  TaskLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['', ['/', !Join ['/', ['ecs', !Join ['-', [!Ref Environment, !Ref ServiceName]]]]]]
+      RetentionInDays: 7
+
+  AlbTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: !Ref DeregistrationDelay
+      HealthCheckIntervalSeconds: 60
+      UnhealthyThresholdCount: 10
+      HealthCheckPath: !Ref HealthCheckPath
+      Matcher:
+        HttpCode: !Ref HealthCheckSuccessCodes
+      Port: !Ref ServicePort
+      Protocol: HTTP
+      VpcId: !Ref VpcId
+      Name: !Sub '${AWS::StackName}-TG'
+
+
+  AlbListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref AlbTargetGroup
+      Conditions:
+        - Field: host-header
+          Values: [!Ref Hostname]
+      ListenerArn: !Ref AlbListenerArn
+      Priority: !Ref AlbListenerRulePriority
+
+
+  AutoScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: ['sts:AssumeRole']
+            Principal:
+              Service:
+                - application-autoscaling.amazonaws.com
+
+  AutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    DependsOn: EcsService
+    Properties:
+      MinCapacity: !Ref AutoScalingMin
+      MaxCapacity: !Ref AutoScalingMax
+      ResourceId: !Join ['', ['service/', !Ref ClusterName, '-', !GetAtt [EcsService, Name]]]
+      RoleARN: !GetAtt [AutoScalingRole, Arn]
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+
+  ScaleOutPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: ServiceScaleOutPolicy
+      PolicyType: StepScaling
+      ScalingTargetId: AutoScalingTarget
+      StepScalingPolicyConfiguration:
+        AdjustmentType: ChangeInCapacity
+        Cooldown: 300
+        MetricAggregationType: Average
+        StepAdjustments:
+          - MetricIntervalLowerBound: 0
+            ScalingAdjustment: 1
+
+  ScaleInPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: ServiceScaleInPolicy
+      PolicyType: StepScaling
+      ScalingTargetId: AutoScalingTarget
+      StepScalingPolicyConfiguration:
+        AdjustmentType: ChangeInCapacity
+        Cooldown: 300
+        MetricAggregationType: Average
+        StepAdjustments:
+          - MetricIntervalLowerBound: 0
+            ScalingAdjustment: -1
+
+  CloudWatchDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !GetAtt [EcsService, Name]
+      DashboardBody: !Sub |
+        {}
+
+  ServiceCpuHighAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      EvaluationPeriods: 5
+      Statistic: Average
+      Threshold: 40
+      AlarmDescription: CPU utilisation is less than 40 percent
+      Period: 60
+      AlarmActions:
+        - !Ref ScaleInPolicy
+      Namespace: AWS/ECS
+      Dimensions:
+        - Name: ClusterName
+          Value: !Ref ClusterName
+        - Name: ServiceName
+          Value: !GetAtt [EcsService, Name]
+      ComparisonOperator: LessThanThreshold
+      MetricName: CPUUtilization
+
+  ServiceCpuLowAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      EvaluationPeriods: 5
+      Statistic: Average
+      Threshold: 60
+      AlarmDescription: CPU utilisation is greater than 60 percent
+      Period: 60
+      AlarmActions:
+        - !Ref ScaleOutPolicy
+      Namespace: AWS/ECS
+      Dimensions:
+        - Name: ClusterName
+          Value: !Ref ClusterName
+        - Name: ServiceName
+          Value: !GetAtt [EcsService, Name]
+      ComparisonOperator: GreaterThanThreshold
+      MetricName: CPUUtilization
+
+Outputs:
