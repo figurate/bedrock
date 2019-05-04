@@ -1,4 +1,4 @@
-# Bedrock - infrastructure blueprints
+# Bedrock - Building blocks for composable Cloud architectures 
 
 [Docker]: https://docker.com
 [Terraform]: https://terraform.io
@@ -6,17 +6,29 @@
 
 [Introduction]: #introduction
 
+[Features]: #features
+
 [Getting started]: #getting-started
 [Requirements]: #requirements
 [Configuring]: #configuring
 
 
+[Examples]: #examples
+
+[Development]: #development
+
+[Contributing]: #contributing
+
 #### Table of Contents
 
 1. [Introduction - What is Bedrock?][Introduction]
-2. [Getting started - How to use Bedrock][Getting started]
+2. [Features][Features]
+3. [Getting started - How to use Bedrock][Getting started]
 	- [Requirements]
 	- [Configuring]
+    - [Examples - common usage scenarios][Examples]
+4. [Development - Guide for contributing to the Bedrock project][Development]
+    - [Contributing to Bedrock][Contributing]
 
 ## Introduction
 
@@ -24,6 +36,8 @@ Bedrock is a collection of blueprints for building public Cloud infrastructure
 using best-practice architectures and techniques. These blueprints are
 based on popular tools such as [Terraform] and [Cloudformation], and provide
 both an informative and practical approach to infrastructure provisioning.
+
+## Features
 
 ## Getting started
 
@@ -74,6 +88,16 @@ For provisioning blueprints in AWS you will require a user with the following IA
 
 * Note that the `Terraform state` permission is only required when state is stored in AWS.
 
+## Development
+
+### Contributing
+
+Open source software is made stronger by the community that supports it. Through participation you not only contribute to the quality of the software, but also gain a deeper insight into the inner workings.
+
+Contributions may be in the form of feature enhancements, bug fixes, test cases, documentation and forum participation. If you have a question, just ask. If you have an answer, write it down.
+
+And if you are somehow constrained from participation, through corporate policy or otherwise, consider financial support. After all, if you are profiting from open source it's only fair to give something back to the community that make it all possible.
+
 ## Developer Environment
 
 Use the following tools to provision a pre-configured developer environment.
@@ -87,9 +111,3 @@ Use the following tools to provision a pre-configured developer environment.
 
     $ docker build -t bedrock-env .
     $ ./developer-env.sh
-
-## Accelerators
-
-### Bastion
-
-    $ TF_BACKEND=bastion accelerator/bastion/scripts/do.sh
