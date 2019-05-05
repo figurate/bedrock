@@ -39,7 +39,62 @@ both an informative and practical approach to infrastructure provisioning.
 
 ## Features
 
+The purpose of Bedrock is not only to provide best-practice blueprints for modern architectures, but to explore and
+educate about the challenges, decisions and opinions behind the designs themselves. As such, Bedrock aims to avoid
+a "black box" approach and is designed to encourage hacking and examining the underlying code.
+
+### Exploration
+
+Each Bedrock module is designed to exist independently from the rest, to allow maximum portability and sharing of code.
+You can go into any module directory and run `terraform init && terraform apply` to execute a blueprint in your
+configured environment.
+
+For example, if you require a Bastion host in your AWS account, do the following:
+
+    # provision IAM roles for creating Bastion host
+    cd terraform/blueprints/bastion/roles
+    terraform init && terraform apply
+     
+    # provision a new Bastion EC2 host
+    cd ../aws
+    terraform init && terraform apply -var bastion_user=bedrock   
+    
+
+### Run Anywhere
+
+You can also build any Bedrock module as a [Docker] image, that can be run anywhere Docker is supported. Building images
+is supported via a Makefile in the root directory, which you can execute as follows:
+
+    # Build Docker images for Bastion roles and instance
+    make bastion-roles bastion-aws
+    
+The Makefile will ensure dependencies are build in the right order, and includes support for tagging and push to a
+remote Docker registry:
+
+    # Tag and push to AWS ECR
+    REGISTRY=<aws_account_id>.dkr.ecr.ap-southeast-2.amazonaws.com make tag push bastion-aws
+    
+After building an image you can now use the provided scripts to execute the blueprint in the current working directory:
+
+    # provision a new Bastion EC2 host
+    export BEDROCK_REGISTRY=<aws_account_id>.dkr.ecr.ap-southeast-2.amazonaws.com
+    bastion/scripts/bastion-aws.sh init && bastion/scripts/bastion-aws.sh apply
+     
+
+### Automation
+
+As the Docker images for Bedrock blueprints can be run anywhere that supports Docker, it is now possible to integrate
+with automated deployment and provisioning tools also. This might include build tools such as Jenkins or Bamboo, and
+also integrated with Cloud platforms such as AWS via the AWS Developer Tools (CodeBuild, CodePipeline, etc.).
+
+As an example, we might configure a CodeBuild project to provision a blueprint using configuration from an S3 Bucket.
+Using S3 Bucket notifications we can trigger a build by simply updating a blueprint configuration. This allows for a
+very minimal effort approach to provisioning sophisticated and secure architectures whilst retaining the ability to
+maintain and evolve the designs.
+
+
 ## Getting started
+
 
 ### Requirements
 
