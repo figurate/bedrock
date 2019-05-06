@@ -1,19 +1,20 @@
+"""
+DynamoDB Import Comma-separated values (CSV) document.
+
+An AWS Lambda function used to import batch records to a DynamoDB table.
+"""
 import csv
 import json
+import os
+import uuid
 
 import boto3
 from botocore.exceptions import ClientError
 
-data_types = {}
-table_name = None
-
-lambdac = boto3.client('lambda')
-try:
-    config = lambdac.get_function_configuration(FunctionName='DynamoDBImportCsv')
-    data_types = json.loads(config['Environment']['Variables']['DataTypes'])
-    table_name = config['Environment']['Variables']['TableName']
-except ClientError as e:
-    print(e)
+data_types = os.environ['DataTypes']
+table_name = os.environ['TableName']
+item_template = json.loads(os.environ['ItemTemplate'])
+auto_generate_key = os.environ['AutoGenerateKey']
 
 
 def lambda_handler(event, context):
@@ -33,6 +34,7 @@ def import_file(bucket, filename):
         linenum = 0
         for row in csv_reader:
             if linenum == 0:
+                # use header row to identify the columns..
                 columns = row
             else:
                 import_row(row2map(columns, row), dynamodb)
@@ -43,6 +45,12 @@ def import_file(bucket, filename):
 
 def row2map(columns, row):
     retval = {}
+    if (auto_generate_key):
+        retval['UUID'] = uuid.uuid4().hex
+    for key, value in item_template.items():
+        data_type = data_types[key] if key in data_types else 'S'
+    retval[key] = {data_type: value}
+
     for column in columns:
         if len(row[columns.index(column)]) > 0:
             data_type = data_types[column] if column in data_types else 'S'

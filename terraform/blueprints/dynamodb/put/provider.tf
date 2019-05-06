@@ -1,7 +1,7 @@
 provider "aws" {
   region = "${var.region}"
   assume_role {
-    role_arn = "arn:aws:iam::${var.assume_role_account}:role/bedrock-iam-admin"
+    role_arn = "arn:aws:iam::${var.assume_role_account}:role/bedrock-dynamodb-admin"
   }
 }
 
