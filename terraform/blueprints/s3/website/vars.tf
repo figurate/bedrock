@@ -7,6 +7,11 @@ variable "version_enabled" {
   default = "true"
 }
 
+variable "object_expiration" {
+  description = "Configure expiry of old verions (days)"
+  default = "90"
+}
+
 variable "source_cidrs" {
   description = "Restrict site access to the specified CIDR blocks of IP addresses"
   type = "list"
