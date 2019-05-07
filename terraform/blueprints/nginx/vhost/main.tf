@@ -17,20 +17,18 @@
 //}
 
 resource "null_resource" "static_resources" {
-
   triggers {
     host = "${var.reverseproxy_host}"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "mkdir -p /var/www/html/error",
-      "mkdir -p /var/www/images"
+      "mkdir -p /tmp/var/www/html/error",
+      "mkdir -p /tmp/var/www/images",
     ]
-
     connection {
       type     = "ssh"
-      user     = "root"
+      user     = "${var.reverseproxy_user}"
       host = "${var.reverseproxy_host}"
       private_key = "${file(var.ssh_private_key)}"
       bastion_host = "${var.bastion_host}"
@@ -69,11 +67,10 @@ resource "null_resource" "static_resources" {
   </body>
   </html>
   EOF
-    destination = "/var/www/html/error/404.html"
-
+    destination = "/tmp/var/www/html/error/404.html"
     connection {
       type = "ssh"
-      user = "root"
+      user = "${var.reverseproxy_user}"
       host = "${var.reverseproxy_host}"
       private_key = "${file(var.ssh_private_key)}"
       bastion_host = "${var.bastion_host}"
@@ -82,11 +79,26 @@ resource "null_resource" "static_resources" {
 
   provisioner "file" {
     content = "${file(var.error_bg_image)}"
-    destination = "${format("/var/www/images/%s", var.error_bg_image)}"
-
+    destination = "${format("/tmp/var/www/images/%s", var.error_bg_image)}"
     connection {
       type = "ssh"
-      user = "root"
+      user = "${var.reverseproxy_user}"
+      host = "${var.reverseproxy_host}"
+      private_key = "${file(var.ssh_private_key)}"
+      bastion_host = "${var.bastion_host}"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir -p /var/www/html/error",
+      "sudo mkdir -p /var/www/images",
+      "sudo mv /tmp/var/www/html/error/404.html /var/www/html/error/",
+      "sudo mv ${format("/tmp/var/www/images/%s", var.error_bg_image)} /var/www/images",
+    ]
+    connection {
+      type     = "ssh"
+      user     = "${var.reverseproxy_user}"
       host = "${var.reverseproxy_host}"
       private_key = "${file(var.ssh_private_key)}"
       bastion_host = "${var.bastion_host}"
