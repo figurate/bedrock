@@ -1,7 +1,7 @@
 /**
- * # AWS Lambda function configuration
+ * # IAM Access Key Rotation Management
  *
- * Deploy a lambda function.
+ * Support for automatic disabling/deletion of old API access keys.
  */
 data "archive_file" "iam_keyrotation" {
   output_path = "iam_keyrotation.zip"
@@ -20,6 +20,7 @@ resource "aws_lambda_function" "iam_keyrotation" {
   role = "${data.aws_iam_role.iam_keyrotation.arn}"
   runtime = "python3.6"
   source_code_hash = "${data.archive_file.iam_keyrotation.output_base64sha256}"
+  timeout = "${var.lambda_timeout}"
   environment {
     variables {
       KeyMaxAge = "${var.key_max_age}"
