@@ -33,6 +33,29 @@ Resources:
       VpcId: !Ref Vpc
       InternetGatewayId: !Ref InternetGateway
 
+  PublicRoutes:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: !Sub ${Environment}-public-routes
+
+  PublicRouteDefault:
+    Type: AWS::EC2::Route
+    DependsOn: VpcGatewayAttachment
+    Properties:
+      GatewayId: !Ref InternetGateway
+      DestinationCidrBlock: '0.0.0.0/0'
+      
+#  PrivateRoutes:
+#    Type: AWS::EC2::RouteTable
+#    Properties:
+#      VpcId: !Ref Vpc
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${Environment}-private-routes
+
 Outputs:
   VpcId:
     Description: The VPC ID
