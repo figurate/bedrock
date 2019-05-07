@@ -6,19 +6,19 @@
 data "aws_caller_identity" "current" {}
 
 data "aws_vpc" "default" {
-//  default = true
-  filter {
-    name = "tag:Environment"
-    values = ["${var.environment}"]
-  }
+  default = true
+//  filter {
+//    name = "tag:Environment"
+//    values = ["${var.environment}"]
+//  }
 }
 
-data "aws_subnet_ids" "public" {
-  vpc_id = "${data.aws_vpc.default.id}"
-  tags {
-    Name = "public_subnet_*"
-  }
-}
+//data "aws_subnet_ids" "default" {
+//  vpc_id = "${data.aws_vpc.default.id}"
+//  tags {
+//    Name = "${var.subnet}"
+//  }
+//}
 
 data "aws_ami" "autoscaling_image" {
   filter {
@@ -40,9 +40,10 @@ data "aws_iam_role" "nginx_cloudformation" {
 data "template_file" "userdata" {
   template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
   vars {
-    PapertrailHost = "${var.papertrail_host}"
-    PapertrailPort = "${var.papertrail_port}"
     NginxAmplifyKey = "${var.amplify_key}"
+    NginxHostname = "${var.environment}-reverseproxy"
+    AuthorizedUserName = "${var.reverseproxy_user}"
+    AuthorizedUserSSHKey = "${file(var.ssh_key)}"
   }
 }
 
@@ -52,12 +53,17 @@ resource "aws_cloudformation_stack" "reverseproxy" {
   iam_role_arn = "${data.aws_iam_role.nginx_cloudformation.arn}"
   parameters {
     Environment = "${var.environment}"
-    KeyPair = ""
+//    KeyPair = ""
     VpcId = "${data.aws_vpc.default.id}"
-    SubnetId = "${data.aws_subnet_ids.public.ids[0]}"
+    VpcCidrBlock = "${data.aws_vpc.default.cidr_block}"
+//    SubnetId = "${data.aws_subnet_ids.default.ids[0]}"
     ImageId = "${data.aws_ami.autoscaling_image.image_id}"
     InstanceType = "${var.instance_type}"
     UserData = "${base64encode(data.template_file.userdata.rendered)}"
+    PublicHostedZoneName = "${var.public_zone}."
+    PrivateHostedZoneName = "${var.private_zone}."
+    PublicRouteName = "${var.environment}-reverseproxy.${var.public_zone}"
+    PrivateRouteName = "${var.environment}-reverseproxy.${var.private_zone}"
   }
   template_body = "${file(format("%s/reverseproxy.yml", var.cloudformation_path))}"
 }
