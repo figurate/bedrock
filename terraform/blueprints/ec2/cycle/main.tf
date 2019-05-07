@@ -1,7 +1,7 @@
 /**
- * # AWS Lambda function configuration
+ * # EC2 Instance Cycling
  *
- * Deploy a lambda function.
+ * A Lambda function to support power cycling EC2 instances.
  */
 data "archive_file" "ec2_cycle" {
   output_path = "ec2_cycle.zip"

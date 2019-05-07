@@ -5,9 +5,8 @@
  */
 data "aws_caller_identity" "current" {}
 
-resource "aws_s3_bucket" "access_log" {
+data "aws_s3_bucket" "access_log" {
   bucket = "${replace(var.access_log_bucket, "/\\A\\z/", format("%s-access-logs", data.aws_caller_identity.current.account_id))}"
-  acl = "log-delivery-write"
 }
 
 data "aws_iam_policy_document" "bucket_policy" {
@@ -48,11 +47,18 @@ resource "aws_s3_bucket" "website" {
     routing_rules = "${var.routing_rules}"
   }
   logging {
-    target_bucket = "${aws_s3_bucket.access_log.id}"
+    target_bucket = "${data.aws_s3_bucket.access_log.id}"
     target_prefix = "${var.fqdn}/"
   }
   versioning {
     enabled = "${var.version_enabled}"
+  }
+  lifecycle_rule {
+    id = "expire_old_versions"
+    enabled = "${var.version_enabled}"
+    noncurrent_version_expiration {
+      days = "${var.object_expiration}"
+    }
   }
 }
 

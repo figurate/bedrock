@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: A Cloudformation template for provisioning an RDS instance.
+
+Parameters:
+
+Resources:
+  'Fn::Transform':
+    Name: 'AWS::Include'
+    Description: Import DBInstance ParameterGroup for the specified engine
+    Parameters:
+      Location: !Sub ${BucketUrl}/${Engine}_${EngineVersion}-params.yml
+
+  InstanceSubnetGroup:
+
+  InstanceSecurityGroup:
+
+  DatabaseInstance:
+
+  InstanceCPUAlarm:
+
+  InstancesMemoryAlarm:
+
+  InstanceEndpoint:
+
+  InstanceStartSchedule:
+
+  InstanceStartSchedulePermission:
+
+  InstanceStopSchedule:
+
+  InstanceStopSchedulePermission:
+
+  InstanceSnapshotSchedule:
+
+  InstanceSnapshotSchedulePermission:
+
+Outputs:

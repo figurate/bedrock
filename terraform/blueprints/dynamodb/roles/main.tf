@@ -32,11 +32,6 @@ resource "aws_iam_role_policy_attachment" "dynamodb_full_access" {
   role = "${aws_iam_role.dynamodb_admin.name}"
 }
 
-resource "aws_iam_role_policy_attachment" "s3_access" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-  role = "${aws_iam_role.dynamodb_admin.id}"
-}
-
 resource "aws_iam_role_policy_attachment" "lambda_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
   role = "${aws_iam_role.dynamodb_admin.id}"
