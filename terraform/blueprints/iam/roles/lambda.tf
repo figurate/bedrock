@@ -13,8 +13,18 @@ resource "aws_iam_role" "iam_keyrotation" {
   assume_role_policy = "${data.aws_iam_policy_document.lambda_assume_role_policy.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "iam_fullaccess" {
-  policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
+resource "aws_iam_role_policy_attachment" "iam_readonly" {
+  policy_arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
+  role = "${aws_iam_role.iam_keyrotation.id}"
+}
+
+resource "aws_iam_role_policy_attachment" "iam_keyrotation" {
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-keyrotation"
+  role = "${aws_iam_role.iam_keyrotation.id}"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_config" {
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-lambda-config"
   role = "${aws_iam_role.iam_keyrotation.id}"
 }
 
