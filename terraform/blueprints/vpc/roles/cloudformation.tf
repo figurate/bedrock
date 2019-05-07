@@ -20,5 +20,5 @@ resource "aws_iam_role_policy_attachment" "vpc_access" {
 
 resource "aws_iam_role_policy_attachment" "cloudformation_iam_passrole" {
   policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-passrole"
-  role = "${aws_iam_role.vpc_cloudformation.id}"
+  role = "${aws_iam_role.vpc_cloudformation.name}"
 }
