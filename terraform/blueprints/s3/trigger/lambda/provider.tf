@@ -12,7 +12,3 @@ variable "region" {
 variable "assume_role_account" {
   description = "AWS account ID for the role to assume into"
 }
-
-provider "null" {
-  version = "~> 1.0"
-}
