@@ -44,12 +44,12 @@ resource "aws_iam_role_policy_attachment" "cloudformation_readonly" {
 
 resource "aws_iam_role_policy_attachment" "iam_passrole" {
   policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-passrole"
-  role = "${aws_iam_role.vpcadmin.id}"
+  role = "${aws_iam_role.vpcadmin.name}"
 }
 
 resource "aws_iam_role_policy_attachment" "cloudformation_create" {
   policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-cloudformation-create"
-  role = "${aws_iam_role.vpcadmin.id}"
+  role = "${aws_iam_role.vpcadmin.name}"
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_subnet_fullaccess" {
