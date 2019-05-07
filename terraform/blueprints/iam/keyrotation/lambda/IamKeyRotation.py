@@ -1,16 +1,10 @@
+import os
 from datetime import datetime, timezone
 
 import boto3
 from botocore.exceptions import ClientError
 
-key_max_age = None
-
-lambdac = boto3.client('lambda')
-try:
-    config = lambdac.get_function_configuration(FunctionName='IamKeyRotation')
-    key_max_age = int(config['Environment']['Variables']['KeyMaxAge'])
-except ClientError as e:
-    print(e)
+key_max_age = os.environ['KeyMaxAge']
 
 
 def lambda_handler(event, context):
@@ -28,13 +22,14 @@ def get_user_ids(event):
 
     if 'Group' in event:
         group = iam.get_group(GroupName=event['Group'])
-        return list(map(lambda i: i['UserId'], group['Users']))
+        return list(map(lambda i: i['UserName'], group['Users']))
 
     try:
+        lambdac = boto3.client('lambda')
         lambda_config = lambdac.get_function_configuration(FunctionName='IamKeyRotation')
         if 'Group' in lambda_config['Environment']['Variables']:
             group = iam.get_group(GroupName=lambda_config['Environment']['Variables']['Group'])
-            return list(map(lambda i: i['UserId'], group['Users']))
+            return list(map(lambda i: i['UserName'], group['Users']))
         else:
             return [lambda_config['Environment']['Variables']['UserId']]
     except ClientError as e:

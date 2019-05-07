@@ -1,38 +1,38 @@
-
-//variable "ssh_key" {
-//  description = "Identifier of public key file for SSH access to droplets"
-//}
-
-variable "ssh_private_key" {
-  description = "Location of private key file for SSH access to droplets"
-  default = "~/.ssh/id_rsa"
-}
-
-variable "enabled" {
-  description = "Start/stop the rancher stack"
-}
-
-variable "environment" {
-  description = "Environment identifier for the rancher hosts"
-}
-
-variable "stack_name" {
-  description = "Name of the Rancher stack"
-  default = "whistlepost"
-}
-
-variable "hostnames" {
-  type = "list"
-  description = "Hostname to configure in virtual host"
-  default = ["wp.mnode.org"]
+variable "template_path" {
+  description = "The root path to vhost templates"
+  default = "templates"
 }
 
 variable "reverseproxy_host" {
   description = "Host to install vhost configuration"
 }
 
+variable "reverseproxy_user" {
+  description = "Username for SSH to reverseproxy host"
+  default = "root"
+}
+
+variable "ssh_private_key" {
+  description = "Location of private key file for SSH access to reverseproxy host"
+  default = "~/.ssh/id_rsa"
+}
+
 variable "bastion_host" {
   description = "Bastion host used to access reverse proxy"
+}
+
+variable "environment" {
+  description = "Environment identifier for the rancher hosts"
+  default = "default"
+}
+
+variable "hostnames" {
+  type = "list"
+  description = "Hostname to configure in virtual host"
+}
+
+variable "target_type" {
+  description = "Indicates the type of vhost configuration to use"
 }
 
 variable "target_hosts" {
@@ -40,27 +40,25 @@ variable "target_hosts" {
   description = "List of target hosts for vhost configuration"
 }
 
-variable "catalog_id" {
-  description = "ID of predefined stack in Rancher catalog"
-  default = ""
-}
-
-variable "docker_compose" {
-  description = "Location of docker-compose file"
-  default = ""
-}
-
-variable "rancher_compose" {
-  description = "Location of rancher-compose file"
-  default = ""
-}
-
 variable "ssl_enabled" {
   description = "Enable SSL with Let's Encrypt"
 }
 
+variable "letsencrypt_email" {
+  description = "Email address to register with Letsencrypt"
+}
+
 variable "error_bg_image" {
   description = "Path to background image used for error pages"
+}
+
+variable "locations_config" {
+  description = "A file containing NGINX location directives"
+}
+
+variable "static_host" {
+  description = "A static site for redirection of requests"
+  default = ""
 }
 
 locals {
