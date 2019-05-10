@@ -39,6 +39,7 @@ variable "instance_type" {
 
 variable "enabled" {
   description = "Start/stop the bastion host"
+  default = "true"
 }
 
 variable "shutdown_delay" {
