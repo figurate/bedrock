@@ -6,18 +6,7 @@
 data "aws_caller_identity" "current" {}
 
 data "aws_vpc" "default" {
-  //  default = true
-  filter {
-    name = "tag:Environment"
-    values = ["dev"]
-  }
-}
-
-data "aws_subnet_ids" "public" {
-  vpc_id = "${data.aws_vpc.default.id}"
-  tags {
-    Name = "public_subnet_*"
-  }
+  default = true
 }
 
 data "aws_ami" "bastion_image" {
@@ -66,6 +55,15 @@ resource "aws_security_group" "bastion" {
     to_port = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
+  egress {
+    protocol = "TCP"
+    from_port = 22
+    to_port = 22
+    cidr_blocks = ["${data.aws_vpc.default.cidr_block}"]
+  }
+  tags {
+    Name = "BastionSG"
+  }
 }
 
 resource "aws_iam_instance_profile" "bastion" {
@@ -84,5 +82,4 @@ resource "aws_instance" "bastion" {
   tags {
     Name = "bastion"
   }
-  vpc_security_group_ids = ["${data.aws_subnet_ids.public.ids}"]
 }
