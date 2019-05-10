@@ -2,4 +2,4 @@
 #BEDROCK_BLUEPRINT="$(basename $0 .sh)"
 BEDROCK_BLUEPRINT="bastion-aws"
 
-. $(dirname $0)/../../../scripts/blueprint-run.sh $@
+. $(dirname $0)/../../../bin/blueprint-run.sh $@
