@@ -3,6 +3,18 @@
  *
  * Provision a droplet with NGINX and letsencrypt installed.
  */
+data "template_file" "userdata" {
+  template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
+  vars {
+    NginxAmplifyKey = "${var.amplify_key}"
+    NginxHostname = "${var.environment}-reverseproxy"
+    AuthorizedUserName = "${var.reverseproxy_user}"
+    AuthorizedUserSSHKey = "${file(var.ssh_key)}"
+    PapertrailHost = "${var.papertrail_host}"
+    PapertrailPort = "${var.papertrail_port}"
+  }
+}
+
 resource "digitalocean_tag" "reverseproxy" {
   name = "reverseproxy"
 }
@@ -17,63 +29,7 @@ resource "digitalocean_droplet" "reverseproxy" {
   monitoring = true
   tags = ["${digitalocean_tag.reverseproxy.name}"]
   ssh_keys = ["${var.ssh_key}"]
-  user_data = <<EOF
-#cloud-config
-apt:
-  sources:
-    certbot:
-      source: ppa:certbot/certbot
-
-packages:
-  - nginx
-  - unattended-upgrades
-  - curl
-  - ntpdate
-  - python
-  - python-certbot-nginx
-
-timezone: Australia/Melbourne
-
-ntp:
-  enabled: true
-  servers:
-    - 0.au.pool.ntp.org
-    - 1.au.pool.ntp.org
-    - 2.au.pool.ntp.org
-    - 3.au.pool.ntp.org
-
-write_files:
-  - content: |
-      server {
-          listen 127.0.0.1:80;
-          server_name 127.0.0.1;
-          location /nginx_status {
-              stub_status on;
-              allow 127.0.0.1;
-              deny all;
-          }
-      }
-    path: /etc/nginx/conf.d/stub_status.conf
-  - content: |
-      files:
-        - /var/log/nginx/access.log
-        - /var/log/nginx/error.log
-      destination:
-        host: ${var.papertrail_host}
-        port: ${var.papertrail_port}
-        protocol: tls
-      pid_file: /var/run/remote_syslog.pid
-    path: /etc/log_files.yml
-
-runcmd:
-  - export API_KEY="${var.amplify_key}"
-  - curl -L https://github.com/nginxinc/nginx-amplify-agent/raw/master/packages/install.sh | bash
-  - "wget --header='X-Papertrail-Token: QHS89ESNb9Q0OGPK9Hu2' https://papertrailapp.com/destinations/2465304/setup.sh"
-  - bash setup.sh
-  - curl -O https://github.com/papertrail/remote_syslog2/releases/download/v0.20/remote-syslog2_0.20_amd64.deb
-  - dpkg --install remote-syslog2_0.20_amd64.deb
-  - remote_syslog
-EOF
+  user_data = "${data.template_file.userdata.rendered}"
 }
 
 resource "digitalocean_floating_ip" "reverseproxy" {
