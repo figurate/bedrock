@@ -4,7 +4,7 @@ Purpose: Provision an IAM user in AWS.
 
 Rationale: Bedrock blueprints use IAM roles to restrict the privileges of the provisioner.
 
-This scripts will create a user that has the following priveleges:
+This script will create a user that has the following privileges:
 
 * IAM access for creation of IAM roles specific to a blueprint
 * Access to read/write Terraform state associated with the account
@@ -14,6 +14,7 @@ This scripts will create a user that has the following priveleges:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| iam\_groups | A list of IAM groups the user belongs to. | list | `<list>` | no |
 | region | AWS default region | string | - | yes |
 | username | The username of the Bedrock power user | string | - | yes |
 
