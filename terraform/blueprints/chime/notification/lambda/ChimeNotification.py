@@ -1,16 +1,8 @@
-import boto3
+import os
+
 import requests
-from botocore.exceptions import ClientError
 
-
-webhook_url = None
-
-lambdac = boto3.client('lambda')
-try:
-    config = lambdac.get_function_configuration(FunctionName='ChimeNotification')
-    webhook_url = config['Environment']['Variables']['WebhookUrl']
-except ClientError as e:
-    print(e)
+webhook_url = os.environ['WebhookUrl']
 
 
 def lambda_handler(event, context):
