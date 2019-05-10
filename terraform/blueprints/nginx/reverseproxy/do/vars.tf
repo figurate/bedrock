@@ -1,3 +1,12 @@
+variable "userdata_path" {
+  description = "The root path to userdata templates"
+  default = "userdata"
+}
+
+variable "reverseproxy_user" {
+  description = "Username for reverseproxy SSH user"
+}
+
 variable "ssh_key" {
   description = "Identifier of public key file for SSH access to droplets"
 }
@@ -5,6 +14,15 @@ variable "ssh_key" {
 variable "reverseproxy_image" {
   description = "Digital Ocean image for reverseproxy droplet"
   default = "ubuntu-18-04-x64"
+}
+
+variable "image_os" {
+  description = <<EOF
+The operating system installed on the selected AMI. Valid values are:
+
+  * ubuntu  = Ubuntu
+EOF
+  default = "ubuntu"
 }
 
 variable "enabled" {
