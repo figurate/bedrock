@@ -9,3 +9,5 @@ puppet/keys/
 .depends.mk
 *.zip
 venv/
+.gradle/
+build/
