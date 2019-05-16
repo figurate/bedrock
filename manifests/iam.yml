@@ -1,0 +1,25 @@
+name: Bedrock IAM
+
+description: |
+  - Provision IAM roles/policies required for provisioning Bedrock blueprints
+  - Provision IAM power user to assume required roles
+  - Provision Lambda to automatically disable old access keys in tenancy
+
+constellations:
+  - bedrock-keyrotation:
+    - iam-keyrotation:
+    - cloudwatch-trigger:
+        trigger_name: iam-keyrotation-trigger
+        description: Rotate old IAM access keys for specified users
+        trigger_schedule: "0 22 15 * ? *"
+        function_name: IamKeyRotation
+        function_input: |
+          {
+            Group = "iam-keyrotation"
+          }
+
+  - bedrock-poweruser:
+    - iam-policies:
+    - iam-roles:
+    - iam-poweruser:
+        username: bedrock
