@@ -10,11 +10,11 @@ e.g.
 * bedrock example.yml apply
 * bedrock destroy # use file "manifest.yml" in current directory
 """
+import argparse
 import os
 from os.path import expanduser
 
 import docker
-import sys
 import yaml
 
 try:
@@ -27,8 +27,8 @@ def init_path(path):
     os.makedirs(expanduser(f'~/.bedrock/{path}'), exist_ok=True)
 
 
-def parse_manifest(path):
-    return yaml.load(open(path, 'r'), Loader=Loader)
+def parse_manifest(file):
+    return yaml.load(file, Loader=Loader)
 
 
 def apply_blueprint(name, key, config, action):
@@ -69,12 +69,17 @@ def apply_blueprint(name, key, config, action):
         print(log.decode('utf-8'), end='')
 
 
-manifest = sys.argv[1]
-blueprint_action = sys.argv[2]
-manifest = parse_manifest(manifest)
+parser = argparse.ArgumentParser(description='Bedrock Manifest Tool.')
+parser.add_argument('-m', '--manifest', metavar='<manifest_path>', default='manifest.yml', type=argparse.FileType('r'),
+                    help='location of manifest file (default: %(default)s)')
+parser.add_argument('action', metavar='<command>', choices=['init', 'apply', 'plan', 'destroy'],
+                    help='manifest action (possible values: %(choices)s)')
+
+args = parser.parse_args()
+
+manifest = parse_manifest(args.manifest)
 
 for constellation in manifest['constellations']:
     blueprint_key = constellation
     for blueprint in manifest['constellations'][constellation]:
-        apply_blueprint(blueprint, blueprint_key, manifest['constellations'][constellation][blueprint],
-                        blueprint_action)
+        apply_blueprint(blueprint, blueprint_key, manifest['constellations'][constellation][blueprint], args.action)
