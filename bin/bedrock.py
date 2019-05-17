@@ -31,7 +31,7 @@ def parse_manifest(file):
     return yaml.load(file, Loader=Loader)
 
 
-def apply_blueprint(name, key, config, action):
+def apply_blueprint(name, key, config, action, extra_volumes):
     print(f'Apply blueprint: {name}/{key} [{action}]')
 
     init_path(f'{name}/{key}')
@@ -62,6 +62,14 @@ def apply_blueprint(name, key, config, action):
             'mode': 'rw'
         }
     }
+
+    for volume in extra_volumes:
+        vargs = volume.split(':')
+        volumes[vargs[0]] = {
+            'bind': vargs[1],
+            'mode': 'ro'
+        }
+
     container = client.containers.run(f"bedrock/{name}", action, privileged=True, network_mode='host',
                           remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
     logs = container.logs(stream=True)
@@ -72,6 +80,8 @@ def apply_blueprint(name, key, config, action):
 parser = argparse.ArgumentParser(description='Bedrock Manifest Tool.')
 parser.add_argument('-m', '--manifest', metavar='<manifest_path>', default='manifest.yml', type=argparse.FileType('r'),
                     help='location of manifest file (default: %(default)s)')
+parser.add_argument('-v', '--volumes', metavar='<path:volume>', nargs='+',
+                    help='additional volumes mounted to support blueprints')
 parser.add_argument('action', metavar='<command>', choices=['init', 'apply', 'plan', 'destroy'],
                     help='manifest action (possible values: %(choices)s)')
 
@@ -82,4 +92,5 @@ manifest = parse_manifest(args.manifest)
 for constellation in manifest['constellations']:
     blueprint_key = constellation
     for blueprint in manifest['constellations'][constellation]:
-        apply_blueprint(blueprint, blueprint_key, manifest['constellations'][constellation][blueprint], args.action)
+        apply_blueprint(blueprint, blueprint_key, manifest['constellations'][constellation][blueprint],
+                        args.action, args.volumes)
