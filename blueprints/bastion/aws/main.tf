@@ -26,7 +26,7 @@ data "template_file" "userdata" {
   template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
   vars {
     AuthorizedUserName = "${var.bastion_user}"
-    AuthorizedUserSSHKey = "${file(var.ssh_key)}"
+    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
     ShutdownDelay = "${var.shutdown_delay}"
   }
 }
