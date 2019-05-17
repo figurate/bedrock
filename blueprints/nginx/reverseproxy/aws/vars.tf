@@ -53,6 +53,11 @@ variable "reverseproxy_user" {
 }
 
 variable "ssh_key" {
+  description = "Public key file for SSH access to host"
+  default = ""
+}
+
+variable "ssh_key_file" {
   description = "Location of public key file for SSH access to reverseproxy"
   default = "~/.ssh/id_rsa.pub"
 }
