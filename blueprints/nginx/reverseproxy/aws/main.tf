@@ -43,7 +43,7 @@ data "template_file" "userdata" {
     NginxAmplifyKey = "${var.amplify_key}"
     NginxHostname = "${var.environment}-reverseproxy"
     AuthorizedUserName = "${var.reverseproxy_user}"
-    AuthorizedUserSSHKey = "${file(var.ssh_key)}"
+    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
   }
 }
 
