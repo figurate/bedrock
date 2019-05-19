@@ -5,8 +5,9 @@
  */
 data "aws_caller_identity" "current" {}
 
-data "aws_vpc" "default" {
-  default = true
+data "aws_vpc" "tenant" {
+  default = "${var.vpc_default}"
+  tags = "${var.vpc_tags}"
 }
 
 //data "aws_subnet_ids" "default" {
@@ -50,8 +51,8 @@ resource "aws_cloudformation_stack" "sling" {
   parameters {
     Environment = "${var.environment}"
 //    KeyPair = ""
-    VpcId = "${data.aws_vpc.default.id}"
-    VpcCidrBlock = "${data.aws_vpc.default.cidr_block}"
+    VpcId = "${data.aws_vpc.tenant.id}"
+    VpcCidrBlock = "${data.aws_vpc.tenant.cidr_block}"
 //    SubnetId = "${data.aws_subnet_ids.default.ids[0]}"
     ImageId = "${data.aws_ami.sling_image.image_id}"
     InstanceType = "${var.instance_type}"

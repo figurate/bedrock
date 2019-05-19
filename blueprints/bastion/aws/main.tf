@@ -5,8 +5,9 @@
  */
 data "aws_caller_identity" "current" {}
 
-data "aws_vpc" "default" {
-  default = true
+data "aws_vpc" "tenant" {
+  default = "${var.vpc_default}"
+  tags = "${var.vpc_tags}"
 }
 
 data "aws_ami" "bastion_image" {
@@ -26,7 +27,8 @@ data "template_file" "userdata" {
   template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
   vars {
     AuthorizedUserName = "${var.bastion_user}"
-    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
+//    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
+    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", "")}"
     ShutdownDelay = "${var.shutdown_delay}"
   }
 }
@@ -59,7 +61,7 @@ resource "aws_security_group" "bastion" {
     protocol = "TCP"
     from_port = 22
     to_port = 22
-    cidr_blocks = ["${data.aws_vpc.default.cidr_block}"]
+    cidr_blocks = ["${data.aws_vpc.tenant.cidr_block}"]
   }
   tags {
     Name = "BastionSG"

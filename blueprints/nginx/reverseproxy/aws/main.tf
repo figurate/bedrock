@@ -5,12 +5,9 @@
  */
 data "aws_caller_identity" "current" {}
 
-data "aws_vpc" "default" {
-  default = true
-//  filter {
-//    name = "tag:Environment"
-//    values = ["${var.environment}"]
-//  }
+data "aws_vpc" "tenant" {
+  default = "${var.vpc_default}"
+  tags = "${var.vpc_tags}"
 }
 
 //data "aws_subnet_ids" "default" {
@@ -43,7 +40,8 @@ data "template_file" "userdata" {
     NginxAmplifyKey = "${var.amplify_key}"
     NginxHostname = "${var.environment}-reverseproxy"
     AuthorizedUserName = "${var.reverseproxy_user}"
-    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
+//    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
+    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", "")}"
   }
 }
 
@@ -54,8 +52,8 @@ resource "aws_cloudformation_stack" "reverseproxy" {
   parameters {
     Environment = "${var.environment}"
 //    KeyPair = ""
-    VpcId = "${data.aws_vpc.default.id}"
-    VpcCidrBlock = "${data.aws_vpc.default.cidr_block}"
+    VpcId = "${data.aws_vpc.tenant.id}"
+    VpcCidrBlock = "${data.aws_vpc.tenant.cidr_block}"
 //    SubnetId = "${data.aws_subnet_ids.default.ids[0]}"
     ImageId = "${data.aws_ami.autoscaling_image.image_id}"
     InstanceType = "${var.instance_type}"
