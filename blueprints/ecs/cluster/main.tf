@@ -5,7 +5,8 @@ data "aws_iam_role" "clusteradmin" {
 }
 
 data "aws_vpc" "tenant" {
-  default = true
+  default = "${var.vpc_default}"
+  tags = "${var.vpc_tags}"
 }
 
 data "aws_availability_zones" "available_zones" {}
