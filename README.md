@@ -107,6 +107,25 @@ maintain and evolve the designs.
 
 ## Getting started
 
+The prerequisites for running the examples below are as follows:
+
+### Environment variables
+
+Ensure you have set the following environment variables:
+
+	AWS_ACCESS_KEY_ID = <your AWS access key>
+	AWS_SECRET_ACCESS_KEY = <your AWS secret key>
+	AWS_DEFAULT_REGION = <your AWS region>
+
+### Build Docker images
+
+	$ cd blueprints && make all
+	
+### Initial manifests
+
+The following manifests are required to configure appropriate IAM roles/permissions
+
+	$ bin/bedrock.py -m manifests/iam.yml init && bin/bedrock.py -m manifests/iam.yml apply
 
 ### Examples
 
