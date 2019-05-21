@@ -69,7 +69,7 @@ variable "fqdn" {
 
 variable "record_ttl" {
   description = "The time to live (TTL) in seconds"
-  default = "900"
+  default = "300"
 }
 
 locals {
