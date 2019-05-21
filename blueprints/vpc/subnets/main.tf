@@ -1,7 +1,8 @@
 data "aws_availability_zones" "available" {}
 
 data "aws_vpc" "tenant" {
-  id = "${var.vpc}"
+  default = "${var.vpc_default}"
+  tags = "${var.vpc_tags}"
 }
 
 data "aws_route_table" "subnet_routes" {

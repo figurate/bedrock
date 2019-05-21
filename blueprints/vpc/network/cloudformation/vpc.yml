@@ -17,6 +17,8 @@ Resources:
       CidrBlock: !Ref CidrBlock
       EnableDnsHostnames: true
       Tags:
+        - Key: Name
+          Value: !Sub {Environment}_vpc
         - Key: Environment
           Value: !Ref Environment
 

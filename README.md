@@ -37,6 +37,18 @@ using best-practice architectures and techniques. These blueprints are
 based on popular tools such as [Terraform] and [Cloudformation], and provide
 both an informative and practical approach to infrastructure provisioning.
 
+### Blueprint
+
+### Manifest
+
+A manifest provides a way to define one or more collections of blueprints (a constellation) and associated configurations that make up a complete architecture.
+
+Often a single blueprint is not sufficient to define a Cloud architecture as they are more likely to be distributed across multiple services. For example, you might have an ECS cluster for web/API applications, RDS or DynamDB for persistence, and S3 for archiving.
+
+Within each of these tiers are additional ancillary services such as route53 for well-known endpoints and/or service discovery, cloudwatch events/triggers, etc. The collection of blueprints that encapsulates and independent function is called a constellation. Multiple constellations may be defined in a single manifest such that an entire architecture may be provisioned.
+
+A manifest also provides a higher-order language that can be used to unambiguously describe novel Cloud architectures that are composed of well-defined blueprints.
+
 ## Features
 
 The purpose of Bedrock is not only to provide best-practice blueprints for modern architectures, but to explore and
@@ -96,6 +108,67 @@ maintain and evolve the designs.
 ## Getting started
 
 
+### Examples
+
+#### 1. Provision a Bastion host
+
+The following manifest file describes how to deploy an EC2 instance as a Bastion host:
+
+    name: AWS Bastion Host
+    
+    description: Provision an EC2 instance for Bastion
+    
+    constellations:
+      bastion:
+        bastion-roles:
+        bastion-aws:
+          bastion_user: fortuna
+
+You can execute this file as follows:
+
+    $ bedrock apply -m bastion.yml -c ssh_key=@~/.ssh/id_rsa.pub
+    
+This command will apply the manifest in your AWS account, overriding the `ssh_key`
+input variable using the public SSH key from your local SSH configuration.
+
+#### 2. Deploy Lambda Layers
+
+The following manifest will create common Lambda Layers for use in Lambda functions:
+
+    name: Lambda Layers
+    
+    description: Create Lambda Layers to support Bedrock Lambda blueprints
+    
+    constellations:
+      aws-java-sdk-lambda:
+        lambda-layer:
+          layer_name: aws-java-sdk-lambda
+          description: Support for the AWS Lambda SDK for Java
+          content_path: /tools/aws-java-sdk-lambda/build/layer
+          runtimes:
+            - java8
+    
+      groovy-runtime:
+        lambda-layer:
+          layer_name: groovy-runtime
+          description: Support for the Groovy JVM language
+          content_path: /tools/groovy-runtime/build/layer
+          runtimes:
+            - java8
+    
+      python-requests:
+        lambda-layer:
+          layer_name: python-requests
+          description: Python requests package plus dependencies
+          content_path: /tools/python-requests/packages
+          runtimes:
+            - python3.6
+
+Note that this manifest requires an additional volume to provide input for the `content_path` variable:
+
+    $ bedrock apply -m lambda-layers.yml -v "$PWD/tools:/tools"
+    
+    
 ### Requirements
 
 To make use of Bedrock you must have access to a public Cloud and a local
