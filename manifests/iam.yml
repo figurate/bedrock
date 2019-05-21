@@ -6,20 +6,26 @@ description: |
   - Provision Lambda to automatically disable old access keys in tenancy
 
 constellations:
-  - bedrock-keyrotation:
-    - iam-keyrotation:
-    - cloudwatch-trigger:
-        trigger_name: iam-keyrotation-trigger
-        description: Rotate old IAM access keys for specified users
-        trigger_schedule: "0 22 15 * ? *"
-        function_name: IamKeyRotation
-        function_input: |
-          {
-            Group = "iam-keyrotation"
-          }
+  policies:
+    iam-policies:
 
-  - bedrock-poweruser:
-    - iam-policies:
-    - iam-roles:
-    - iam-poweruser:
-        username: bedrock
+  iam:
+    iam-roles:
+
+  keyrotation:
+    iam-keyrotation:
+
+  iam-keyrotation-trigger:
+    cloudwatch-trigger:
+      trigger_name: iam-keyrotation-trigger
+      description: Rotate old IAM access keys for specified users
+      trigger_schedule: "0 22 15 * ? *"
+      function_name: IamKeyRotation
+      function_input: |
+        {
+          Group = "iam-keyrotation"
+        }
+
+  bedrock:
+    iam-poweruser:
+      username: bedrock

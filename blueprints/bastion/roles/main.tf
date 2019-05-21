@@ -41,3 +41,8 @@ resource "aws_iam_role_policy_attachment" "ec2_instance_profile_fullaccess" {
   policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-ec2-instance-profile-fullaccess"
   role = "${aws_iam_role.bastion_admin.id}"
 }
+
+resource "aws_iam_role_policy_attachment" "route53_access" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRoute53FullAccess"
+  role = "${aws_iam_role.bastion_admin.name}"
+}

@@ -28,7 +28,7 @@ variable "vpc_tags" {
 //}
 
 variable "image_name" {
-  description = "AWS image for Sling instance"
+  description = "AWS image for Solr instance"
   default = "amzn2-ami-hvm-*"
 }
 
@@ -42,23 +42,22 @@ variable "image_os" {
 The operating system installed on the selected AMI. Valid values are:
 
   * al2     = Amazon Linux 2
-  * ubuntu  = Ubuntu
 EOF
   default = "al2"
 }
 
 variable "instance_type" {
-  description = "AWS instance type for Sling"
+  description = "AWS instance type for Solr"
   default = "t3.micro"
 }
 
-variable "sling_version" {
-  description = "The major release version of Apache Sling to use"
-  default = "10"
+variable "solr_version" {
+  description = "The major release version of Apache Solr to use"
+  default = "7.7.0"
 }
 
-variable "sling_user" {
-  description = "Username for Sling SSH user"
+variable "solr_user" {
+  description = "Username for Solr SSH user"
 }
 
 variable "ssh_key" {
