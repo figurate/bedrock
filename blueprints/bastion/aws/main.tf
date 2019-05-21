@@ -85,3 +85,14 @@ resource "aws_instance" "bastion" {
     Name = "bastion"
   }
 }
+data "aws_route53_zone" "primary" {
+  name = "${local.hosted_zone}."
+}
+
+resource "aws_route53_record" "bastion" {
+  zone_id = "${data.aws_route53_zone.primary.zone_id}"
+  name    = "${var.fqdn}"
+  type    = "A"
+  ttl     = "${var.record_ttl}"
+  records = ["${aws_instance.bastion.public_ip}"]
+}
