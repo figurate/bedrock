@@ -5,5 +5,7 @@ description: Provision an EC2 instance for Bastion
 constellations:
   bastion:
     bastion-roles:
+
     bastion-aws:
-      bastion_user: foo
+      bastion_user: fortuna
+      fqdn: bastion.mnode.org
