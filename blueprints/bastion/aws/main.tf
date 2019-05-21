@@ -92,7 +92,7 @@ data "aws_route53_zone" "primary" {
 resource "aws_route53_record" "bastion" {
   zone_id = "${data.aws_route53_zone.primary.zone_id}"
   name    = "${var.fqdn}"
-  type    = "A"
+  type    = "CNAME"
   ttl     = "${var.record_ttl}"
-  records = ["${aws_instance.bastion.public_ip}"]
+  records = ["${aws_instance.bastion.public_dns}"]
 }
