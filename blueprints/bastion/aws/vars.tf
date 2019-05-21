@@ -62,3 +62,16 @@ variable "shutdown_delay" {
   description = "Number of minutes before the host will automatically shutdown"
   default = 60
 }
+
+variable "fqdn" {
+  description = "Fully-qualified domain name for the record"
+}
+
+variable "record_ttl" {
+  description = "The time to live (TTL) in seconds"
+  default = "900"
+}
+
+locals {
+  hosted_zone = "${join(".", slice(split(".", var.fqdn), 1, length(split(".", var.fqdn))))}"
+}
