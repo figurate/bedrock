@@ -3,10 +3,21 @@ name: Bedrock VPC
 description: Provision a new VPC for Bedrock Constellations
 
 constellations:
-  - default:
-      - vpc-network:
-          environment: bedrock
-          cidr_block: 10.0.0.0/16
-      - vpc-subnets: # public
-      - vpc-subnets: # private
-      - vpc-natgateway:
+  default:
+    vpc-network:
+      environment: bedrock
+      cidr_block: 10.0.0.0/16
+
+    vpc-subnets: # public
+      vpc_tags:
+        - "Environment=bedrock"
+      is_public: true
+
+  private:
+    vpc-subnets: # private
+      vpc_tags:
+        - "Environment=bedrock"
+        -
+    vpc-natgateway:
+      vpc_tags:
+        - "Environment=bedrock"
