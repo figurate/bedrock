@@ -96,7 +96,7 @@ parser.add_argument('-v', '--volumes', metavar='<path:volume>', nargs='+',
 parser.add_argument('-c', '--config', metavar='<key=value>', nargs='+',
                     help='additional configuration to support blueprints')
 parser.add_argument('action', metavar='<command>', choices=['init', 'apply', 'plan', 'destroy'],
-                    help='manifest action (possible values: %(choices)s)')
+                    help='manifest action (possible values: %(choices)s)', nargs='?', default='init')
 
 args = parser.parse_args()
 
