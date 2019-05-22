@@ -31,6 +31,11 @@ def parse_manifest(file):
     return yaml.load(file, Loader=Loader)
 
 
+def append_env(environment, env_var):
+    if env_var in os.environ:
+        environment.append(f'{env_var}={os.environ[env_var]}')
+
+
 def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
     print(f'Apply blueprint: {name}/{key} [{action}]')
 
@@ -39,14 +44,14 @@ def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
     client = docker.from_env()
     environment = [
         f'TF_BACKEND_KEY={name}/{key}',
-        f'TF_APPLY_ARGS=-auto-approve',
         f'AWS_ACCESS_KEY_ID={os.environ["AWS_ACCESS_KEY_ID"]}',
         f'AWS_SECRET_ACCESS_KEY={os.environ["AWS_SECRET_ACCESS_KEY"]}',
         f'TF_VAR_region={os.environ["AWS_DEFAULT_REGION"]}',
-        f'http_proxy={os.environ["http_proxy"]}',
-        f'https_proxy={os.environ["https_proxy"]}',
-        f'no_proxy={os.environ["no_proxy"]}'
     ]
+
+    # Append optional environment variables..
+    for env_var in ['TF_APPLY_ARGS', 'TF_DESTROY_ARGS', 'http_proxy', 'https_proxy', 'no_proxy']:
+        append_env(environment, env_var)
 
     if config:
         for item in config:
@@ -97,8 +102,16 @@ args = parser.parse_args()
 
 manifest = parse_manifest(args.manifest)
 
-for constellation in manifest['constellations']:
-    blueprint_key = constellation
-    for blueprint in manifest['constellations'][constellation]:
-        apply_blueprint(blueprint, blueprint_key, manifest['constellations'][constellation][blueprint],
-                        args.action, args.volumes, args.config)
+if args.action == 'destroy':
+    # destroy in reverse order..
+    for constellation in reversed(manifest['constellations']):
+        blueprint_key = constellation
+        for blueprint in reversed(manifest['constellations'][constellation]):
+            apply_blueprint(blueprint, blueprint_key, manifest['constellations'][constellation][blueprint],
+                            args.action, args.volumes, args.config)
+else:
+    for constellation in manifest['constellations']:
+        blueprint_key = constellation
+        for blueprint in manifest['constellations'][constellation]:
+            apply_blueprint(blueprint, blueprint_key, manifest['constellations'][constellation][blueprint],
+                            args.action, args.volumes, args.config)
