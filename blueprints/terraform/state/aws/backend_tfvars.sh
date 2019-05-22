@@ -1,4 +1,2 @@
 #!/usr/bin/env bash
-cat <<EOF
-key    = "$1/terraform.tfstate"
-EOF
+# No need for backend configuration with local
