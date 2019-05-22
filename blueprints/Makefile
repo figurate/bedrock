@@ -24,7 +24,7 @@ ifeq (clean,$(filter clean,$(MAKECMDGOALS)))
 	docker rmi $(REGISTRY)/$@
 endif
 
-	docker build ${BUILD_ARGS} -t $(REGISTRY)/$@ $(subst -,/,$@)
+	docker build ${BUILD_ARGS} --build-arg HTTP_PROXY=${http_proxy} -t $(REGISTRY)/$@ --network=host $(subst -,/,$@)
 
 ifeq (tag,$(filter tag,$(MAKECMDGOALS)))
 	docker tag $(REGISTRY)/$@ $(REGISTRY)/$@
