@@ -1,7 +1,13 @@
-name: Terraform
+name: AWS Initialisation
 
 description: Create an S3 bucket for storing Terraform state
 
 constellations:
+  policies:
+    iam-policies:
+
+  iam:
+    iam-roles:
+
   default:
     terraform-state-aws:
