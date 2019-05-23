@@ -3,6 +3,8 @@
 [Docker]: https://docker.com
 [Terraform]: https://terraform.io
 [Cloudformation]: https://aws.amazon.com/cloudformation/
+[Terragrunt]: https://github.com/gruntwork-io/terragrunt
+[Astro]: https://github.com/uber/astro
 
 [Introduction]: #introduction
 
@@ -104,6 +106,15 @@ Using S3 Bucket notifications we can trigger a build by simply updating a bluepr
 very minimal effort approach to provisioning sophisticated and secure architectures whilst retaining the ability to
 maintain and evolve the designs.
 
+### Comparison with other tools
+
+#### Terragrunt
+
+[Terragrunt] provides a wrapper to Terraform that enforces consistency and reduces code duplication across multiple modules. Whilst Bedrock offers similar module grouping via the manifest file, it does not impose constraints on the code in each module, nor does it hide the underlying Terraform code.
+
+#### Astro
+
+[Astro] offers dependency mapping between Terraform modules and concurrent execution. Bedrock provides rudimentary dependency mapping (via sequential execution of the manifest), it doesn't yet support concurrent execution.
 
 ## Getting started
 
