@@ -38,7 +38,8 @@ data "template_file" "userdata" {
   template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
   vars {
     AuthorizedUserName = "${var.solr_user}"
-    AuthorizedUserSSHKey = "${file(var.ssh_key)}"
+    //    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
+    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", "")}"
     SolrHostname = "${var.environment}-apachesolr"
     SolrVersion = "${var.solr_version}"
   }
