@@ -5,7 +5,7 @@ MAINTAINER Ben Fortuna
 ARG HTTP_PROXY=""
 
 RUN http_proxy=${HTTP_PROXY} apk add --update jq python py-pip bash groff \
-    && pip --no-cache-dir install awscli
+    && https_proxy=${HTTP_PROXY} pip --no-cache-dir install awscli
 
 WORKDIR /work
 

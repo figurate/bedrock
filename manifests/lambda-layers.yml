@@ -4,6 +4,9 @@ name: Lambda Layers
 description: Create Lambda Layers to support Bedrock Lambda blueprints
 
 constellations:
+  lambda:
+    lambda-roles:
+
   aws-java-sdk-lambda:
     lambda-layer:
       layer_name: aws-java-sdk-lambda
