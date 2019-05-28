@@ -16,6 +16,6 @@ variable "function_name" {
 
 variable "function_input" {
   description = "A map of values passed to the function invocation"
-  type = "map"
-  default = {}
+  type        = "map"
+  default     = {}
 }
