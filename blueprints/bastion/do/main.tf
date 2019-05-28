@@ -5,10 +5,11 @@
  */
 data "template_file" "userdata" {
   template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
+
   vars {
-    AuthorizedUserName = "${var.bastion_user}"
+    AuthorizedUserName   = "${var.bastion_user}"
     AuthorizedUserSSHKey = "${var.ssh_key}"
-    ShutdownDelay = "${var.shutdown_delay}"
+    ShutdownDelay        = "${var.shutdown_delay}"
   }
 }
 
@@ -17,16 +18,16 @@ resource "digitalocean_tag" "bastion" {
 }
 
 resource "digitalocean_droplet" "bastion" {
-  count = "${var.enabled}"
-  image = "${var.bastion_image}"
-  name = "${local.uuid}"
-  region = "${var.do_region}"
-  size = "s-1vcpu-1gb"
+  count              = "${var.enabled}"
+  image              = "${var.bastion_image}"
+  name               = "${local.uuid}"
+  region             = "${var.do_region}"
+  size               = "s-1vcpu-1gb"
   private_networking = true
-  monitoring = true
-  tags = ["${digitalocean_tag.bastion.name}"]
-  ssh_keys = ["${var.ssh_key}"]
-  user_data = "${data.template_file.userdata.rendered}"
+  monitoring         = true
+  tags               = ["${digitalocean_tag.bastion.name}"]
+  ssh_keys           = ["${var.ssh_key}"]
+  user_data          = "${data.template_file.userdata.rendered}"
 }
 
 resource "null_resource" "bastion_ssh_key" {
@@ -38,10 +39,11 @@ resource "null_resource" "bastion_ssh_key" {
 
   provisioner "remote-exec" {
     inline = ["chmod 600 /root/.ssh/id_rsa"]
+
     connection {
-      type     = "ssh"
-      user     = "root"
-      host = "${digitalocean_droplet.bastion.ipv4_address}"
+      type        = "ssh"
+      user        = "root"
+      host        = "${digitalocean_droplet.bastion.ipv4_address}"
       private_key = "${file(var.ssh_private_key)}"
     }
   }

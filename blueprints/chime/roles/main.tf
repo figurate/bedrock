@@ -14,19 +14,20 @@ data "aws_caller_identity" "current" {}
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
+
     principals {
       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-      type = "AWS"
+      type        = "AWS"
     }
   }
 }
 
 resource "aws_iam_role" "chime_admin" {
-  name = "bedrock-chime-admin"
+  name               = "bedrock-chime-admin"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
-  role = "${aws_iam_role.chime_admin.id}"
+  role       = "${aws_iam_role.chime_admin.id}"
 }

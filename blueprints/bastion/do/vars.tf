@@ -1,6 +1,6 @@
 variable "userdata_path" {
   description = "The root path to userdata templates"
-  default = "userdata"
+  default     = "userdata"
 }
 
 variable "bastion_user" {
@@ -13,12 +13,12 @@ variable "ssh_key" {
 
 variable "ssh_private_key" {
   description = "Location of private key file for SSH access to droplets"
-  default = "~/.ssh/id_rsa"
+  default     = "~/.ssh/id_rsa"
 }
 
 variable "bastion_image" {
   description = "Digital Ocean image for bastion droplet"
-  default = "ubuntu-18-04-x64"
+  default     = "ubuntu-18-04-x64"
 }
 
 variable "image_os" {
@@ -27,6 +27,7 @@ The operating system installed on the selected droplet. Valid values are:
 
   * ubuntu  = Ubuntu
 EOF
+
   default = "ubuntu"
 }
 
@@ -36,7 +37,7 @@ variable "enabled" {
 
 variable "shutdown_delay" {
   description = "Number of minutes before the host will automatically shutdown"
-  default = 60
+  default     = 60
 }
 
 locals {

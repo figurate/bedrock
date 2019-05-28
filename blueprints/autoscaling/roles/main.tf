@@ -14,6 +14,7 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "clusteradmin" {
   name = "autoscaling-bedrock-clusteradmin"
+
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -35,10 +36,11 @@ EOF
 
 resource "aws_iam_role_policy_attachment" "ec2_access_clusteradmin" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
-  role = "${aws_iam_role.clusteradmin.name}"
+  role       = "${aws_iam_role.clusteradmin.name}"
 }
 
 //resource "aws_iam_role_policy_attachment" "s3_terraform_access_clusteradmin" {
 //  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-terraform-state"
 //  role = "${aws_iam_role.clusteradmin.name}"
 //}
+
