@@ -60,7 +60,13 @@ variable "solr_user" {
   description = "Username for Solr SSH user"
 }
 
+
 variable "ssh_key" {
+  description = "Public key file for SSH access to host"
+  default = ""
+}
+
+variable "ssh_key_file" {
   description = "Location of public key file for SSH access to host"
   default = "~/.ssh/id_rsa.pub"
 }

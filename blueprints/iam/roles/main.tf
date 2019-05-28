@@ -34,7 +34,7 @@ resource "aws_iam_role_policy_attachment" "iam_access" {
 
 resource "aws_iam_role_policy_attachment" "lambda_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
-  role = "${aws_iam_role.iamadmin.id}"
+  role = "${aws_iam_role.iamadmin.name}"
 }
 
 resource "aws_iam_role_policy_attachment" "s3_terraform_access" {
