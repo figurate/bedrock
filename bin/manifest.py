@@ -3,12 +3,12 @@
 """
 Support for provisioning blueprint constellations via a provided manifest.
 
-Usage: bedrock [-m <manifest_file>] <apply|destroy>
+Usage: manifest [-m <manifest_file>] <apply|destroy>
 
 e.g.
 
-* bedrock example.yml apply
-* bedrock destroy # use file "manifest.yml" in current directory
+* manifest example.yml apply
+* manifest destroy # use file "manifest.yml" in current directory
 """
 import argparse
 import os
