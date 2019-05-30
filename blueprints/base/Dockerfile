@@ -1,13 +1,16 @@
-FROM hashicorp/terraform:light
+FROM hashicorp/terraform:0.11.14
 
 MAINTAINER Ben Fortuna
 
 ARG HTTP_PROXY=""
 
+COPY requirements.txt /tmp
 RUN http_proxy=${HTTP_PROXY} apk add --update jq python py-pip bash groff \
-    && https_proxy=${HTTP_PROXY} pip --no-cache-dir install awscli
+    && https_proxy=${HTTP_PROXY} pip --no-cache-dir install -r /tmp/requirements.txt
 
+RUN adduser -S bedrock && mkdir /work /bootstrap && chown bedrock /work /bootstrap
 WORKDIR /work
+USER bedrock
 
 ADD *.sh /bootstrap/
 ADD environment /bootstrap/environment
