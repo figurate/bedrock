@@ -4,7 +4,7 @@ IMAGES=$(subst /,-,$(subst /Dockerfile,,$(DOCKERFILES)))
 DEPENDS=.depends.mk
 BUILD_ARGS?=
 
-.PHONY: all clean tag push docs $(IMAGES)
+.PHONY: all clean tag push docs format $(IMAGES)
 
 all: $(IMAGES)
 
@@ -36,4 +36,8 @@ endif
 
 ifeq (docs,$(filter docs,$(MAKECMDGOALS)))
 	docker run --rm -v "${PWD}:/work" tmknom/terraform-docs markdown $(subst -,/,$@)/ >$(subst -,/,$@)/README.md
+endif
+
+ifeq (format,$(filter format,$(MAKECMDGOALS)))
+	terraform fmt -list=true $(subst -,/,$@)/
 endif
