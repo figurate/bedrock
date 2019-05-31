@@ -61,10 +61,11 @@ elif [ -n "$TF_ENVIRONMENT" ]; then
     sh /bootstrap/environment/terraform_tfvars.sh $TF_ENVIRONMENT > terraform.tfvars
 else
     sh /bootstrap/backend_tfvars.sh $TF_BACKEND_KEY > backend.tfvars
-    sh /bootstrap/terraform_tfvars.sh $TF_ENVIRONMENT > terraform.tfvars
 fi
 
 TF_ACTION=${1:-init}
+
+TF_VAR_assume_role_account=$(aws sts get-caller-identity | jq -r '.Account')
 
 case "$TF_ACTION" in
 	init) 			init;;
