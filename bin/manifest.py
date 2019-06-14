@@ -46,11 +46,11 @@ def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
         f'TF_BACKEND_KEY={name}/{key}',
         f'AWS_ACCESS_KEY_ID={os.environ["AWS_ACCESS_KEY_ID"]}',
         f'AWS_SECRET_ACCESS_KEY={os.environ["AWS_SECRET_ACCESS_KEY"]}',
-        f'TF_VAR_region={os.environ["AWS_DEFAULT_REGION"]}',
+        f'AWS_DEFAULT_REGION={os.environ["AWS_DEFAULT_REGION"]}',
     ]
 
     # Append optional environment variables..
-    for env_var in ['TF_APPLY_ARGS', 'TF_DESTROY_ARGS', 'http_proxy', 'https_proxy', 'no_proxy']:
+    for env_var in ['AWS_SESSION_TOKEN', 'TF_APPLY_ARGS', 'TF_DESTROY_ARGS', 'http_proxy', 'https_proxy', 'no_proxy']:
         append_env(environment, env_var)
 
     if config:

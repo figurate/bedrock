@@ -1,12 +1,7 @@
 provider "aws" {
-  region = "${var.region}"
   assume_role {
     role_arn = "arn:aws:iam::${var.assume_role_account}:role/bedrock-lambda-admin"
   }
-}
-
-variable "region" {
-  description = "AWS default region"
 }
 
 variable "assume_role_account" {
