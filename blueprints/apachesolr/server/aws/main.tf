@@ -39,8 +39,8 @@ data "aws_iam_role" "solr_cloudformation" {
 data "template_file" "userdata" {
   template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
 
-  vars {
-    AuthorizedUserName = "${var.solr_user}"
+  vars = {
+    AuthorizedUserName = var.solr_user
 
     //    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
     AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", "")}"

@@ -1,4 +1,5 @@
-FROM hashicorp/terraform:0.11.14
+ARG TERRAFORM_VERSION=latest
+FROM hashicorp/terraform:${TERRAFORM_VERSION}
 
 MAINTAINER Ben Fortuna
 

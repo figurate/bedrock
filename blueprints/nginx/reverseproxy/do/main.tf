@@ -4,9 +4,9 @@
  * Provision a droplet with NGINX and letsencrypt installed.
  */
 data "template_file" "userdata" {
-  template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
-  vars {
-    NginxAmplifyKey = "${var.amplify_key}"
+  template = file(format("%s/%s.yml", var.userdata_path, var.image_os))
+  vars = {
+    NginxAmplifyKey = var.amplify_key
     NginxHostname = "${var.environment}-reverseproxy"
     AuthorizedUserName = "${var.reverseproxy_user}"
     AuthorizedUserSSHKey = "${file(var.ssh_key)}"

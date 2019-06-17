@@ -28,8 +28,8 @@ data "aws_ami" "bastion_image" {
 data "template_file" "userdata" {
   template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
 
-  vars {
-    AuthorizedUserName = "${var.bastion_user}"
+  vars = {
+    AuthorizedUserName = var.bastion_user
 
     //    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"
     AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", "")}"
@@ -72,7 +72,7 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = ["${data.aws_vpc.tenant.cidr_block}"]
   }
 
-  tags {
+  tags = {
     Name = "BastionSG"
   }
 }
@@ -91,7 +91,7 @@ resource "aws_instance" "bastion" {
   iam_instance_profile                 = "${aws_iam_instance_profile.bastion.name}"
   instance_initiated_shutdown_behavior = "terminate"
 
-  tags {
+  tags = {
     Name = "bastion"
   }
 }
@@ -104,6 +104,6 @@ resource "aws_route53_record" "bastion" {
   zone_id = "${data.aws_route53_zone.primary.zone_id}"
   name    = "${var.fqdn}"
   type    = "CNAME"
-  ttl     = "${var.record_ttl}"
-  records = ["${aws_instance.bastion.public_dns}"]
+  ttl     = var.record_ttl
+  records = [aws_instance.bastion[0].public_dns]
 }
