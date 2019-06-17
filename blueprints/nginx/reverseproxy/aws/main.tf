@@ -35,9 +35,9 @@ data "aws_iam_role" "nginx_cloudformation" {
 }
 
 data "template_file" "userdata" {
-  template = "${file(format("%s/%s.yml", var.userdata_path, var.image_os))}"
-  vars {
-    NginxAmplifyKey = "${var.amplify_key}"
+  template = file(format("%s/%s.yml", var.userdata_path, var.image_os))
+  vars = {
+    NginxAmplifyKey = var.amplify_key
     NginxHostname = "${var.environment}-reverseproxy"
     AuthorizedUserName = "${var.reverseproxy_user}"
 //    AuthorizedUserSSHKey = "${replace(var.ssh_key, "/\\A\\z/", file(var.ssh_key_file))}"

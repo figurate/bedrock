@@ -1,17 +1,17 @@
 variable "cloudformation_path" {
   description = "The root path to cloudformation templates"
-  default = "cloudformation"
+  default     = "cloudformation"
 }
 
 variable "vpc_default" {
   description = "Boolean value to indicate whether the matched VPC should be default for the region"
-  default = "true"
+  default     = "true"
 }
 
 variable "vpc_tags" {
-  type = "list"
-  description = "A list of tags to match on the VPC lookup"
-  default = []
+  type        = "map"
+  description = "A map of tags to match on the VPC lookup"
+  default     = {}
 }
 
 variable "cluster_name" {
@@ -23,6 +23,6 @@ variable "hosted_zone" {
 }
 
 locals {
-  env_string = ""
+  env_string   = ""
   account_hash = "${substr(sha256(data.aws_caller_identity.current.account_id), -10, 10)}"
 }

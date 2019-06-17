@@ -4,9 +4,9 @@ variable "vpc_default" {
 }
 
 variable "vpc_tags" {
-  type = "list"
-  description = "A list of tags to match on the VPC lookup"
-  default = []
+  type        = "map"
+  description = "A map of tags to match on the VPC lookup"
+  default     = {}
 }
 
 variable "cidr_prefix" {

@@ -1,6 +1,6 @@
 data "template_file" "vhost_config" {
-  template = "${file(format("%s/%s.conf", var.template_path, var.target_type))}"
-  vars {
+  template = file(format("%s/%s.conf", var.template_path, var.target_type))
+  vars = {
     UpstreamUUID = "${local.uuid}.internal"
     UpstreamHosts = "${join("\n", formatlist("    server %s:8080;", var.target_hosts))}"
     Hostnames = "${join(" ", var.hostnames)}"
