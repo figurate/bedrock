@@ -52,16 +52,7 @@ function export() {
 
 # Generate terraform backend config
 sh /bootstrap/backend_tf.sh > /bootstrap/backend.tf
-
-if [ -n "$TF_STACK" ]; then
-    sh /bootstrap/stack/backend_tfvars.sh $TF_STACK $TF_ENVIRONMENT > backend.tfvars
-    sh /bootstrap/stack/terraform_tfvars.sh $TF_STACK > terraform.tfvars
-elif [ -n "$TF_ENVIRONMENT" ]; then
-    sh /bootstrap/environment/backend_tfvars.sh $TF_ENVIRONMENT > backend.tfvars
-    sh /bootstrap/environment/terraform_tfvars.sh $TF_ENVIRONMENT > terraform.tfvars
-else
-    sh /bootstrap/backend_tfvars.sh $TF_BACKEND_KEY > backend.tfvars
-fi
+sh /bootstrap/backend_tfvars.sh $TF_BACKEND_KEY > backend.tfvars
 
 TF_ACTION=${1:-init}
 
