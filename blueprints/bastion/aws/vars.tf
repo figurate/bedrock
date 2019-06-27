@@ -30,7 +30,7 @@ variable "ssh_key_file" {
 
 variable "image_name" {
   description = "AWS image for bastion instance"
-  default     = "amzn2-ami-hvm-*"
+  default     = "amzn2-ami-hvm-2.0.????????-x86_64-gp2"
 }
 
 variable "image_owner" {
@@ -51,28 +51,28 @@ EOF
 
 variable "instance_type" {
   description = "AWS instance type for bastion"
-  default     = "t3.nano"
+  default = "t3.nano"
 }
 
 variable "enabled" {
   description = "Start/stop the bastion host"
-  default     = "true"
+  default = "true"
 }
 
 variable "shutdown_delay" {
   description = "Number of minutes before the host will automatically shutdown"
-  default     = 60
+  default = 60
 }
 
-variable "fqdn" {
+variable "bastion_fqdn" {
   description = "Fully-qualified domain name for the record"
 }
 
 variable "record_ttl" {
   description = "The time to live (TTL) in seconds"
-  default     = "300"
+  default = "300"
 }
 
 locals {
-  hosted_zone = "${join(".", slice(split(".", var.fqdn), 1, length(split(".", var.fqdn))))}"
+  hosted_zone = join(".", slice(split(".", var.bastion_fqdn), 1, length(split(".", var.bastion_fqdn))))
 }
