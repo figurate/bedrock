@@ -14,8 +14,6 @@ WORKDIR /work
 USER bedrock
 
 ADD *.sh /bootstrap/
-ADD environment /bootstrap/environment
-ADD stack /bootstrap/stack
 
 ENTRYPOINT ["/bootstrap/terraform.sh"]
 
