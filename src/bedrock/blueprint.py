@@ -40,7 +40,8 @@ def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config)
     ]
 
     # Append optional environment variables..
-    for env_var in ['AWS_SESSION_TOKEN', 'TF_APPLY_ARGS', 'TF_DESTROY_ARGS', 'http_proxy', 'https_proxy', 'no_proxy']:
+    for env_var in ['AWS_SESSION_TOKEN', 'TF_APPLY_ARGS', 'TF_PLAN_ARGS', 'TF_DESTROY_ARGS',
+                    'http_proxy', 'https_proxy', 'no_proxy']:
         append_env(environment, env_var)
 
     # if config:
@@ -73,28 +74,33 @@ def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config)
 
     action_string = ' '.join([action] + action_args)
     container = client.containers.run(f"bedrock/{name}", action_string, privileged=True, network_mode='host',
-                          remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
+                                      remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
     logs = container.logs(stream=True)
     for log in logs:
         print(log.decode('utf-8'), end='')
 
 
-parser = argparse.ArgumentParser(description='Bedrock Blueprint Tool.')
-parser.add_argument('-t', '--tag', metavar='<blueprint_tag>',
-                    help='optional tag for blueprint instance (defaults to same as blueprint name)')
-parser.add_argument('-v', '--volumes', metavar='<path:volume>', nargs='+',
-                    help='additional volumes mounted to support blueprints')
-parser.add_argument('-c', '--config', metavar='<key=value>', nargs='+',
-                    help='additional configuration to support blueprints')
-parser.add_argument('blueprint', metavar='<blueprint_id>',
-                    help='name of the blueprint to apply')
-parser.add_argument('action', metavar='<command>',
-                    choices=['init', 'plan', 'apply', 'destroy', 'import', 'taint', 'output', 'export'],
-                    help='blueprint action (possible values: %(choices)s)', nargs='?', default='init')
-parser.add_argument('action_args', metavar='<action_args>',
-                    help='additional arguments for specific actions', nargs='*')
+def main():
+    parser = argparse.ArgumentParser(description='Bedrock Blueprint Tool.')
+    parser.add_argument('-t', '--tag', metavar='<blueprint_tag>',
+                        help='optional tag for blueprint instance (defaults to same as blueprint name)')
+    parser.add_argument('-v', '--volumes', metavar='<path:volume>', nargs='+',
+                        help='additional volumes mounted to support blueprints')
+    parser.add_argument('-c', '--config', metavar='<key=value>', nargs='+',
+                        help='additional configuration to support blueprints')
+    parser.add_argument('blueprint', metavar='<blueprint_id>',
+                        help='name of the blueprint to apply')
+    parser.add_argument('action', metavar='<command>',
+                        choices=['init', 'plan', 'apply', 'destroy', 'import', 'taint', 'output', 'export'],
+                        help='blueprint action (possible values: %(choices)s)', nargs='?', default='init')
+    parser.add_argument('action_args', metavar='<action_args>',
+                        help='additional arguments for specific actions', nargs='*')
 
-args = parser.parse_args()
-blueprint_key = args.tag if args.tag is not None else args.blueprint
+    args = parser.parse_args()
+    blueprint_key = args.tag if args.tag is not None else args.blueprint
 
-apply_blueprint(args.blueprint, blueprint_key, args.action, args.action_args, args.volumes, args.config)
+    apply_blueprint(args.blueprint, blueprint_key, args.action, args.action_args, args.volumes, args.config)
+
+
+if __name__ == "__main__":
+    main()
