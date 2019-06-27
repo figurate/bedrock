@@ -22,8 +22,10 @@ ENTRYPOINT ["/bootstrap/terraform.sh"]
 # aws cli help doesn't work with busybox less
 ENV PAGER="cat"
 
-ENV AWS_DEFAULT_REGION="ap-southeast-2"
-
+# Required environment variables..
+ENV AWS_DEFAULT_REGION=""
+ENV TF_VAR_region="$AWS_DEFAULT_REGION"
+ENV TF_VAR_assume_role_account=""
 ENV TF_BACKEND_KEY="__UNDEFINED__"
 
 CMD [""]
