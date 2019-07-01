@@ -40,7 +40,7 @@ def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config)
     ]
 
     # Append optional environment variables..
-    for env_var in ['AWS_SESSION_TOKEN', 'TF_APPLY_ARGS', 'TF_PLAN_ARGS', 'TF_DESTROY_ARGS',
+    for env_var in ['AWS_SESSION_TOKEN', 'TF_INIT_ARGS', 'TF_APPLY_ARGS', 'TF_PLAN_ARGS', 'TF_DESTROY_ARGS',
                     'http_proxy', 'https_proxy', 'no_proxy']:
         append_env(environment, env_var)
 
