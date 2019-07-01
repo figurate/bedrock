@@ -9,9 +9,10 @@ COPY requirements.txt /tmp
 RUN http_proxy=${HTTP_PROXY} apk add --update jq python py-pip bash groff \
     && https_proxy=${HTTP_PROXY} pip --no-cache-dir install -r /tmp/requirements.txt
 
-RUN adduser -S bedrock && mkdir /work /bootstrap && chown bedrock /work /bootstrap
+## Currently run as root to avoid complexity of synchronised UID/GID on the host system
+#RUN adduser -S bedrock && mkdir /work /bootstrap && chown bedrock /work /bootstrap
 WORKDIR /work
-USER bedrock
+#USER bedrock
 
 ADD *.sh /bootstrap/
 
