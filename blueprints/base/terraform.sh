@@ -14,7 +14,7 @@ function init() {
 
 # Show resources to be provisioned
 function plan() {
-	terraform plan /bootstrap
+	terraform plan $TF_PLAN_ARGS /bootstrap
 }
 
 # Provision resources
