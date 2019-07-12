@@ -42,7 +42,7 @@ Resources:
   EcsLoadBalancerSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Sub ${ClusterName}-AlbSG
+      GroupName: !Sub ${ClusterName}-alb
       GroupDescription: Security group for ECS load balancer
       VpcId: !Ref VpcId
       SecurityGroupIngress:
@@ -53,7 +53,7 @@ Resources:
           Description: Allow connections from within the VPC
       Tags:
         - Key: Name
-          Value: !Sub ${ClusterName}-AlbSG
+          Value: !Sub ${ClusterName}-alb
 
   EcsLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -88,6 +88,18 @@ Resources:
           TargetGroupArn: !Ref EcsLbTargetGroup
       LoadBalancerArn: !Ref EcsLoadBalancer
       Port: 443
+      Protocol: HTTPS
+
+  EcsLbTestListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Certificates:
+        - CertificateArn: !Ref CertificateArn
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref EcsLbTargetGroup
+      LoadBalancerArn: !Ref EcsLoadBalancer
+      Port: 8443
       Protocol: HTTPS
 
   EcsClusterRole:
