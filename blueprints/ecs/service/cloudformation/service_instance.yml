@@ -12,6 +12,10 @@ Parameters:
   Environment:
     Type: String
     Description: The name of the environment represented by the VPC
+  NetworkMode:
+    Description: Network configuration of service tasks
+    Default: bridge
+    AllowedValues: [none, bridge, awsvpc, host]
   ServiceDiscoveryNamespace:
     Type: String
     Description: The namespace to register service discovery endpoint
@@ -49,6 +53,7 @@ Resources:
     Properties:
       Family: !Join ['-', [!Ref Environment, !Ref ServiceName]]
       TaskRoleArn: !Ref ServiceTaskRole
+      NetworkMode: !Ref NetworkMode
       ContainerDefinitions:
         - Name: !Join ['-', !Split ['/', !Ref ServiceImage]]
           Cpu: !Ref CpuUnits
