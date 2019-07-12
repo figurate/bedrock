@@ -51,7 +51,7 @@ function export() {
 }
 
 # Generate terraform backend config
-sh /bootstrap/backend_tf.sh > /bootstrap/backend.tf
+sh /bootstrap/backend_tf.sh $TF_STATE_BUCKET > /bootstrap/backend.tf
 sh /bootstrap/backend_tfvars.sh $TF_BACKEND_KEY > backend.tfvars
 
 TF_ACTION=${1:-init}
