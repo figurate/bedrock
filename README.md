@@ -1,5 +1,7 @@
 # Bedrock - Building blocks for composable Cloud architectures 
 
+[principle of least privilege]: https://en.wikipedia.org/wiki/Principle_of_least_privilege
+
 [Docker]: https://docker.com
 [Terraform]: https://terraform.io
 [Cloudformation]: https://aws.amazon.com/cloudformation/
@@ -34,10 +36,24 @@
 
 ## Introduction
 
-Bedrock is a collection of blueprints for building public Cloud infrastructure
-using best-practice architectures and techniques. These blueprints are
-based on popular tools such as [Terraform] and [Cloudformation], and provide
-both an informative and practical approach to infrastructure provisioning.
+Bedrock is a collection of managed role-based policies and Terraform-based blueprints to assist with provisioning infrastructure and 
+services. When we design modern computing architectures it is important to consider security, reliability and efficiency as equally 
+important concerns. With public Cloud architectures in particular, security must be addressed throughout the entire architecture, and not
+just at the perimiter.
+
+Role-based access control (RBAC) allows us to restrict actors to the minimum required permissions, which is commonly referred to as the [principle of least privilege], and is the basis for the architectural blueprints provided by Bedrock. 
+
+### Terraform
+
+The Bedrock blueprints are based on popular tools such as [Terraform] and [Cloudformation], and provide both an informative and practical 
+approach to infrastructure provisioning. You are encouraged to explore and critique these blueprints as they should continue to evolve
+over time.
+
+## Features
+
+The purpose of Bedrock is not only to provide best-practice blueprints for modern architectures, but to explore and
+educate about the challenges, decisions and opinions behind the designs themselves. As such, Bedrock aims to avoid
+a "black box" approach and is designed to encourage hacking and examining the underlying code.
 
 ### Blueprint
 
@@ -51,11 +67,6 @@ Within each of these tiers are additional ancillary services such as route53 for
 
 A manifest also provides a higher-order language that can be used to unambiguously describe novel Cloud architectures that are composed of well-defined blueprints.
 
-## Features
-
-The purpose of Bedrock is not only to provide best-practice blueprints for modern architectures, but to explore and
-educate about the challenges, decisions and opinions behind the designs themselves. As such, Bedrock aims to avoid
-a "black box" approach and is designed to encourage hacking and examining the underlying code.
 
 ### Exploration
 
