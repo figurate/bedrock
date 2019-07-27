@@ -43,6 +43,11 @@ def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config)
     for env_var in ['AWS_SESSION_TOKEN', 'TF_STATE_BUCKET', 'TF_ARGS', 'http_proxy', 'https_proxy', 'no_proxy']:
         append_env(environment, env_var)
 
+    # Append openstack environment variables..
+    for env_var in ['OS_AUTH_URL', 'OS_TENANT_ID', 'OS_TENANT_NAME', 'OS_USERNAME', 'OS_PASSWORD', 'OS_REGION_NAME',
+                    'OS_ENDPOINT_TYPE', 'OS_IDENTITY_API_VERSION']:
+        append_env(environment, env_var)
+
     # if config:
     #     for item in config:
     #         if isinstance(config[item], list):
@@ -90,7 +95,7 @@ def main():
     parser.add_argument('blueprint', metavar='<blueprint_id>',
                         help='name of the blueprint to apply')
     parser.add_argument('action', metavar='<command>',
-                        choices=['init', 'plan', 'apply', 'destroy', 'import', 'taint', 'output', 'export'],
+                        choices=['init', 'plan', 'apply', 'destroy', 'import', 'taint', 'output', 'force-unlock', 'export'],
                         help='blueprint action (possible values: %(choices)s)', nargs='?', default='init')
     parser.add_argument('action_args', metavar='<action_args>',
                         help='additional arguments for specific actions', nargs='*')
