@@ -9,17 +9,17 @@ EOF
 
 # Initialise terraform provider, etc.
 function init() {
-	terraform init -backend-config backend.tfvars $TF_INIT_ARGS /bootstrap
+	terraform init -backend-config backend.tfvars $TF_ARGS /bootstrap
 }
 
 # Show resources to be provisioned
 function plan() {
-	terraform plan $TF_PLAN_ARGS /bootstrap
+	terraform plan $TF_ARGS /bootstrap
 }
 
 # Provision resources
 function apply() {
-	terraform apply $TF_APPLY_ARGS /bootstrap
+	terraform apply $TF_ARGS /bootstrap
 
 	# Additional commands to run after terraform apply
 	/bootstrap/post-apply.sh $@
@@ -27,22 +27,27 @@ function apply() {
 
 # Remove resources
 function destroy() {
-	terraform destroy $TF_DESTROY_ARGS /bootstrap
+	terraform destroy $TF_ARGS /bootstrap
 }
 
 # Import existing resources
 function import() {
-	terraform import -config=/bootstrap $@
+	terraform import -config=/bootstrap $TF_ARGS $@
 }
 
 # Taint existing state
 function taint() {
-	terraform taint $@
+	terraform taint $TF_ARGS $@
 }
 
 # Print outputs
 function output() {
-	terraform output
+	terraform output $TF_ARGS
+}
+
+# Unlock state
+function force-unlock() {
+	terraform force-unlock $TF_ARGS $@ /bootstrap
 }
 
 # export terraform scripts to current working directory
@@ -66,6 +71,7 @@ case "$TF_ACTION" in
 	import) 		import ${@:2};;
 	taint) 			taint ${@:2};;
 	output) 		output;;
+	force-unlock)   force-unlock ${@:2};;
 	export) 		export;;
 	*)				usage;;
 esac
