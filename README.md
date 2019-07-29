@@ -1,8 +1,12 @@
 # Bedrock - Building blocks for composable Cloud architectures 
 
+[principle of least privilege]: https://en.wikipedia.org/wiki/Principle_of_least_privilege
+
 [Docker]: https://docker.com
 [Terraform]: https://terraform.io
 [Cloudformation]: https://aws.amazon.com/cloudformation/
+[Terragrunt]: https://github.com/gruntwork-io/terragrunt
+[Astro]: https://github.com/uber/astro
 
 [Introduction]: #introduction
 
@@ -32,10 +36,24 @@
 
 ## Introduction
 
-Bedrock is a collection of blueprints for building public Cloud infrastructure
-using best-practice architectures and techniques. These blueprints are
-based on popular tools such as [Terraform] and [Cloudformation], and provide
-both an informative and practical approach to infrastructure provisioning.
+Bedrock is a collection of managed role-based policies and Terraform-based blueprints to assist with provisioning infrastructure and 
+services. When we design modern computing architectures it is important to consider security, reliability and efficiency as equally 
+important concerns. With public Cloud architectures in particular, security must be addressed throughout the entire architecture, and not
+just at the perimiter.
+
+Role-based access control (RBAC) allows us to restrict actors to the minimum required permissions, which is commonly referred to as the [principle of least privilege], and is the basis for the architectural blueprints provided by Bedrock. 
+
+### Terraform
+
+The Bedrock blueprints are based on popular tools such as [Terraform] and [Cloudformation], and provide both an informative and practical 
+approach to infrastructure provisioning. You are encouraged to explore and critique these blueprints as they should continue to evolve
+over time.
+
+## Features
+
+The purpose of Bedrock is not only to provide best-practice blueprints for modern architectures, but to explore and
+educate about the challenges, decisions and opinions behind the designs themselves. As such, Bedrock aims to avoid
+a "black box" approach and is designed to encourage hacking and examining the underlying code.
 
 ### Blueprint
 
@@ -49,11 +67,6 @@ Within each of these tiers are additional ancillary services such as route53 for
 
 A manifest also provides a higher-order language that can be used to unambiguously describe novel Cloud architectures that are composed of well-defined blueprints.
 
-## Features
-
-The purpose of Bedrock is not only to provide best-practice blueprints for modern architectures, but to explore and
-educate about the challenges, decisions and opinions behind the designs themselves. As such, Bedrock aims to avoid
-a "black box" approach and is designed to encourage hacking and examining the underlying code.
 
 ### Exploration
 
@@ -104,9 +117,37 @@ Using S3 Bucket notifications we can trigger a build by simply updating a bluepr
 very minimal effort approach to provisioning sophisticated and secure architectures whilst retaining the ability to
 maintain and evolve the designs.
 
+### Comparison with other tools
+
+#### Terragrunt
+
+[Terragrunt] provides a wrapper to Terraform that enforces consistency and reduces code duplication across multiple modules. Whilst Bedrock offers similar module grouping via the manifest file, it does not impose constraints on the code in each module, nor does it hide the underlying Terraform code.
+
+#### Astro
+
+[Astro] offers dependency mapping between Terraform modules and concurrent execution. Bedrock provides rudimentary dependency mapping (via sequential execution of the manifest), it doesn't yet support concurrent execution.
 
 ## Getting started
 
+The prerequisites for running the examples below are as follows:
+
+### Environment variables
+
+Ensure you have set the following environment variables:
+
+	AWS_ACCESS_KEY_ID = <your AWS access key>
+	AWS_SECRET_ACCESS_KEY = <your AWS secret key>
+	AWS_DEFAULT_REGION = <your AWS region>
+
+### Build Docker images
+
+	$ cd blueprints && make all
+	
+### Initial manifests
+
+The following manifests are required to configure appropriate IAM roles/permissions
+
+	$ bin/bedrock.py -m manifests/iam.yml init && bin/bedrock.py -m manifests/iam.yml apply
 
 ### Examples
 
