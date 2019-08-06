@@ -22,7 +22,7 @@ function apply() {
 	terraform apply $TF_ARGS /bootstrap
 
 	# Additional commands to run after terraform apply
-	/bootstrap/post-apply.sh $@
+	/bootstrap/post-apply.sh "$@"
 }
 
 # Remove resources
@@ -32,12 +32,12 @@ function destroy() {
 
 # Import existing resources
 function import() {
-	terraform import -config=/bootstrap $TF_ARGS $@
+	terraform import -config=/bootstrap $TF_ARGS "$@"
 }
 
 # Taint existing state
 function taint() {
-	terraform taint $TF_ARGS $@
+	terraform taint $TF_ARGS "$@"
 }
 
 # Print outputs
@@ -47,7 +47,7 @@ function output() {
 
 # Unlock state
 function force-unlock() {
-	terraform force-unlock $TF_ARGS $@ /bootstrap
+	terraform force-unlock $TF_ARGS "$@" /bootstrap
 }
 
 # export terraform scripts to current working directory
@@ -62,16 +62,17 @@ sh /bootstrap/backend_tfvars.sh $TF_BACKEND_KEY > backend.tfvars
 TF_ACTION=${1:-init}
 
 TF_VAR_assume_role_account=$(aws sts get-caller-identity | jq -r '.Account')
+export TF_VAR_assume_role_account
 
 case "$TF_ACTION" in
-	init) 			init;;
-	plan) 			plan;;
-	apply) 			apply;;
-	destroy) 		destroy;;
-	import) 		import ${@:2};;
-	taint) 			taint ${@:2};;
-	output) 		output;;
-	force-unlock)   force-unlock ${@:2};;
-	export) 		export;;
-	*)				usage;;
+	init) 			    init;;
+	plan) 			    plan;;
+	apply) 			    apply "${@:2}";;
+	destroy) 		    destroy;;
+	import) 		    import "${@:2}";;
+	taint) 			    taint "${@:2}";;
+	output) 		    output;;
+	force-unlock)   force-unlock "${@:2}";;
+	export) 		    export;;
+	*)				      usage;;
 esac
