@@ -48,6 +48,10 @@ def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config)
                     'OS_ENDPOINT_TYPE', 'OS_IDENTITY_API_VERSION']:
         append_env(environment, env_var)
 
+    # Append digitalocean environment variables..
+    for env_var in ['DIGITALOCEAN_TOKEN', 'SPACES_ACCESS_KEY_ID', 'SPACES_SECRET_ACCESS_KEY']:
+        append_env(environment, env_var)
+
     # if config:
     #     for item in config:
     #         if isinstance(config[item], list):
