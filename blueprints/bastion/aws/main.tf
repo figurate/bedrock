@@ -109,6 +109,5 @@ resource "aws_route53_record" "bastion" {
   name    = var.bastion_fqdn
   type    = "CNAME"
   ttl     = var.record_ttl
-  records = [
-  aws_instance.bastion[0].public_dns]
+  records = [aws_instance.bastion[0].public_dns]
 }

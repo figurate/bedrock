@@ -3,6 +3,10 @@ variable "userdata_path" {
   default     = "userdata"
 }
 
+variable "do_region" {
+  description = "Digital Ocean region"
+}
+
 variable "bastion_user" {
   description = "Username for bastion SSH user"
 }
@@ -33,11 +37,23 @@ EOF
 
 variable "enabled" {
   description = "Start/stop the bastion host"
+  default = "true"
+}
+
+variable "upstream_tags" {
+  type = "list"
+  description = "A list of firewall tags to route upstream traffic"
+  default = ["reverseproxy"]
+}
+
+variable "apex_domain" {
+  description = "Root domain for private DNS records"
+  default = "service.internal"
 }
 
 variable "shutdown_delay" {
   description = "Number of minutes before the host will automatically shutdown"
-  default     = 60
+  default = 60
 }
 
 locals {

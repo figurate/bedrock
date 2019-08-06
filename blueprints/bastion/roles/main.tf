@@ -17,8 +17,11 @@ data "aws_iam_policy_document" "assume_role_policy" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-      type        = "AWS"
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/bedrock-iam-admin"
+      ]
+      type = "AWS"
     }
   }
 }

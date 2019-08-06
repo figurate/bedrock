@@ -1,4 +1,4 @@
-FROM bedrock/base
+FROM bedrock/blueprint-base
 
 ADD export.sh /bootstrap/
 
