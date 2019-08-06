@@ -64,6 +64,10 @@ def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
                     'OS_ENDPOINT_TYPE', 'OS_IDENTITY_API_VERSION']:
         append_env(environment, env_var)
 
+    # Append digitalocean environment variables..
+    for env_var in ['DIGITALOCEAN_TOKEN', 'SPACES_ACCESS_KEY_ID', 'SPACES_SECRET_ACCESS_KEY']:
+        append_env(environment, env_var)
+
     if config:
         for item in config:
             if isinstance(config[item], list):
@@ -120,13 +124,11 @@ def main():
     manifest = parse_manifest(args.manifest)
     constellations = manifest['constellations']
 
-    if args.action == 'destroy':
+    if len(constellations) > 1 and args.action == 'destroy':
         # destroy in reverse order..
         constellations = constellations[::-1]
 
     for constellation in constellations:
-        constellation_key = None
-        blueprints = None
         if 'keyvars' in manifest['constellations'][constellation]:
             constellation_key = resolve_key(manifest['constellations'][constellation]['keyvars'],
                                             args.config, constellation)
@@ -136,7 +138,7 @@ def main():
             constellation_key = constellation
             blueprints = manifest['constellations'][constellation]
 
-        if args.action == 'destroy':
+        if len(blueprints) > 1 and args.action == 'destroy':
             # destroy in reverse order..
             blueprints = blueprints[::-1]
 
