@@ -52,6 +52,10 @@ def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config)
     for env_var in ['DIGITALOCEAN_TOKEN', 'SPACES_ACCESS_KEY_ID', 'SPACES_SECRET_ACCESS_KEY']:
         append_env(environment, env_var)
 
+    # Append rancher environment variables..
+    for env_var in ['RANCHER_URL', 'RANCHER_ACCESS_KEY', 'RANCHER_SECRET_KEY']:
+        append_env(environment, env_var)
+
     # if config:
     #     for item in config:
     #         if isinstance(config[item], list):
@@ -81,11 +85,16 @@ def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config)
             }
 
     action_string = ' '.join([action] + action_args)
-    container = client.containers.run(f"bedrock/{name}", action_string, privileged=True, network_mode='host',
-                                      remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
-    logs = container.logs(stream=True)
-    for log in logs:
-        print(log.decode('utf-8'), end='')
+
+    try:
+        container = client.containers.run(f"bedrock/{name}", action_string, privileged=True, network_mode='host',
+                                          remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
+        logs = container.logs(stream=True)
+        for log in logs:
+            print(log.decode('utf-8'), end='')
+    except KeyboardInterrupt:
+        print(f"Aborting {name}..")
+        container.stop()
 
 
 def main():

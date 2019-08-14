@@ -31,10 +31,28 @@ def parse_manifest(file):
     return yaml.load(file, Loader=Loader)
 
 
+def merge_config(manifest_vars, cli_config):
+    configvars = {}
+
+    if cli_config is not None:
+        for cnf in cli_config:
+            cargs = cnf.split('=')
+            configvars[cargs[0]] = cargs[1]
+
+    for var in manifest_vars:
+        if var not in configvars:
+            if 'default' in manifest_vars[var]:
+                configvars[var] = manifest_vars[var]['default']
+            else:
+                raise ValueError(f'Missing value for mandatory variable: {var}')
+                
+    return configvars
+
+
 def resolve_key(parts, varlist, default_key):
     varmap = dict(map(lambda var: var.split('='), varlist))
     keyparts = [key for key in (map(lambda part: varmap[part] if part in varmap else None, parts) if parts else None) if key is not None]
-    return f'{"-".join(keyparts)}' if keyparts else default_key
+    return f'{"-".join(keyparts + [default_key])}' if keyparts else default_key
 
 
 def append_env(environment, env_var):
@@ -68,6 +86,10 @@ def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
     for env_var in ['DIGITALOCEAN_TOKEN', 'SPACES_ACCESS_KEY_ID', 'SPACES_SECRET_ACCESS_KEY']:
         append_env(environment, env_var)
 
+    # Append rancher environment variables..
+    for env_var in ['RANCHER_URL', 'RANCHER_ACCESS_KEY', 'RANCHER_SECRET_KEY']:
+        append_env(environment, env_var)
+
     if config:
         for item in config:
             if isinstance(config[item], list):
@@ -76,10 +98,12 @@ def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
             else:
                 environment.append(f'TF_VAR_{item}={config[item]}')
 
+    print(extra_config)
+
     if extra_config:
-        for cnf in extra_config:
-            cargs = cnf.split('=')
-            environment.append(f'TF_VAR_{cargs[0]}={cargs[1]}')
+        # environment.extend(map(lambda conf, value: f'TF_VAR_{conf}={value}', extra_config))
+        for config, value in extra_config.items():
+            environment.append(f'TF_VAR_{config}={value}')
 
     volumes = {
         expanduser(f'~/.bedrock/{name}/{key}'): {
@@ -96,11 +120,15 @@ def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
                 'mode': 'ro'
             }
 
-    container = client.containers.run(f"bedrock/{name}", action, privileged=True, network_mode='host',
-                          remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
-    logs = container.logs(stream=True)
-    for log in logs:
-        print(log.decode('utf-8'), end='')
+    try:
+        container = client.containers.run(f"bedrock/{name}", action, privileged=True, network_mode='host',
+                              remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
+        logs = container.logs(stream=True)
+        for log in logs:
+            print(log.decode('utf-8'), end='')
+    except KeyboardInterrupt:
+        print(f"Aborting {name}..")
+        container.stop()
 
 
 def apply_blueprints(tf_key, blueprints, action, volumes, config):
@@ -122,6 +150,9 @@ def main():
     args = parser.parse_args()
 
     manifest = parse_manifest(args.manifest)
+
+    varmap = merge_config(manifest['vars'], args.config)
+
     constellations = manifest['constellations']
 
     if len(constellations) > 1 and args.action == 'destroy':
@@ -138,11 +169,12 @@ def main():
             constellation_key = constellation
             blueprints = manifest['constellations'][constellation]
 
+        print(f'conskey={constellation_key}')
         if len(blueprints) > 1 and args.action == 'destroy':
             # destroy in reverse order..
             blueprints = blueprints[::-1]
 
-        apply_blueprints(constellation_key, blueprints, args.action, args.volumes, args.config)
+        apply_blueprints(constellation_key, blueprints, args.action, args.volumes, varmap)
 
 
 if __name__ == "__main__":
