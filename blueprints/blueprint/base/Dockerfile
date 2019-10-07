@@ -27,4 +27,7 @@ ENV TF_VAR_region="$AWS_DEFAULT_REGION"
 ENV TF_VAR_assume_role_account=""
 ENV TF_BACKEND_KEY="__UNDEFINED__"
 
+ENV TF_INPUT=0
+ENV TF_IN_AUTOMATION="true"
+
 CMD [""]

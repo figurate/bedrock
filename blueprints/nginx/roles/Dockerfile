@@ -1,3 +1,3 @@
-FROM bedrock/base
+FROM bedrock/blueprint-base
 
 ADD *.tf /bootstrap/
