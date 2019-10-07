@@ -1,0 +1,84 @@
+#cloud-config
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - gnupg-agent
+  - software-properties-common
+  - unattended-upgrades
+  - curl
+  - ntpdate
+  - zip
+  - openjdk-11-jdk
+
+timezone: Australia/Melbourne
+
+ntp:
+  enabled: true
+  servers:
+    - 0.au.pool.ntp.org
+    - 1.au.pool.ntp.org
+    - 2.au.pool.ntp.org
+    - 3.au.pool.ntp.org
+
+groups:
+  - pki
+
+users:
+  - name: ${AuthorizedUserName}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ${AuthorizedUserSSHKey}
+  - name: orientdb
+    groups: pki
+    homedir: /var/lib/orientdb
+    shell: /bin/nologin
+#    system: true
+
+write_files:
+  - path: /etc/update-motd.d/99-unauthorised-access
+    permissions: 0755
+    content: |
+      echo 'UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED
+
+      You must have explicit, authorized permission to access or configure this device. Unauthorized attempts and
+      actions to access or use this system may result in civil and/or criminal penalties. All activities performed on
+      this device are logged and monitored.'
+  - path: /etc/systemd/system/orientdb.service
+    content: |
+      [Unit]
+      Description=OrientDB Server
+      Documentation=https://orientdb.org/docs/
+      After=network.target
+      After=syslog.target
+
+      [Install]
+      WantedBy=multi-user.target
+
+      [Service]
+      User=orientdb
+      Group=orientdb
+      Environment='ORIENTDB_OPTS_MEMORY="-Xms512M -Xmx768M"'
+      ExecStart=/opt/orientdb/bin/server.sh
+      ExecReload=/usr/local/bin/kill --signal HUP $MAINPID
+      KillSignal=SIGINT
+
+runcmd:
+  # SSH
+  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - restart ssh
+  # OrientDB
+  - curl -O https://s3.us-east-2.amazonaws.com/orientdb3/releases/${OrientDBVersion}/orientdb-${OrientDBVersion}.tar.gz
+  - tar zxvf orientdb-*.tar.gz
+  - mv orientdb-${OrientDBVersion} /opt/orientdb && chown -R orientdb:orientdb /opt/orientdb
+  - chmod 640 /opt/orientdb/config /opt/orientdb/config/orientdb-server-config.xml
+  - chown orientdb:orientdb ${OrientDBBackupDir} && ln -s ${OrientDBBackupDir} /opt/orientdb/backup
+  - systemctl start orientdb && systemctl enable orientdb
+  # Papertrail
+  - "wget --header='X-Papertrail-Token: QHS89ESNb9Q0OGPK9Hu2' https://papertrailapp.com/destinations/2465304/setup.sh"
+  - bash setup.sh
+  - curl -O https://github.com/papertrail/remote_syslog2/releases/download/v0.20/remote-syslog2_0.20_amd64.deb
+  - dpkg --install remote-syslog2_0.20_amd64.deb
+  - remote_syslog
