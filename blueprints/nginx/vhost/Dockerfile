@@ -1,4 +1,6 @@
-FROM bedrock/base
+FROM bedrock/blueprint-base
+
+ADD export.sh /bootstrap/
 
 ADD *.tf /bootstrap/
 ADD templates /bootstrap/templates
