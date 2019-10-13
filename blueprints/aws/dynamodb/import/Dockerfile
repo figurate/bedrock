@@ -1,4 +1,4 @@
-FROM bedrock/base
+FROM bedrock/blueprint-base
 
 ADD *.tf /bootstrap/
 ADD lambda /bootstrap/lambda
