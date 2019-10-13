@@ -20,44 +20,44 @@ data "aws_s3_bucket" "blueprints" {
 }
 
 resource "aws_codebuild_project" "blueprint" {
-  name          = "blueprint"
-  description   = "Provision infrastructure with bedrock blueprint"
-  build_timeout = "${var.build_timeout}"
-  service_role  = "${data.aws_iam_role.codebuild.arn}"
+  name           = "blueprint"
+  description    = "Provision infrastructure with bedrock blueprint"
+  build_timeout  = "${var.build_timeout}"
+  service_role   = "${data.aws_iam_role.codebuild.arn}"
   encryption_key = "${aws_kms_key.build_params.id}"
   source {
-    type     = "NO_SOURCE"
+    type      = "NO_SOURCE"
     buildspec = "${var.buildspec}"
   }
   secondary_sources {
-    type = "S3"
+    type              = "S3"
     source_identifier = "package"
-    location = "${data.aws_s3_bucket.blueprints.bucket}/package.zip"
+    location          = "${data.aws_s3_bucket.blueprints.bucket}/package.zip"
   }
   artifacts {
     type = "NO_ARTIFACTS"
   }
   environment {
-    compute_type = "BUILD_GENERAL1_SMALL"
-    image        = "${var.codebuild_image}"
-    type         = "LINUX_CONTAINER"
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "${var.codebuild_image}"
+    type            = "LINUX_CONTAINER"
     privileged_mode = true
     environment_variable {
-      name = "AWS_DEFAULT_REGION"
+      name  = "AWS_DEFAULT_REGION"
       value = "${var.region}"
     }
     environment_variable {
-      name = "AWS_ACCESS_KEY_ID"
+      name  = "AWS_ACCESS_KEY_ID"
       value = "${aws_ssm_parameter.aws_access_key.name}"
-      type = "PARAMETER_STORE"
+      type  = "PARAMETER_STORE"
     }
     environment_variable {
-      name = "AWS_SECRET_ACCESS_KEY"
+      name  = "AWS_SECRET_ACCESS_KEY"
       value = "${aws_ssm_parameter.aws_secret_key.name}"
-      type = "PARAMETER_STORE"
+      type  = "PARAMETER_STORE"
     }
   }
   tags {
-    "Environment" = "Test"
+    Environment = "Test"
   }
 }

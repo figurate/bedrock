@@ -3,6 +3,10 @@ variable "codebuild_image" {
   default = "aws/codebuild/docker:17.09.0"
 }
 
+variable "region" {
+  description = "AWS default region"
+}
+
 //variable "build_type" {
 //  description = "Indicates the buildspec to use for the build job"
 //  default = "blueprint"
@@ -31,7 +35,7 @@ phases:
     commands:
       - docker run --privileged -it --rm \
   --mount type=bind,source="$(pwd)",target=/work \
-  -e TF_BACKEND_KEY=$BLUEPRINT/\${TF_BACKEND_KEY:-$(basename $PWD)} \
+  -e TF_BACKEND_KEY="$BLUEPRINT/\${TF_BACKEND_KEY:-$(basename $PWD)}" \
   -e TF_APPLY_ARGS="\${TF_APPLY_ARGS}" \
   -e AWS_PROFILE=\${AWS_PROFILE-iamadmin} \
   -e TF_VAR_region=\${AWS_DEFAULT_REGION} \
