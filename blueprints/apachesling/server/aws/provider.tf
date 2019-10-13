@@ -1,13 +1,8 @@
 provider "aws" {
-  region = "${var.region}"
-
+  version = ">= 2.7.0"
   assume_role {
     role_arn = "arn:aws:iam::${var.assume_role_account}:role/bedrock-apachesling-admin"
   }
-}
-
-variable "region" {
-  description = "AWS default region"
 }
 
 variable "assume_role_account" {
