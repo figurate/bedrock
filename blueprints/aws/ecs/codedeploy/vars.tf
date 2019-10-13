@@ -7,6 +7,10 @@ variable environment {
   description = "Environment categorisation used in the naming of the ECS cluster"
 }
 
+variable "region" {
+  description = "AWS default region"
+}
+
 variable context {
   description = "Contextual categorisation used in the naming of the ECS cluster"
   default     = ""
