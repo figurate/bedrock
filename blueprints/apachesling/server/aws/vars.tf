@@ -3,9 +3,9 @@ variable "cloudformation_path" {
   default     = "cloudformation"
 }
 
-variable "userdata_path" {
+variable "template_path" {
   description = "The root path to userdata templates"
-  default     = "userdata"
+  default     = "templates"
 }
 
 variable "environment" {
@@ -29,7 +29,7 @@ variable "vpc_tags" {
 
 variable "image_name" {
   description = "AWS image for Sling instance"
-  default     = "amzn2-ami-hvm-*"
+  default     = "amzn2-ami-hvm-2.0.????????-x86_64-gp2"
 }
 
 variable "image_owner" {
@@ -50,26 +50,26 @@ EOF
 
 variable "instance_type" {
   description = "AWS instance type for Sling"
-  default     = "t3.micro"
+  default = "t3.micro"
 }
 
 variable "sling_version" {
   description = "The major release version of Apache Sling to use"
-  default     = "10"
+  default = "10"
 }
 
-variable "sling_user" {
+variable "ssh_user" {
   description = "Username for Sling SSH user"
 }
 
 variable "ssh_key" {
   description = "Public key file for SSH access to host"
-  default     = ""
+  default = ""
 }
 
 variable "ssh_key_file" {
   description = "Location of public key file for SSH access to host"
-  default     = "~/.ssh/id_rsa.pub"
+  default = "~/.ssh/id_rsa.pub"
 }
 
 variable "hosted_zone" {

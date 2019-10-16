@@ -1,12 +1,12 @@
 resource "null_resource" "vhost" {
 
-  count = "${replace(replace(var.ssl_enabled, "/false/", 1), "/true/", 0)}"
+  count = replace(replace(var.ssl_enabled, "/false/", 1), "/true/", 0)
 
   triggers {
-    host = "${var.reverseproxy_host}"
-    targets = "${join(",", var.target_hosts)}"
-    port = "${var.target_port}"
-    ssl_enabled = "${var.ssl_enabled}"
+    host        = var.nginx_host
+    targets     = join(",", var.target_hosts)
+    port        = var.target_port
+    ssl_enabled = var.ssl_enabled
   }
 
   provisioner "file" {
@@ -33,11 +33,11 @@ EOF
     destination = "/etc/nginx/sites-available/${var.hostname}"
 
     connection {
-      type     = "ssh"
-      user     = "root"
-      host = "${var.reverseproxy_host}"
-      private_key = "${file(var.ssh_private_key)}"
-      bastion_host = "${var.bastion_host}"
+      type = "ssh"
+      user = "root"
+      host = var.nginx_host
+      private_key = file(var.ssh_private_key)
+      bastion_fqdn = var.bastion_fqdn
     }
   }
 
@@ -49,11 +49,11 @@ EOF
     ]
 
     connection {
-      type     = "ssh"
-      user     = "root"
-      host = "${var.reverseproxy_host}"
-      private_key = "${file(var.ssh_private_key)}"
-      bastion_host = "${var.bastion_host}"
+      type = "ssh"
+      user = "root"
+      host = var.nginx_host
+      private_key = file(var.ssh_private_key)
+      bastion_fqdn = var.bastion_fqdn
     }
   }
 }
