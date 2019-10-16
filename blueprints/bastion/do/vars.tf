@@ -1,13 +1,13 @@
-variable "userdata_path" {
-  description = "The root path to userdata templates"
-  default     = "userdata"
+variable "template_path" {
+  description = "The root path to templates"
+  default     = "templates"
 }
 
 variable "do_region" {
   description = "Digital Ocean region"
 }
 
-variable "bastion_user" {
+variable "ssh_user" {
   description = "Username for bastion SSH user"
 }
 
@@ -20,8 +20,8 @@ variable "ssh_private_key" {
   default     = "~/.ssh/id_rsa"
 }
 
-variable "bastion_image" {
-  description = "Digital Ocean image for bastion droplet"
+variable "droplet_image" {
+  description = "Digital Ocean image for droplet"
   default     = "ubuntu-18-04-x64"
 }
 
@@ -38,6 +38,12 @@ EOF
 variable "enabled" {
   description = "Start/stop the bastion host"
   default = "true"
+}
+
+variable "floatingip_addresses" {
+  type = "list"
+  description = "Floating IP addresses to associate with the droplets (count must not exceed number of instances)"
+  default = []
 }
 
 variable "upstream_tags" {
