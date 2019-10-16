@@ -1,22 +1,22 @@
 variable "cloudformation_path" {
   description = "The root path to cloudformation templates"
-  default = "cloudformation"
+  default     = "cloudformation"
 }
 
-variable "userdata_path" {
+variable "template_path" {
   description = "The root path to userdata templates"
-  default = "userdata"
+  default     = "templates"
 }
 
 variable "vpc_default" {
   description = "Boolean value to indicate whether the matched VPC should be default for the region"
-  default = "true"
+  default     = "true"
 }
 
 variable "vpc_tags" {
-  type = "list"
-  description = "A list of tags to match on the VPC lookup"
-  default = []
+  type        = "map"
+  description = "A map of tags to match on the VPC lookup"
+  default     = {}
 }
 
 variable "environment" {
@@ -29,15 +29,15 @@ variable "environment" {
 
 variable "image_name" {
   description = "AWS image for autoscaling launch configuration"
-  default = "amzn2-ami-hvm-*"
-//  default = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+  default     = "amzn2-ami-hvm-2.0.????????-x86_64-gp2"
+  //  default = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
 }
 
 variable "image_owner" {
   description = "AMI image owner (leave blank for current account)"
-  default = "137112412989"
+  default     = "137112412989"
   // Canonical
-//  default = "679593333241"
+  //  default = "679593333241"
 }
 
 variable "image_os" {
@@ -59,7 +59,7 @@ variable "amplify_key" {
   description = "API key for nginx amplify"
 }
 
-variable "reverseproxy_user" {
+variable "ssh_user" {
   description = "Username for reverseproxy SSH user"
 }
 

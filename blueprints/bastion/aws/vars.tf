@@ -1,41 +1,41 @@
-variable "userdata_path" {
+variable "template_path" {
   description = "The root path to userdata templates"
-  default = "userdata"
+  default     = "templates"
 }
 
 variable "vpc_default" {
   description = "Boolean value to indicate whether the matched VPC should be default for the region"
-  default = "true"
+  default     = "true"
 }
 
 variable "vpc_tags" {
-  type = "list"
-  description = "A list of tags to match on the VPC lookup"
-  default = []
+  type        = "map"
+  description = "A map of tags to match on the VPC lookup"
+  default     = {}
 }
 
-variable "bastion_user" {
+variable "ssh_user" {
   description = "Username for bastion SSH user"
 }
 
 variable "ssh_key" {
   description = "Public key file for SSH access to host"
-  default = ""
+  default     = ""
 }
 
 variable "ssh_key_file" {
   description = "Location of public key file for SSH access to droplets"
-  default = "~/.ssh/id_rsa.pub"
+  default     = "~/.ssh/id_rsa.pub"
 }
 
 variable "image_name" {
   description = "AWS image for bastion instance"
-  default = "amzn2-ami-hvm-*"
+  default     = "amzn2-ami-hvm-2.0.????????-x86_64-gp2"
 }
 
 variable "image_owner" {
   description = "AMI image owner (leave blank for current account)"
-  default = "137112412989"
+  default     = "137112412989"
 }
 
 variable "image_os" {
@@ -45,6 +45,7 @@ The operating system installed on the selected AMI. Valid values are:
   * al2     = Amazon Linux 2
   * ubuntu  = Ubuntu
 EOF
+
   default = "al2"
 }
 
@@ -63,7 +64,7 @@ variable "shutdown_delay" {
   default = 60
 }
 
-variable "fqdn" {
+variable "bastion_fqdn" {
   description = "Fully-qualified domain name for the record"
 }
 
@@ -73,5 +74,5 @@ variable "record_ttl" {
 }
 
 locals {
-  hosted_zone = "${join(".", slice(split(".", var.fqdn), 1, length(split(".", var.fqdn))))}"
+  hosted_zone = join(".", slice(split(".", var.bastion_fqdn), 1, length(split(".", var.bastion_fqdn))))
 }

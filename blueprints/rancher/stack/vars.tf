@@ -4,11 +4,12 @@
 
 variable "ssh_private_key" {
   description = "Location of private key file for SSH access to droplets"
-  default = "~/.ssh/id_rsa"
+  default     = "~/.ssh/id_rsa"
 }
 
 variable "enabled" {
   description = "Start/stop the rancher stack"
+  default     = "true"
 }
 
 variable "environment" {
@@ -23,37 +24,37 @@ variable "hostname" {
   description = "Hostname to configure in virtual host"
 }
 
-variable "reverseproxy_host" {
+variable "nginx_host" {
   description = "Host to install vhost configuration"
 }
 
-variable "bastion_host" {
+variable "bastion_fqdn" {
   description = "Bastion host used to access reverse proxy"
 }
 
 variable "target_hosts" {
-  type = "list"
+  type        = "list"
   description = "List of target hosts for vhost configuration"
 }
 
 variable "target_port" {
   description = "Target port for vhost configuration"
-  default = "8080"
+  default     = "8080"
 }
 
 variable "catalog_id" {
   description = "ID of predefined stack in Rancher catalog"
-  default = ""
+  default     = ""
 }
 
 variable "docker_compose" {
   description = "Location of docker-compose file"
-  default = "docker-compose.yml"
+  default     = "docker-compose.yml"
 }
 
 variable "rancher_compose" {
   description = "Location of rancher-compose file"
-  default = "rancher-compose.yml"
+  default     = "rancher-compose.yml"
 }
 
 variable "ssl_enabled" {

@@ -1,2 +1,2 @@
-PyYAML
-docker
+PyYAML>=5.1
+docker>=3.7.2

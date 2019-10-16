@@ -6,7 +6,7 @@
 resource "null_resource" "target_host" {
 
   triggers {
-    target = "${var.target_host}"
+    target = var.target_host
   }
 
   provisioner "remote-exec" {
@@ -18,12 +18,12 @@ resource "null_resource" "target_host" {
     ]
 
     connection {
-      type     = "ssh"
-      user     = "root"
-      host = "${var.target_host}"
-      private_key = "${file(var.ssh_private_key)}"
-      bastion_host = "${var.bastion_host}"
-      bastion_private_key = "${file(var.bastion_private_key)}"
+      type                = "ssh"
+      user                = "root"
+      host                = var.target_host
+      private_key         = file(var.ssh_private_key)
+      bastion_fqdn        = var.bastion_fqdn
+      bastion_private_key = file(var.bastion_private_key)
     }
   }
 }
