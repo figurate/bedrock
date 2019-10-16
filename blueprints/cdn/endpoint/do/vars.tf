@@ -20,3 +20,8 @@ variable "record_ttl" {
   description = "The time to live (TTL) in seconds"
   default     = "900"
 }
+
+locals {
+  record_name = split(".", var.fqdn)[0]
+  apex_domain = join(".", slice(split(".", var.fqdn), 1, length(split(".", var.fqdn))))
+}
