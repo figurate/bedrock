@@ -11,7 +11,9 @@ e.g.
 * manifest destroy # use file "manifest.yml" in current directory
 """
 import argparse
+import json
 import os
+from datetime import datetime
 from os.path import expanduser
 
 import docker
@@ -21,6 +23,12 @@ try:
     from yaml import CLoader as Loader
 except ImportError:
     from yaml import Loader
+
+
+result = {
+    'timestamp': datetime.now().strftime('%Y-%m-%dT%H%M%S'),
+    'constellations': []
+}
 
 
 def init_path(path):
@@ -39,12 +47,13 @@ def merge_config(manifest_vars, cli_config):
             cargs = cnf.split('=')
             configvars[cargs[0]] = cargs[1]
 
-    for var in manifest_vars:
-        if var not in configvars:
-            if 'default' in manifest_vars[var]:
-                configvars[var] = manifest_vars[var]['default']
-            else:
-                raise ValueError(f'Missing value for mandatory variable: {var}')
+    if manifest_vars is not None:
+        for var in manifest_vars:
+            if var not in configvars:
+                if 'default' in manifest_vars[var]:
+                    configvars[var] = manifest_vars[var]['default']
+                else:
+                    raise ValueError(f'Missing value for mandatory variable: {var}')
                 
     return configvars
 
@@ -60,8 +69,9 @@ def append_env(environment, env_var):
         environment.append(f'{env_var}={os.environ[env_var]}')
 
 
-def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
+def apply_blueprint(name, key, config, action, extra_volumes, extra_config, dry_run, quiet):
     print(f'Apply blueprint: {name}/{key} [{action}]')
+    blueprint_result = {'name': name}
 
     init_path(f'{name}/{key}')
 
@@ -98,8 +108,6 @@ def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
             else:
                 environment.append(f'TF_VAR_{item}={config[item]}')
 
-    print(extra_config)
-
     if extra_config:
         # environment.extend(map(lambda conf, value: f'TF_VAR_{conf}={value}', extra_config))
         for config, value in extra_config.items():
@@ -120,20 +128,31 @@ def apply_blueprint(name, key, config, action, extra_volumes, extra_config):
                 'mode': 'ro'
             }
 
-    try:
-        container = client.containers.run(f"bedrock/{name}", action, privileged=True, network_mode='host',
-                              remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
-        logs = container.logs(stream=True)
-        for log in logs:
-            print(log.decode('utf-8'), end='')
-    except KeyboardInterrupt:
-        print(f"Aborting {name}..")
-        container.stop()
+    if not dry_run:
+        try:
+            container = client.containers.run(f"bedrock/{name}", action, privileged=True, network_mode='host',
+                                  remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
+            if not quiet:
+                logs = container.logs(stream=True)
+                for log in logs:
+                    print(log.decode('utf-8'), end='')
+        except KeyboardInterrupt:
+            print(f"Aborting {name}..")
+            if container is not None:
+                container.stop()
+
+        blueprint_result['executionResult'] = container.wait()
+
+    return blueprint_result
 
 
-def apply_blueprints(tf_key, blueprints, action, volumes, config):
+def apply_blueprints(tf_key, blueprints, action, volumes, config, dry_run=False, quiet=False):
+    blueprints_result = []
     for blueprint in blueprints:
-        apply_blueprint(blueprint, tf_key, blueprints[blueprint], action, volumes, config)
+        blueprints_result.append(apply_blueprint(blueprint, tf_key, blueprints[blueprint], action, volumes, config,
+                                                 dry_run, quiet))
+
+    return blueprints_result
 
 
 def main():
@@ -144,14 +163,20 @@ def main():
                         help='additional volumes mounted to support blueprints')
     parser.add_argument('-c', '--config', metavar='<key=value>', nargs='+',
                         help='additional configuration to support blueprints')
-    parser.add_argument('action', metavar='<command>', choices=['init', 'apply', 'plan', 'destroy'],
+    parser.add_argument('--dryrun', action='store_true', help='simulate execution without making any changes')
+    parser.add_argument('-q', '--quiet', action='store_true', help='suppress execution output to stdout')
+    parser.add_argument('action', metavar='<command>', choices=['version', 'init', 'workspace', 'apply', 'plan', 'destroy'],
                         help='manifest action (possible values: %(choices)s)', nargs='?', default='init')
 
     args = parser.parse_args()
 
     manifest = parse_manifest(args.manifest)
 
-    varmap = merge_config(manifest['vars'], args.config)
+    varmap = merge_config(manifest['vars'] if 'vars' in manifest else None, args.config)
+
+    result['manifest'] = args.manifest.name
+    result['action'] = args.action
+    result['vars'] = varmap
 
     constellations = manifest['constellations']
 
@@ -169,12 +194,17 @@ def main():
             constellation_key = constellation
             blueprints = manifest['constellations'][constellation]
 
-        print(f'conskey={constellation_key}')
+        const_result = {'name': constellation_key}
         if len(blueprints) > 1 and args.action == 'destroy':
             # destroy in reverse order..
             blueprints = blueprints[::-1]
 
-        apply_blueprints(constellation_key, blueprints, args.action, args.volumes, varmap)
+        const_result['blueprints'] = apply_blueprints(constellation_key, blueprints, args.action, args.volumes, varmap,
+                                                      args.dryrun, args.quiet)
+
+        result['constellations'].append(const_result)
+
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":
