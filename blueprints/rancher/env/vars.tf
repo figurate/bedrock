@@ -1,5 +1,6 @@
 variable "enabled" {
   description = "Start/stop the rancher environment"
+  default     = "true"
 }
 
 variable "environment" {
@@ -8,10 +9,10 @@ variable "environment" {
 
 variable "host_count" {
   description = "The number of hosts to create"
-  default = "1"
+  default     = "1"
 }
 
-variable "region" {
+variable "do_region" {
   description = "Digitalocean region of the rancher environment"
 }
 

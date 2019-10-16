@@ -1,12 +1,12 @@
 provider "rancher" {
-  api_url = "${var.rancher_url}"
+  api_url    = "${var.rancher_url}"
   access_key = "${var.rancher_access_key}"
   secret_key = "${var.rancher_secret_key}"
 }
 
 variable "rancher_url" {
   description = "Base URL of Rancher API"
-  default = "http://rancher.mnode.org"
+  default     = "http://rancher.mnode.org"
 }
 
 variable "rancher_access_key" {
@@ -18,5 +18,5 @@ variable "rancher_secret_key" {
 }
 
 provider "null" {
-  version = "~> 1.0"
+  version = ">= 2.1.0"
 }

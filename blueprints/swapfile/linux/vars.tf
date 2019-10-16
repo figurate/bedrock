@@ -8,7 +8,7 @@ variable "bastion_private_key" {
   default = "~/.ssh/id_rsa"
 }
 
-variable "bastion_host" {
+variable "bastion_fqdn" {
   description = "Bastion host used to access target host"
 }
 

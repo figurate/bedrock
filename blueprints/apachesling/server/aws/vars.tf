@@ -1,11 +1,11 @@
 variable "cloudformation_path" {
   description = "The root path to cloudformation templates"
-  default = "cloudformation"
+  default     = "cloudformation"
 }
 
-variable "userdata_path" {
+variable "template_path" {
   description = "The root path to userdata templates"
-  default = "userdata"
+  default     = "templates"
 }
 
 variable "environment" {
@@ -14,13 +14,13 @@ variable "environment" {
 
 variable "vpc_default" {
   description = "Boolean value to indicate whether the matched VPC should be default for the region"
-  default = "true"
+  default     = "true"
 }
 
 variable "vpc_tags" {
-  type = "list"
-  description = "A list of tags to match on the VPC lookup"
-  default = []
+  type        = "map"
+  description = "A map of tags to match on the VPC lookup"
+  default     = {}
 }
 
 //variable "subnet" {
@@ -29,12 +29,12 @@ variable "vpc_tags" {
 
 variable "image_name" {
   description = "AWS image for Sling instance"
-  default = "amzn2-ami-hvm-*"
+  default     = "amzn2-ami-hvm-2.0.????????-x86_64-gp2"
 }
 
 variable "image_owner" {
   description = "AMI image owner (leave blank for current account)"
-  default = "137112412989"
+  default     = "137112412989"
 }
 
 variable "image_os" {
@@ -44,6 +44,7 @@ The operating system installed on the selected AMI. Valid values are:
   * al2     = Amazon Linux 2
   * ubuntu  = Ubuntu
 EOF
+
   default = "al2"
 }
 
@@ -57,11 +58,16 @@ variable "sling_version" {
   default = "10"
 }
 
-variable "sling_user" {
+variable "ssh_user" {
   description = "Username for Sling SSH user"
 }
 
 variable "ssh_key" {
+  description = "Public key file for SSH access to host"
+  default = ""
+}
+
+variable "ssh_key_file" {
   description = "Location of public key file for SSH access to host"
   default = "~/.ssh/id_rsa.pub"
 }

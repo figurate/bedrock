@@ -1,0 +1,113 @@
+#cloud-config
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - gnupg-agent
+  - software-properties-common
+  - unattended-upgrades
+  - curl
+  - ntpdate
+  - zip
+
+timezone: Australia/Melbourne
+
+ntp:
+  enabled: true
+  servers:
+    - 0.au.pool.ntp.org
+    - 1.au.pool.ntp.org
+    - 2.au.pool.ntp.org
+    - 3.au.pool.ntp.org
+
+groups:
+  - pki
+
+users:
+  - name: ${AuthorizedUserName}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ${AuthorizedUserSSHKey}
+  - name: vault
+    groups: pki
+    homedir: /var/lib/vault
+    shell: /bin/nologin
+#    system: true
+
+write_files:
+  - path: /etc/update-motd.d/99-unauthorised-access
+    permissions: 0755
+    content: |
+      echo 'UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED
+
+      You must have explicit, authorized permission to access or configure this device. Unauthorized attempts and
+      actions to access or use this system may result in civil and/or criminal penalties. All activities performed on
+      this device are logged and monitored.'
+  - path: /etc/vault.hcl
+#    permissions: "0640"
+    owner: vault
+    content: |
+      backend "file" {
+        path = "/var/lib/vault"
+      }
+      listener "tcp" {
+        tls_disable = 0
+        tls_cert_file = "/etc/ssl/private/${VaultHostname}/fullchain.pem"
+        tls_key_file = "/etc/ssl/private/${VaultHostname}/privkey.pem"
+      }
+  - path: /etc/systemd/system/vault.service
+    content: |
+      [Unit]
+      Description=a tool for managing secrets
+      Documentation=https://vaultproject.io/docs/
+      After=network.target
+      ConditionFileNotEmpty=/etc/vault.hcl
+
+      [Service]
+      User=vault
+      Group=vault
+      ExecStart=/usr/local/bin/vault server -config=/etc/vault.hcl
+      ExecReload=/usr/local/bin/kill --signal HUP $MAINPID
+      CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
+      Capabilities=CAP_IPC_LOCK+ep
+      SecureBits=keep-caps
+      NoNewPrivileges=yes
+      KillSignal=SIGINT
+
+      [Install]
+      WantedBy=multi-user.target
+  - path: /etc/ssl/private/${VaultHostname}/fullchain.pem
+#    permissions: "0640"
+    encoding: b64
+    owner: "root"
+    content: ${VaultSslCert}
+  - path: /etc/ssl/private/${VaultHostname}/privkey.pem
+#    permissions: "0640"
+    encoding: b64
+    owner: "root"
+    content: ${VaultPrivateKey}
+
+runcmd:
+  # SSH
+  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - restart ssh
+  # Vault
+  - curl -O https://releases.hashicorp.com/vault/${VaultVersion}/vault_${VaultVersion}_linux_amd64.zip
+  - curl -O https://releases.hashicorp.com/vault/${VaultVersion}/vault_${VaultVersion}_SHA256SUMS
+  - grep linux_amd64 vault_*_SHA256SUMS | sha256sum -c -
+  - unzip vault_*.zip
+  - cp vault /usr/local/bin/
+  - setcap cap_ipc_lock=+ep /usr/local/bin/vault
+  - install -o vault -g vault -m 750 -d /var/lib/vault
+  - chgrp pki /etc/ssl/private/${VaultHostname}
+  - chmod g+rx /etc/ssl/private/${VaultHostname}
+  - echo 127.0.0.1 ${VaultHostname} | tee -a /etc/hosts
+  - systemctl start vault
+  # Papertrail
+  - "wget --header='X-Papertrail-Token: QHS89ESNb9Q0OGPK9Hu2' https://papertrailapp.com/destinations/2465304/setup.sh"
+  - bash setup.sh
+  - curl -O https://github.com/papertrail/remote_syslog2/releases/download/v0.20/remote-syslog2_0.20_amd64.deb
+  - dpkg --install remote-syslog2_0.20_amd64.deb
+  - remote_syslog
