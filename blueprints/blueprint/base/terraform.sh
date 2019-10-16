@@ -3,14 +3,27 @@
 function usage() {
   cat << EOF
 
-USAGE: $0 <init|plan|apply|destroy|import|taint|output|export>
+USAGE: $0 <version|init|workspace|plan|apply|destroy|import|remove|taint|output|force-unlock|export>
 EOF
+}
+
+function version() {
+  terraform -version &
+	tf_process=$!
+  wait "$tf_process"
 }
 
 # Initialise terraform provider, etc.
 function init() {
   echo "Initialising terraform state.."
 	terraform init -backend-config backend.tfvars $TF_ARGS /bootstrap &
+	tf_process=$!
+  wait "$tf_process"
+}
+
+# Apply terraform workspace
+function workspace() {
+	terraform workspace new -state /work/.terraform/terraform.tfstate $TF_ARGS "$@" &
 	tf_process=$!
   wait "$tf_process"
 }
@@ -42,6 +55,13 @@ function destroy() {
 # Import existing resources
 function import() {
 	terraform import -config=/bootstrap $TF_ARGS "$@" &
+	tf_process=$!
+  wait "$tf_process"
+}
+
+# Terraform state manipulation
+function remove() {
+	terraform state rm -state /work/.terraform/terraform.tfstate $TF_ARGS "$@" &
 	tf_process=$!
   wait "$tf_process"
 }
@@ -90,11 +110,14 @@ TF_VAR_assume_role_account=$(aws sts get-caller-identity | jq -r '.Account')
 export TF_VAR_assume_role_account
 
 case "$TF_ACTION" in
+	version) 			  version;;
 	init) 			    init;;
+	workspace) 			workspace "${@:2}";;
 	plan) 			    plan;;
 	apply) 			    apply "${@:2}";;
 	destroy) 		    destroy;;
 	import) 		    import "${@:2}";;
+	remove) 		    remove "${@:2}";;
 	taint) 			    taint "${@:2}";;
 	output) 		    output;;
 	force-unlock)   force-unlock "${@:2}";;
