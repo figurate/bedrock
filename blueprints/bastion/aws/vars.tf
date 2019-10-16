@@ -1,6 +1,6 @@
-variable "userdata_path" {
+variable "template_path" {
   description = "The root path to userdata templates"
-  default     = "userdata"
+  default     = "templates"
 }
 
 variable "vpc_default" {
@@ -14,7 +14,7 @@ variable "vpc_tags" {
   default     = {}
 }
 
-variable "bastion_user" {
+variable "ssh_user" {
   description = "Username for bastion SSH user"
 }
 

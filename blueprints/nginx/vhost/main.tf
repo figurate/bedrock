@@ -17,21 +17,20 @@
 //}
 
 resource "null_resource" "static_resources" {
-  triggers {
-    host = "${var.reverseproxy_host}"
+  triggers = {
+    host = var.nginx_host
   }
-
   provisioner "remote-exec" {
     inline = [
       "mkdir -p /tmp/var/www/html/error",
       "mkdir -p /tmp/var/www/images",
     ]
     connection {
-      type     = "ssh"
-      user     = "${var.reverseproxy_user}"
-      host = "${var.reverseproxy_host}"
-      private_key = "${file(var.ssh_private_key)}"
-      bastion_host = "${var.bastion_host}"
+      type         = "ssh"
+      user         = var.ssh_user
+      host         = var.nginx_host
+      private_key  = file(var.ssh_private_key)
+      bastion_host = var.bastion_fqdn
     }
   }
 
@@ -70,38 +69,38 @@ resource "null_resource" "static_resources" {
     destination = "/tmp/var/www/html/error/404.html"
     connection {
       type = "ssh"
-      user = "${var.reverseproxy_user}"
-      host = "${var.reverseproxy_host}"
-      private_key = "${file(var.ssh_private_key)}"
-      bastion_host = "${var.bastion_host}"
+      user = var.ssh_user
+      host = var.nginx_host
+      private_key = file(var.ssh_private_key)
+      bastion_host = var.bastion_fqdn
     }
   }
 
-  provisioner "file" {
-    content = "${file(var.error_bg_image)}"
-    destination = "${format("/tmp/var/www/images/%s", var.error_bg_image)}"
-    connection {
-      type = "ssh"
-      user = "${var.reverseproxy_user}"
-      host = "${var.reverseproxy_host}"
-      private_key = "${file(var.ssh_private_key)}"
-      bastion_host = "${var.bastion_host}"
-    }
-  }
+  //  provisioner "file" {
+  //    content = var.error_bg_image != "" ? file(var.error_bg_image) : ""
+  //    destination = format("/tmp/var/www/images/%s", var.error_bg_image)
+  //    connection {
+  //      type = "ssh"
+  //      user = var.ssh_user
+  //      host = var.nginx_host
+  //      private_key = file(var.ssh_private_key)
+  //      bastion_host = var.bastion_fqdn
+  //    }
+  //  }
 
   provisioner "remote-exec" {
     inline = [
       "sudo mkdir -p /var/www/html/error",
       "sudo mkdir -p /var/www/images",
       "sudo mv /tmp/var/www/html/error/404.html /var/www/html/error/",
-      "sudo mv ${format("/tmp/var/www/images/%s", var.error_bg_image)} /var/www/images",
+      //      "sudo mv ${format("/tmp/var/www/images/%s", var.error_bg_image)} /var/www/images",
     ]
     connection {
-      type     = "ssh"
-      user     = "${var.reverseproxy_user}"
-      host = "${var.reverseproxy_host}"
-      private_key = "${file(var.ssh_private_key)}"
-      bastion_host = "${var.bastion_host}"
+      type = "ssh"
+      user = var.ssh_user
+      host = var.nginx_host
+      private_key = file(var.ssh_private_key)
+      bastion_host = var.bastion_fqdn
     }
   }
 }

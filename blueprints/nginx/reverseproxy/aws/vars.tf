@@ -3,9 +3,9 @@ variable "cloudformation_path" {
   default     = "cloudformation"
 }
 
-variable "userdata_path" {
+variable "template_path" {
   description = "The root path to userdata templates"
-  default     = "userdata"
+  default     = "templates"
 }
 
 variable "vpc_default" {
@@ -59,7 +59,7 @@ variable "amplify_key" {
   description = "API key for nginx amplify"
 }
 
-variable "reverseproxy_user" {
+variable "ssh_user" {
   description = "Username for reverseproxy SSH user"
 }
 

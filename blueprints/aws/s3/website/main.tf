@@ -63,7 +63,7 @@ resource "aws_s3_bucket" "website" {
 }
 
 resource "null_resource" "content_sync" {
-  triggers {
+  triggers = {
     content_path = sha256(var.content_path)
     includes     = sha256(join(",", var.includes))
     excludes     = sha256(join(",", var.excludes))
