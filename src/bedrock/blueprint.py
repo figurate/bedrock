@@ -108,7 +108,7 @@ def main():
     parser.add_argument('blueprint', metavar='<blueprint_id>',
                         help='name of the blueprint to apply')
     parser.add_argument('action', metavar='<command>',
-                        choices=['init', 'plan', 'apply', 'destroy', 'import', 'taint', 'output', 'force-unlock', 'export'],
+                        choices=['version', 'init', 'workspace', 'plan', 'apply', 'destroy', 'import', 'remove', 'taint', 'output', 'force-unlock', 'export'],
                         help='blueprint action (possible values: %(choices)s)', nargs='?', default='init')
     parser.add_argument('action_args', metavar='<action_args>',
                         help='additional arguments for specific actions', nargs='*')
