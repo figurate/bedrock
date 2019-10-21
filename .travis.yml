@@ -5,7 +5,7 @@ services:
 
 script:
   - cd blueprints
-  - TAGS="latest,$TRAVIS_TAG" make all tag
+  - TAGS="$(git tag --points-at HEAD | tr '\n' ',')latest" make all tag
 
 deploy:
   provider: script
