@@ -1,8 +1,12 @@
+language: python
+
 services:
   - docker
+
 script:
   - cd blueprints
-  - make all
+  - TAGS="latest,$TRAVIS_TAG" make all
+
 deploy:
   provider: script
   script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && cd blueprints && make tag push all
