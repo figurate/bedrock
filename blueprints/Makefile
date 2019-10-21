@@ -1,7 +1,9 @@
+SHELL:=/bin/bash
 REGISTRY?=bedrock
 DOCKERFILES=$(shell find * -mindepth 1 -type f -name Dockerfile)
 IMAGES=$(subst /,-,$(subst /Dockerfile,,$(DOCKERFILES)))
 DEPENDS=.depends.mk
+TAGS?=latest
 BUILD_ARGS?=
 
 .PHONY: all clean tag push docs format $(IMAGES)
@@ -27,11 +29,11 @@ endif
 	docker build ${BUILD_ARGS} --build-arg HTTP_PROXY=${http_proxy} -t $(REGISTRY)/$@ --network=host $(subst -,/,$@)
 
 ifeq (tag,$(filter tag,$(MAKECMDGOALS)))
-	docker tag $(REGISTRY)/$@ $(REGISTRY)/$@
+	echo $(TAGS) | tr "/," "-\n" | xargs -n1 -I % docker tag $(REGISTRY)/$@ $(REGISTRY)/$@:%
 endif
 
 ifeq (push,$(filter push,$(MAKECMDGOALS)))
-	docker push $(REGISTRY)/$@
+	echo $(TAGS) | tr "/," "-\n" | xargs -n1 -I % docker push $(REGISTRY)/$@:%
 endif
 
 ifeq (docs,$(filter docs,$(MAKECMDGOALS)))
