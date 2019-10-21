@@ -5,7 +5,7 @@ services:
 
 script:
   - cd blueprints
-  - TAGS="latest,$TRAVIS_TAG" make all
+  - TAGS="latest,$TRAVIS_TAG" make all tag
 
 deploy:
   provider: script
