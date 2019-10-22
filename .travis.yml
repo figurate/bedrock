@@ -8,7 +8,18 @@ script:
   - TAGS="$(git tag --points-at HEAD | tr '\n' ',')latest" make all tag
 
 deploy:
-  provider: script
-  script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && cd blueprints && make tag push all
-  on:
-    branch: master
+  matrix:
+  - provider: pypi
+    user: __token__
+    password:
+      secure: dLrZ/9nFwgG8KoU09+mYEpXQz1vLu+MQyTlELj8G1od0YxYV30qV9Ka6qLR8tjZG0PYoRz1+jlJ3gnznoH8R4pKYyscZpXS3iq7oxLODvMqFQnarCnC1HlQ/0WZwDaPtPKungU1ZHdVLj8IBKV8Szw5fqdxewW/mnkQbOYyp219OR5TFR8MTEbW52AgKmCjZX8vK0otcqb6SGi7qi+FXD7LHJyjREkfitCXlRzbcLAxICvqSHqPf384B2YbUKgFIAsYi5MWPnhvdv/wYOsSg6jN1X4wlIxP4vew4v2HcK0E1iUigPrdVxelFLrebCrmqwLZ+vVnABkEUsIvKmLzt/jwo4Df9f8ImnxQJQIqbo0eDr/F7tZrVUJnXVHlMh4wRVdZbakmKtqDAwlqImUKdJqbUKUxCc+eU3hzleG30JT0H/bbPhWOIgJZJPIQWGKCBnmv4tQ4moo2EaANyFvybBPtsge4oElVAa1GGP5kZOPxwzr6DPLkQByBsE/HREwtZEBF7Gmo6ZsItCrOi5LeVr8LjBLvts16nIiMvz4jfUesBVzhv2lZiLgrz7hY9zxRRMAptawXIHZFgZFr/+KVGvkwIS1FM6k62vPRSgbeASJSz1q46Chun+/vtBivNqPh/jWfl3jaLemEYmo1tCd3bjwhcgiQSGXTdcUeakLDIotM=
+    server: https://test.pypi.org/legacy/
+    on:
+      tags: true
+  - provider: script
+    script:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - cd blueprints
+      - TAGS="$(git tag --points-at HEAD | tr '\n' ',')latest" make tag push all
+    on:
+      tags: true
