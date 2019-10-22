@@ -6,8 +6,8 @@ with open("README.md", "r") as readme:
     long_description = readme.read()
 
 setup(
-    name='brock',
-    version='1.0.1',
+    name='bedrockcli',
+    version='1.0',
     author='Ben Fortuna',
     author_email='fortuna@micronode.com',
     description='A collection of Terraform-based blueprints',
