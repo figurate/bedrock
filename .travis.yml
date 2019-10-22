@@ -6,12 +6,10 @@ services:
 script:
   - cd blueprints
   - TAGS="$(git tag --points-at HEAD | tr '\n' ',')latest" make all tag
+  - cd ..
 
 env:
   - BEDROCK_VERSION=$TRAVIS_TAG
-
-before_deploy:
-  - cd ~/
 
 deploy:
   - provider: pypi
