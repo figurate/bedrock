@@ -11,29 +11,56 @@ e.g.
 * blueprint bastion destroy # use template key of same name as blueprint
 """
 import argparse
-import os
-from os.path import expanduser
 
 import docker
+import sys
+
+from .utils import *
 
 
-def init_path(path):
-    os.makedirs(expanduser(f'~/.bedrock/{path}'), exist_ok=True)
+class BedrockBlueprint:
+
+    name = None
+    key = None
+    action = None
+    action_args = None
+    extra_volumes = None
+    extra_config = None
+
+    def __init__(self, args):
+        parser = argparse.ArgumentParser(description='Bedrock Blueprint Tool.')
+        parser.add_argument('-t', '--tag', metavar='<blueprint_tag>',
+                            help='optional tag for blueprint instance (defaults to same as blueprint name)')
+        parser.add_argument('-v', '--volumes', metavar='<path:volume>', nargs='+',
+                            help='additional volumes mounted to support blueprints')
+        parser.add_argument('-c', '--config', metavar='<key=value>', nargs='+',
+                            help='additional configuration to support blueprints')
+        parser.add_argument('blueprint', metavar='<blueprint_id>',
+                            help='name of the blueprint to apply')
+        parser.add_argument('action', metavar='<command>',
+                            choices=['version', 'init', 'workspace', 'plan', 'apply', 'destroy', 'import', 'remove',
+                                     'taint', 'output', 'force-unlock', 'export'],
+                            help='blueprint action (possible values: %(choices)s)', nargs='?', default='init')
+        parser.add_argument('action_args', metavar='<action_args>',
+                            help='additional arguments for specific actions', nargs='*')
+
+        parsed_args = parser.parse_args(args)
+
+        self.name = parsed_args.blueprint
+        self.key = parsed_args.tag if parsed_args.tag is not None else parsed_args.blueprint
+        self.action = parsed_args.action
+        self.action_args = parsed_args.action_args
+        self.extra_volumes = parsed_args.volumes
+        self.extra_config = parsed_args.config
 
 
-def append_env(environment, env_var):
-    if env_var in os.environ:
-        environment.append(f'{env_var}={os.environ[env_var]}')
+def execute(blueprint):
+    print(f'Bedrock blueprint [action]: {blueprint.name}/{blueprint.key} [{blueprint.action}]')
 
+    init_path(f'{blueprint.name}/{blueprint.key}')
 
-def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config):
-    print(f'Apply blueprint: {name}/{key} [{action}]')
-
-    init_path(f'{name}/{key}')
-
-    client = docker.from_env()
     environment = [
-        f'TF_BACKEND_KEY={name}/{key}',
+        f'TF_BACKEND_KEY={blueprint.name}/{blueprint.key}',
         f'AWS_ACCESS_KEY_ID={os.environ["AWS_ACCESS_KEY_ID"]}',
         f'AWS_SECRET_ACCESS_KEY={os.environ["AWS_SECRET_ACCESS_KEY"]}',
         f'AWS_DEFAULT_REGION={os.environ["AWS_DEFAULT_REGION"]}',
@@ -64,60 +91,42 @@ def apply_blueprint(name, key, action, action_args, extra_volumes, extra_config)
     #         else:
     #             environment.append(f'TF_VAR_{item}={config[item]}')
 
-    if extra_config:
-        for cnf in extra_config:
+    if blueprint.extra_config:
+        for cnf in blueprint.extra_config:
             cargs = cnf.split('=')
             environment.append(f'TF_VAR_{cargs[0]}={cargs[1]}')
 
     volumes = {
-        expanduser(f'~/.bedrock/{name}/{key}'): {
+        expanduser(f'~/.bedrock/{blueprint.name}/{blueprint.key}'): {
             'bind': '/work',
             'mode': 'rw'
         }
     }
 
-    if extra_volumes:
-        for volume in extra_volumes:
+    if blueprint.extra_volumes:
+        for volume in blueprint.extra_volumes:
             vargs = volume.split(':')
             volumes[vargs[0]] = {
                 'bind': vargs[1],
                 'mode': 'ro'
             }
 
-    action_string = ' '.join([action] + action_args)
+    action_string = ' '.join([blueprint.action] + blueprint.action_args) \
+        if blueprint.action_args is not None else blueprint.action
 
+    container = None
     try:
-        container = client.containers.run(f"bedrock/{name}", action_string, privileged=True, network_mode='host',
+        client = docker.from_env()
+        container = client.containers.run(f"bedrock/{blueprint.name}", action_string, privileged=True, network_mode='host',
                                           remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
         logs = container.logs(stream=True)
         for log in logs:
             print(log.decode('utf-8'), end='')
     except KeyboardInterrupt:
-        print(f"Aborting {name}..")
-        container.stop()
-
-
-def main():
-    parser = argparse.ArgumentParser(description='Bedrock Blueprint Tool.')
-    parser.add_argument('-t', '--tag', metavar='<blueprint_tag>',
-                        help='optional tag for blueprint instance (defaults to same as blueprint name)')
-    parser.add_argument('-v', '--volumes', metavar='<path:volume>', nargs='+',
-                        help='additional volumes mounted to support blueprints')
-    parser.add_argument('-c', '--config', metavar='<key=value>', nargs='+',
-                        help='additional configuration to support blueprints')
-    parser.add_argument('blueprint', metavar='<blueprint_id>',
-                        help='name of the blueprint to apply')
-    parser.add_argument('action', metavar='<command>',
-                        choices=['version', 'init', 'workspace', 'plan', 'apply', 'destroy', 'import', 'remove', 'taint', 'output', 'force-unlock', 'export'],
-                        help='blueprint action (possible values: %(choices)s)', nargs='?', default='init')
-    parser.add_argument('action_args', metavar='<action_args>',
-                        help='additional arguments for specific actions', nargs='*')
-
-    args = parser.parse_args()
-    blueprint_key = args.tag if args.tag is not None else args.blueprint
-
-    apply_blueprint(args.blueprint, blueprint_key, args.action, args.action_args, args.volumes, args.config)
+        print(f"Aborting {blueprint.name}..")
+        if container is not None:
+            container.stop()
 
 
 if __name__ == "__main__":
-    main()
+    execute(BedrockBlueprint(sys.argv))
