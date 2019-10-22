@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from setuptools import setup, find_packages
 
 with open("README.md", "r") as readme:
@@ -20,8 +22,7 @@ setup(
     python_requires='>=3.7',
     entry_points={
         'console_scripts': [
-            'bmt = bedrock.manifest:main',
-            'bbt = bedrock.blueprint:main',
+            'bedrock = bedrock.cli:BedrockCli',
         ]
     }
 )
