@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+
 from setuptools import setup, find_packages
 
 with open("README.md", "r") as readme:
@@ -7,7 +9,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name='bedrockcli',
-    version='1.0',
+    version=os.environ['BEDROCK_VERSION'],
     author='Ben Fortuna',
     author_email='fortuna@micronode.com',
     description='A collection of Terraform-based blueprints',
