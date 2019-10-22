@@ -12,4 +12,5 @@ venv/
 .gradle/
 build/
 dist/
-Bedrock.egg-info/
+*.egg-info/
+.eggs
