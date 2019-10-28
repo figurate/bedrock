@@ -35,5 +35,5 @@ EOF
 
 resource "aws_iam_role_policy_attachment" "rds_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
-  role = "${aws_iam_role.rdsadmin.name}"
+  role       = "${aws_iam_role.rdsadmin.name}"
 }
