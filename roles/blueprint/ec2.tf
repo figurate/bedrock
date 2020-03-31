@@ -38,10 +38,10 @@ data "aws_iam_policy_document" "ec2_instance_profile_fullaccess" {
 
 resource "aws_iam_policy" "ec2_subnet_fullaccess" {
   name   = "bedrock-ec2-subnet-fullaccess"
-  policy = "${data.aws_iam_policy_document.ec2_subnet_fullaccess.json}"
+  policy = data.aws_iam_policy_document.ec2_subnet_fullaccess.json
 }
 
 resource "aws_iam_policy" "ec2_instance_profile_fullaccess" {
   name   = "bedrock-ec2-instance-profile-fullaccess"
-  policy = "${data.aws_iam_policy_document.ec2_instance_profile_fullaccess.json}"
+  policy = data.aws_iam_policy_document.ec2_instance_profile_fullaccess.json
 }

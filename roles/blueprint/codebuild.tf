@@ -29,5 +29,5 @@ data "aws_iam_policy_document" "codebuild_vpc" {
 
 resource "aws_iam_policy" "codebuild_vpc" {
   name   = "bedrock-codebuild-vpc"
-  policy = "${data.aws_iam_policy_document.codebuild_vpc.json}"
+  policy = data.aws_iam_policy_document.codebuild_vpc.json
 }
