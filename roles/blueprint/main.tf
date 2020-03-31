@@ -24,21 +24,22 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "blueprintadmin" {
-  name               = "bedrock-blueprint-admin"
+  name               = "blueprint-admin"
+  path               = "/bedrock/"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "assumerole" {
   role       = aws_iam_role.blueprintadmin.id
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-assumerole"
+  policy_arn = aws_iam_policy.iam_assumerole.arn
 }
 
 resource "aws_iam_role_policy_attachment" "terraform_state" {
   role       = aws_iam_role.blueprintadmin.id
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-terraform-state"
+  policy_arn = aws_iam_policy.s3_terraform_access.arn
 }
 
 resource "aws_iam_role_policy_attachment" "terraform_lock" {
   role       = aws_iam_role.blueprintadmin.id
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-terraform-locking"
+  policy_arn = aws_iam_policy.dynamodb_terraform_access.arn
 }

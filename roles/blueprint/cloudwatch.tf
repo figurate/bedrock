@@ -23,10 +23,10 @@ data "aws_iam_policy_document" "cloudwatch_log_groups" {
 
 resource "aws_iam_policy" "cloudwatch_logs" {
   name   = "bedrock-cloudwatch-logs"
-  policy = "${data.aws_iam_policy_document.cloudwatch_logs.json}"
+  policy = data.aws_iam_policy_document.cloudwatch_logs.json
 }
 
 resource "aws_iam_policy" "cloudwatch_log_groups" {
   name   = "bedrock-cloudwatch-log-groups"
-  policy = "${data.aws_iam_policy_document.cloudwatch_log_groups.json}"
+  policy = data.aws_iam_policy_document.cloudwatch_log_groups.json
 }
