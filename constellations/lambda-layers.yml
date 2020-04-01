@@ -1,14 +1,16 @@
-# Requires volume mounted on /tools
+   ######
+  #  Requires volume mounted on /tools
+ #  Usage: $ br-manifest apply -m lambda-layers.yml -v "$PWD/tools:/tools"
+######
 name: Lambda Layers
-
 description: Create Lambda Layers to support Bedrock Lambda blueprints
 
 constellations:
-  lambda:
-    lambda-roles:
+  roles:
+    aws-lambda-roles:
 
   aws-java-sdk-lambda:
-    lambda-layer:
+    aws-lambda-layer:
       layer_name: aws-java-sdk-lambda
       description: Support for the AWS Lambda SDK for Java
       content_path: /tools/aws-java-sdk-lambda/build/layer
@@ -16,7 +18,7 @@ constellations:
         - java8
 
   groovy-runtime:
-    lambda-layer:
+    aws-lambda-layer:
       layer_name: groovy-runtime
       description: Support for the Groovy JVM language
       content_path: /tools/groovy-runtime/build/layer
@@ -24,7 +26,7 @@ constellations:
         - java8
 
   python-requests:
-    lambda-layer:
+    aws-lambda-layer:
       layer_name: python-requests
       description: Python requests package plus dependencies
       content_path: /tools/python-requests/packages
