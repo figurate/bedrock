@@ -26,6 +26,8 @@ class BedrockBlueprint:
     action_args = None
     extra_volumes = None
     extra_config = None
+    dry_run = False
+    quiet = False
 
     def __init__(self, args):
         parser = argparse.ArgumentParser(description='Bedrock Blueprint Tool.')
@@ -59,12 +61,17 @@ def execute(blueprint):
 
     init_path(f'{blueprint.name}/{blueprint.key}')
 
-    environment = [
-        f'TF_BACKEND_KEY={blueprint.name}/{blueprint.key}',
-        f'AWS_ACCESS_KEY_ID={os.environ["AWS_ACCESS_KEY_ID"]}',
-        f'AWS_SECRET_ACCESS_KEY={os.environ["AWS_SECRET_ACCESS_KEY"]}',
-        f'AWS_DEFAULT_REGION={os.environ["AWS_DEFAULT_REGION"]}',
-    ]
+    if not blueprint.dry_run:
+        environment = [
+            f'TF_BACKEND_KEY={blueprint.name}/{blueprint.key}',
+            f'AWS_ACCESS_KEY_ID={os.environ["AWS_ACCESS_KEY_ID"]}',
+            f'AWS_SECRET_ACCESS_KEY={os.environ["AWS_SECRET_ACCESS_KEY"]}',
+            f'AWS_DEFAULT_REGION={os.environ["AWS_DEFAULT_REGION"]}',
+        ]
+    else:
+        environment = [f'TF_BACKEND_KEY={blueprint.name}/{blueprint.key}']
+        for env_var in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_DEFAULT_REGION']:
+            append_env(environment, env_var, True)
 
     # Append optional environment variables..
     for env_var in ['AWS_SESSION_TOKEN', 'TF_STATE_BUCKET', 'TF_ARGS', 'http_proxy', 'https_proxy', 'no_proxy']:
@@ -100,6 +107,11 @@ def execute(blueprint):
         expanduser(f'~/.bedrock/{blueprint.name}/{blueprint.key}'): {
             'bind': '/work',
             'mode': 'rw'
+        },
+        # bind-mount docker socket to support blueprints that use docker..
+        '/var/run/docker.sock': {
+            'bind': '/var/run/docker.sock',
+            'mode': 'ro'
         }
     }
 
@@ -114,18 +126,19 @@ def execute(blueprint):
     action_string = ' '.join([blueprint.action] + blueprint.action_args) \
         if blueprint.action_args is not None else blueprint.action
 
-    container = None
-    try:
-        client = docker.from_env()
-        container = client.containers.run(f"bedrock/{blueprint.name}", action_string, privileged=True, network_mode='host',
-                                          remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
-        logs = container.logs(stream=True)
-        for log in logs:
-            print(log.decode('utf-8'), end='')
-    except KeyboardInterrupt:
-        print(f"Aborting {blueprint.name}..")
-        if container is not None:
-            container.stop()
+    if not blueprint.dry_run:
+        container = None
+        try:
+            client = docker.from_env()
+            container = client.containers.run(f"bedrock/{blueprint.name}", action_string, privileged=True, network_mode='host',
+                                              remove=True, environment=environment, volumes=volumes, tty=True, detach=True)
+            logs = container.logs(stream=True)
+            for log in logs:
+                print(log.decode('utf-8'), end='')
+        except KeyboardInterrupt:
+            print(f"Aborting {blueprint.name}..")
+            if container is not None:
+                container.stop()
 
 
 if __name__ == "__main__":
