@@ -3,7 +3,7 @@
 """
 Support for provisioning blueprint constellations via a provided manifest.
 
-Usage: manifest [-m <manifest_file>] <apply|destroy>
+Usage: manifest [-f <manifest_file>] <apply|destroy>
 
 e.g.
 
@@ -42,7 +42,7 @@ class BedrockManifest:
 
     def __init__(self, args):
         parser = argparse.ArgumentParser(description='Bedrock Manifest Tool.')
-        parser.add_argument('-m', '--manifest', metavar='<manifest_path>', default='manifest.yml', type=argparse.FileType('r'),
+        parser.add_argument('-f', '--file', metavar='<manifest_path>', default='manifest.yml', type=argparse.FileType('r'),
                             help='location of manifest file (default: %(default)s)')
         parser.add_argument('-v', '--volumes', metavar='<path:volume>', nargs='+',
                             help='additional volumes mounted to support blueprints')
