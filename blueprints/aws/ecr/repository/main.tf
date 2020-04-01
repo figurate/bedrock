@@ -4,11 +4,15 @@
  * Create an ECR repository with lifecycle rules.
  */
 resource "aws_ecr_repository" "repository" {
-  name = "${var.repository_name}"
+  name = var.repository_name
+
+  image_scanning_configuration {
+    scan_on_push = var.scan_on_push
+  }
 }
 
 resource "aws_ecr_lifecycle_policy" "untagged_images" {
-  repository = "${aws_ecr_repository.repository.name}"
+  repository = aws_ecr_repository.repository.name
   policy     = <<EOF
 {
   "rules": [
