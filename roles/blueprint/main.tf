@@ -24,7 +24,8 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "blueprintadmin" {
-  name               = "blueprint-admin"
+  name               = "bedrock-blueprint-admin"
+  description        = "Bedrock role used to provision blueprints and blueprint roles"
   path               = "/bedrock/"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }

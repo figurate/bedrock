@@ -29,8 +29,13 @@ data "aws_iam_policy_document" "iam_assumerole" {
   statement {
     actions = [
       "iam:ListRoles",
-      "iam:GetRole",
-      "iam:AssumeRole",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "sts:AssumeRole",
     ]
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/bedrock*"]
   }
