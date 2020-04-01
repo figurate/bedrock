@@ -23,11 +23,13 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "ecr_admin" {
-  name               = "bedrock-ecr-admin"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+  name               = "ecr-blueprint-role"
+  description        = "Bedrock role assumed by AWS ECR blueprints"
+  path               = "/bedrock/"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-  role       = "${aws_iam_role.ecr_admin.id}"
+  role       = aws_iam_role.ecr_admin.id
 }
