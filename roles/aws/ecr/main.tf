@@ -1,5 +1,5 @@
 /**
- * # AWS S3 role configuration
+ * # AWS ECR Roles
  *
  * Purpose: Provision IAM roles in AWS.
  *
@@ -20,16 +20,4 @@ data "aws_iam_policy_document" "assume_role_policy" {
       type        = "AWS"
     }
   }
-}
-
-resource "aws_iam_role" "ecr_admin" {
-  name               = "ecr-blueprint-role"
-  description        = "Bedrock role assumed by AWS ECR blueprints"
-  path               = "/bedrock/"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
-}
-
-resource "aws_iam_role_policy_attachment" "ecr_access" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-  role       = aws_iam_role.ecr_admin.id
 }

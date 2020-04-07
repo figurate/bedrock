@@ -22,32 +22,19 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-resource "aws_iam_role" "iamadmin" {
-  name               = "bedrock-iam-admin"
+resource "aws_iam_role" "blueprint" {
+  name               = "iam-blueprint-role"
+  description        = "Bedrock role assumed by AWS IAM Role blueprints"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "iam_access" {
+resource "aws_iam_role_policy_attachment" "iam_role_access" {
   policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
-  role       = aws_iam_role.iamadmin.name
+  role       = aws_iam_role.blueprint.name
 }
 
+// lambda for automated user key rotation..
 resource "aws_iam_role_policy_attachment" "lambda_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
-  role       = aws_iam_role.iamadmin.name
-}
-
-//resource "aws_iam_role_policy_attachment" "s3_terraform_access" {
-//  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-terraform-state"
-//  role = aws_iam_role.iamadmin.name
-//}
-//
-//resource "aws_iam_role_policy_attachment" "dynamodb_terraform_access" {
-//  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-terraform-locking"
-//  role = aws_iam_role.iamadmin.name
-//}
-
-resource "aws_iam_role_policy_attachment" "iam_assumerole" {
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-assumerole"
-  role       = aws_iam_role.iamadmin.name
+  role       = aws_iam_role.blueprint.name
 }

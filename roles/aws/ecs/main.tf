@@ -23,59 +23,31 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "iam_passrole_policy" {
-  statement {
-    actions   = ["iam:PassRole"]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/bedrock-ecs-cloudformation"]
-  }
-}
-
-data "aws_iam_policy_document" "cloudformation_create_policy" {
-  statement {
-    actions   = ["cloudformation:Create*"]
-    resources = ["*"]
-  }
-}
-
-resource "aws_iam_role" "clusteradmin" {
-  name               = "bedrock-ecs-clusteradmin"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+data "aws_iam_policy" "cloudformation_create_policy" {
+  arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-cloudformation-create"
 }
 
 resource "aws_iam_role" "serviceadmin" {
-  name               = "bedrock-ecs-service-admin"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+  name                  = "ecs-service-admin"
+  path                  = var.role_path
+  assume_role_policy    = data.aws_iam_policy_document.assume_role_policy.json
+  force_detach_policies = true
 }
 
 resource "aws_iam_role" "codedeploy" {
-  name               = "bedrock-ecs-codedeploy"
+  name               = "ecs-codedeploy-role"
+  path               = var.role_path
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_policy_attachment" "ecs_access" {
   name       = "bedrock-ecs-access"
-  policy_arn = "arn:aws:iam::aws:policy/AmazonECS_ReadOnly"
-  roles      = [aws_iam_role.clusteradmin.name, aws_iam_role.serviceadmin.name]
-}
-
-resource "aws_iam_policy" "iam_passrole" {
-  name   = "bedrock-ecs-passrole"
-  policy = data.aws_iam_policy_document.iam_passrole_policy.json
-}
-
-resource "aws_iam_policy_attachment" "iam_passrole" {
-  name       = "bedrock-ecs-passrole"
-  policy_arn = aws_iam_policy.iam_passrole.arn
-  roles      = [aws_iam_role.clusteradmin.id, aws_iam_role.serviceadmin.id]
-}
-
-resource "aws_iam_policy" "cloudformation_create" {
-  policy = data.aws_iam_policy_document.cloudformation_create_policy.json
-  roles  = [aws_iam_role.clusteradmin.id, aws_iam_role.serviceadmin.id]
+  policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+  roles      = [aws_iam_role.blueprint.name, aws_iam_role.serviceadmin.name]
 }
 
 resource "aws_iam_policy_attachment" "cloudformation_create" {
   name       = "bedrock-ecs-cloudformation"
-  policy_arn = aws_iam_policy.cloudformation_create.arn
-  roles      = [aws_iam_role.clusteradmin.id, aws_iam_role.serviceadmin.id]
+  policy_arn = data.aws_iam_policy.cloudformation_create_policy.arn
+  roles      = [aws_iam_role.blueprint.id, aws_iam_role.serviceadmin.id]
 }

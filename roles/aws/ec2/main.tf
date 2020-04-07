@@ -21,17 +21,17 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-resource "aws_iam_role" "ec2admin" {
-  name               = "bedrock-ec2-admin"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+resource "aws_iam_role" "blueprint" {
+  name               = "ec2-blueprint-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
-  role       = "${aws_iam_role.ec2admin.id}"
+  role       = aws_iam_role.blueprint.id
 }
 
 resource "aws_iam_role_policy_attachment" "iam_passrole" {
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-passrole"
-  role       = "${aws_iam_role.ec2admin.id}"
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-cloudformation-passrole"
+  role       = aws_iam_role.blueprint.id
 }
