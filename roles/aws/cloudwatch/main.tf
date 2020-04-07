@@ -24,15 +24,15 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
 resource "aws_iam_role" "cloudwatchadmin" {
   name               = "bedrock-cloudwatch-admin"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "cloudwatch_access" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchEventsFullAccess"
-  role       = "${aws_iam_role.cloudwatchadmin.id}"
+  role       = aws_iam_role.cloudwatchadmin.id
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
-  role       = "${aws_iam_role.cloudwatchadmin.id}"
+  role       = aws_iam_role.cloudwatchadmin.id
 }

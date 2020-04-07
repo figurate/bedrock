@@ -22,22 +22,22 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-resource "aws_iam_role" "dynamodb_admin" {
-  name               = "bedrock-dynamodb-admin"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+resource "aws_iam_role" "blueprint" {
+  name               = "dynamodb-blueprint-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "dynamodb_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-  role       = "${aws_iam_role.dynamodb_admin.name}"
+  role       = aws_iam_role.blueprint.name
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
-  role       = "${aws_iam_role.dynamodb_admin.id}"
+  role       = aws_iam_role.blueprint.id
 }
 
 resource "aws_iam_role_policy_attachment" "iam_passrole" {
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-passrole"
-  role       = "${aws_iam_role.dynamodb_admin.id}"
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-cloudformation-passrole"
+  role       = aws_iam_role.blueprint.id
 }

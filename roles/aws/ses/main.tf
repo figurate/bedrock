@@ -22,12 +22,12 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-resource "aws_iam_role" "sesadmin" {
-  name               = "bedrock-ses-admin"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+resource "aws_iam_role" "blueprint" {
+  name               = "ses-blueprint-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "s3_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-  role       = "${aws_iam_role.sesadmin.id}"
+  role       = aws_iam_role.blueprint.id
 }

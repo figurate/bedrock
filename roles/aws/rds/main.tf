@@ -12,28 +12,22 @@
  */
 data "aws_caller_identity" "current" {}
 
-resource "aws_iam_role" "rdsadmin" {
-  name               = "rds-bedrock-admin"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-      },
-      "Action": "sts:AssumeRole",
-      "Condition": {
-        "Bool": { "aws:MultiFactorAuthPresent": "${var.mfa_required}" }
-      }
+data "aws_iam_policy_document" "assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      type        = "AWS"
     }
-  ]
+  }
 }
-EOF
+
+resource "aws_iam_role" "blueprint" {
+  name               = "rds-blueprint-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "rds_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
-  role       = "${aws_iam_role.rdsadmin.name}"
+  role       = aws_iam_role.blueprint.name
 }

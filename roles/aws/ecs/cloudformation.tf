@@ -9,11 +9,13 @@ data "aws_iam_policy_document" "cloudformation_assume_role_policy" {
 }
 
 resource "aws_iam_role" "ecs_cloudformation" {
-  name               = "bedrock-ecs-cloudformation"
-  assume_role_policy = "${data.aws_iam_policy_document.cloudformation_assume_role_policy.json}"
+  name                  = "ecs-cloudformation-role"
+  path                  = var.role_path
+  assume_role_policy    = data.aws_iam_policy_document.cloudformation_assume_role_policy.json
+  force_detach_policies = true
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
-  role       = "${aws_iam_role.ecs_cloudformation.name}"
+  role       = aws_iam_role.ecs_cloudformation.name
 }

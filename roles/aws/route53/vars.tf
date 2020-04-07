@@ -1,4 +1,4 @@
-variable "mfa_required" {
-  description = "Indicates whether users assuming this role must have MFA enabled"
-  default     = "true"
+variable "role_path" {
+  description = "The path applied to blueprint roles"
+  default     = "/"
 }

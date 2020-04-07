@@ -22,37 +22,37 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-resource "aws_iam_role" "vpcadmin" {
-  name               = "bedrock-vpc-admin"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+resource "aws_iam_role" "blueprint" {
+  name               = "vpc-blueprint-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_readonly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
-  role       = "${aws_iam_role.vpcadmin.name}"
+  role       = aws_iam_role.blueprint.name
 }
 
 resource "aws_iam_role_policy_attachment" "iam_readonly" {
   policy_arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
-  role       = "${aws_iam_role.vpcadmin.name}"
+  role       = aws_iam_role.blueprint.name
 }
 
 resource "aws_iam_role_policy_attachment" "cloudformation_readonly" {
   policy_arn = "arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess"
-  role       = "${aws_iam_role.vpcadmin.name}"
+  role       = aws_iam_role.blueprint.name
 }
 
 resource "aws_iam_role_policy_attachment" "iam_passrole" {
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-iam-passrole"
-  role       = "${aws_iam_role.vpcadmin.name}"
+  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-cloudformation-passrole"
+  role       = aws_iam_role.blueprint.name
 }
 
 resource "aws_iam_role_policy_attachment" "cloudformation_create" {
   policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-cloudformation-create"
-  role       = "${aws_iam_role.vpcadmin.name}"
+  role       = aws_iam_role.blueprint.name
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_subnet_fullaccess" {
   policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/bedrock-ec2-subnet-fullaccess"
-  role       = "${aws_iam_role.vpcadmin.id}"
+  role       = aws_iam_role.blueprint.id
 }
