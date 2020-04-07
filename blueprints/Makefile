@@ -6,7 +6,7 @@ DEPENDS=.depends.mk
 TAGS?=latest
 BUILD_ARGS?=
 
-.PHONY: all clean tag push docs format $(IMAGES)
+.PHONY: all clean test tag push docs format $(IMAGES)
 
 all: $(IMAGES)
 
@@ -24,6 +24,10 @@ $(IMAGES): %:
 
 ifeq (clean,$(filter clean,$(MAKECMDGOALS)))
 	docker rmi $(REGISTRY)/$@
+endif
+
+ifeq (test,$(filter test,$(MAKECMDGOALS)))
+	terraform init $(subst -,/,$@) && terraform validate $(subst -,/,$@)
 endif
 
 	docker build ${BUILD_ARGS} --build-arg HTTP_PROXY=${http_proxy} -t $(REGISTRY)/$@ --network=host $(subst -,/,$@)
