@@ -5,6 +5,13 @@ data "aws_iam_policy_document" "iam_passrole_policy" {
   }
 }
 
+data "aws_iam_policy_document" "cloudformation_passrole_policy" {
+  statement {
+    actions   = ["iam:PassRole"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*-cloudformation-role"]
+  }
+}
+
 data "aws_iam_policy_document" "iam_keyrotation" {
   statement {
     actions = [
@@ -37,7 +44,9 @@ data "aws_iam_policy_document" "iam_assumerole" {
     actions = [
       "sts:AssumeRole",
     ]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/bedrock*"]
+    resources = [
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*-blueprint-role",
+    ]
   }
 }
 
@@ -53,8 +62,15 @@ data "aws_iam_policy_document" "iam_groupadmin" {
 }
 
 resource "aws_iam_policy" "iam_passrole" {
-  name   = "bedrock-iam-passrole"
-  policy = data.aws_iam_policy_document.iam_passrole_policy.json
+  name        = "bedrock-iam-passrole"
+  description = "Deprecated: use bedrock-cloudformation-passrole"
+  policy      = data.aws_iam_policy_document.iam_passrole_policy.json
+}
+
+resource "aws_iam_policy" "cloudformation_passrole" {
+  name        = "bedrock-cloudformation-passrole"
+  description = "Permission to pass role to cloudformation"
+  policy      = data.aws_iam_policy_document.cloudformation_passrole_policy.json
 }
 
 resource "aws_iam_policy" "iam_keyrotation" {
