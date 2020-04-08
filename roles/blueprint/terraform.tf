@@ -27,11 +27,13 @@ data "aws_iam_policy_document" "dynamodb_terraform_access" {
 }
 
 resource "aws_iam_policy" "s3_terraform_access" {
-  name   = "bedrock-terraform-state"
-  policy = data.aws_iam_policy_document.s3_terraform_access.json
+  name        = "bedrock-terraform-state"
+  description = "Manage persisted state for Terraform"
+  policy      = data.aws_iam_policy_document.s3_terraform_access.json
 }
 
 resource "aws_iam_policy" "dynamodb_terraform_access" {
-  name   = "bedrock-terraform-locking"
-  policy = data.aws_iam_policy_document.dynamodb_terraform_access.json
+  name        = "bedrock-terraform-locking"
+  description = "Manage execution locking for Terraform"
+  policy      = data.aws_iam_policy_document.dynamodb_terraform_access.json
 }

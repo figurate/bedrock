@@ -10,6 +10,7 @@ data "aws_iam_policy_document" "cloudformation_create_policy" {
 }
 
 resource "aws_iam_policy" "cloudformation_create" {
-  name   = "bedrock-cloudformation-create"
-  policy = data.aws_iam_policy_document.cloudformation_create_policy.json
+  name        = "bedrock-cloudformation-create"
+  description = "Manage CloudFormation stacks"
+  policy      = data.aws_iam_policy_document.cloudformation_create_policy.json
 }

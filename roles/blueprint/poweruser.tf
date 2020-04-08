@@ -8,6 +8,7 @@ data "aws_iam_policy_document" "poweruser_boundary_policy" {
 }
 
 resource "aws_iam_policy" "poweruser_boundary" {
-  name   = "bedrock-poweruser-boundary"
-  policy = data.aws_iam_policy_document.poweruser_boundary_policy.json
+  name        = "bedrock-poweruser-boundary"
+  description = "Restrict IAM functions to the specified region"
+  policy      = data.aws_iam_policy_document.poweruser_boundary_policy.json
 }
