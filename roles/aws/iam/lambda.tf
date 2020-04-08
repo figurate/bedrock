@@ -10,6 +10,7 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 
 resource "aws_iam_role" "lambda" {
   name               = "iam-lambda-role"
+  description        = "Role assumed by IAM Lambda functions"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 

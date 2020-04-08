@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
 resource "aws_iam_role" "blueprint" {
   name               = "iam-blueprint-role"
-  description        = "Bedrock role assumed by AWS IAM Role blueprints"
+  description        = "Role assumed by Bedrock blueprints"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 

@@ -1,6 +1,6 @@
 resource "aws_iam_role" "blueprint" {
   name                  = "ecr-blueprint-role"
-  description           = "Bedrock role assumed by AWS ECR blueprints"
+  description           = "Role assumed by Bedrock blueprints"
   path                  = var.role_path
   assume_role_policy    = data.aws_iam_policy_document.assume_role_policy.json
   force_detach_policies = true

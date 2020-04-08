@@ -10,6 +10,7 @@ data "aws_iam_policy_document" "cloudformation_assume_role_policy" {
 
 resource "aws_iam_role" "ecs_cloudformation" {
   name                  = "ecs-cloudformation-role"
+  description           = "Role assumed by ECS Cloudformation stacks"
   path                  = var.role_path
   assume_role_policy    = data.aws_iam_policy_document.cloudformation_assume_role_policy.json
   force_detach_policies = true
