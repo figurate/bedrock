@@ -1,5 +1,6 @@
 resource "aws_iam_role" "blueprint" {
   name               = "cloudfront-blueprint-role"
+  description        = "Role assumed by Bedrock blueprints"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 

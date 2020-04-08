@@ -10,6 +10,7 @@ data "aws_iam_policy_document" "cloudformation_assume_role_policy" {
 
 resource "aws_iam_role" "cloudformation" {
   name               = "vpc-cloudformation-role"
+  description        = "Role assumed by VPC Cloudformation stacks"
   assume_role_policy = data.aws_iam_policy_document.cloudformation_assume_role_policy.json
 }
 
