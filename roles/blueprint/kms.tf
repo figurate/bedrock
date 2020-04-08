@@ -19,11 +19,13 @@ data "aws_iam_policy_document" "kms_encryption" {
 }
 
 resource "aws_iam_policy" "kms_keymanagement" {
-  name   = "bedrock-kms-keymanagement"
-  policy = data.aws_iam_policy_document.kms_additional.json
+  name        = "bedrock-kms-keymanagement"
+  description = "Rotate KMS keys"
+  policy      = data.aws_iam_policy_document.kms_additional.json
 }
 
 resource "aws_iam_policy" "kms_encryption" {
-  name   = "bedrock-kms-encryption"
-  policy = data.aws_iam_policy_document.kms_encryption.json
+  name        = "bedrock-kms-encryption"
+  description = "Encrypt/decrypt using KMS keys"
+  policy      = data.aws_iam_policy_document.kms_encryption.json
 }

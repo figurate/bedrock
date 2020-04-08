@@ -11,6 +11,7 @@ data "aws_iam_policy_document" "dynamodb_fullaccess" {
 }
 
 resource "aws_iam_policy" "dynamodb_fullaccess" {
-  name   = "bedrock-dynamodb-fullaccess"
-  policy = data.aws_iam_policy_document.dynamodb_fullaccess.json
+  name        = "bedrock-dynamodb-fullaccess"
+  description = "Manage DynamoDB table entries"
+  policy      = data.aws_iam_policy_document.dynamodb_fullaccess.json
 }
