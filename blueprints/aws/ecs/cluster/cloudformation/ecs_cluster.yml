@@ -15,9 +15,6 @@ Parameters:
   LoadBalancerSubnets:
     Type: List<AWS::EC2::Subnet::Id>
     Description: Applicable subnets for the cluster load balancer
-  TargetGroupName:
-    Type: String
-    Description: Name of the cluster target group
   TargetDeregistrationDelay:
     Type: String
     Description: Delay before target deregistration (seconds)
@@ -37,13 +34,32 @@ Parameters:
   RouteName:
     Type: String
     Description: FQDN for the cluster load balancer
+  BlueGreenEnabled:
+    Type: String
+    Description: Indicates whether to enable load balancer support for blue-green deployments
+    AllowedValues: [true, false]
+    Default: false
+  ServiceDiscoveryEnabled:
+    Type: String
+    Description: Indicates whether to create a namespace for service discovery
+    AllowedValues: [true, false]
+    Default: false
+
+Conditions:
+  CreateServiceDiscoveryNamespace:
+    !Equals [true, !Ref ServiceDiscoveryEnabled]
 
 Resources:
-  EcsLoadBalancerSG:
+  EcsCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+
+  ClusterNodeSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Sub ${ClusterName}-alb
-      GroupDescription: Security group for ECS load balancer
+      GroupName: !Sub '${ClusterName}-NodeSG'
+      GroupDescription: !Sub 'Security Group for ${ClusterName} Cluster Nodes'
       VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -53,99 +69,11 @@ Resources:
           Description: Allow connections from within the VPC
       Tags:
         - Key: Name
-          Value: !Sub ${ClusterName}-alb
-
-  EcsLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: !Ref LoadBalancerName
-      Subnets: !Ref LoadBalancerSubnets
-      SecurityGroups:
-        !GetAtt EcsLoadBalancerSG.GroupId
-      Scheme: internal
-
-  EcsLbTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: !Ref TargetGroupName
-      TargetGroupAttributes:
-        - Key: deregistration_delay.timeout_seconds
-          Value: !Ref TargetDeregistrationDelay
-      HealthCheckIntervalSeconds: 60
-      UnhealthyThresholdCount: 10
-      HealthCheckPath: !Ref HealthCheckPath
-      Port: 80
-      Protocol: HTTP
-      VpcId: !Ref VpcId
-
-  EcsLbListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      Certificates:
-        - CertificateArn: !Ref CertificateArn
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref EcsLbTargetGroup
-      LoadBalancerArn: !Ref EcsLoadBalancer
-      Port: 443
-      Protocol: HTTPS
-
-  EcsLbTestListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      Certificates:
-        - CertificateArn: !Ref CertificateArn
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref EcsLbTargetGroup
-      LoadBalancerArn: !Ref EcsLoadBalancer
-      Port: 8443
-      Protocol: HTTPS
-
-  EcsClusterRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - sts:AssumeRole
-            Principal:
-              Service:
-                - ecs.amazonaws.com
-      Policies:
-        - PolicyName: !Sub ${ClusterName}-Policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:AuthorizeSecurityGroupIngress
-                  - ec2:Describe*
-                  - elasticloadbalancing:RegisterInstancesWithLoadBalancer
-                  - elasticloadbalancing:RegisterTargets
-                  - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
-                  - elasticloadbalancing:DeregisterTargets
-                  - elasticloadbalancing:Describe*
-
-  EcsCluster:
-    Type: AWS::ECS::Cluster
-    Properties:
-      ClusterName: !Ref ClusterName
-
-  EcsRecordSet:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      AliasTarget:
-        DNSName: !GetAtt EcsLoadBalancer.DNSName
-        HostedZoneId: !GetAtt EcsLoadBalancer.CanonicalHostedZoneID
-      HostedZoneId: !Ref HostedZoneId
-      Name: !Ref RouteName
-      Type: A
+          Value: !Sub '${ClusterName}-NodeSG'
 
   ServiceDiscoveryNamespace:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Condition: CreateServiceDiscoveryNamespace
     Properties:
       Name: !Ref ClusterName
       Vpc: !Ref VpcId
