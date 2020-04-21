@@ -5,6 +5,10 @@ provider "aws" {
   }
 }
 
+provider "tls" {
+  version = "~> 2.1"
+}
+
 variable "assume_role_account" {
   description = "AWS account ID for the role to assume into"
 }
