@@ -23,13 +23,9 @@ variable "vpc_default" {
 }
 
 variable "vpc_tags" {
-  type        = "map"
+  type        = map(any)
   description = "A map of tags to match on the VPC lookup"
   default     = {}
-}
-
-variable "zone_name" {
-  description = "A Route53 hosted zone to associate the ECS cluster endpoint"
 }
 
 variable "private_routing" {
@@ -41,17 +37,26 @@ variable "private_routing" {
   //  }
 }
 
-variable "appmesh_enabled" {
-  description = "Enable AppMesh for the cluster"
-  default     = "False"
-  //  validation {
-  //    condition = var.appmesh_enabled == "true" || var.appmesh_enabled == "false"
-  //    error_message = "Must be a boolean value"
-  //  }
+variable "servicemesh_enabled" {
+  description = "Enable service mesh for the cluster"
+  default     = false
+}
+
+variable "service_namespace" {
+  description = "The namespace to use for service discovery (leave blank for default namespace)"
+  default     = ""
+}
+
+variable "efs_enabled" {
+  description = "Enable EFS filesystem for persistent volumes"
+  default     = false
 }
 
 locals {
-  env_string   = var.context == "" ? var.environment : format("%s-%s", var.environment, var.context)
-  cluster_name = var.context == "" ? format("%s-cluster", var.environment) : format("%s-cluster-%s", var.environment, var.context)
-  account_hash = substr(sha256(data.aws_caller_identity.current.account_id), -10, 10)
+  env_string        = var.context == "" ? var.environment : format("%s-%s", var.environment, var.context)
+  cluster_name      = var.context == "" ? format("%s-cluster", var.environment) : format("%s-cluster-%s", var.environment, var.context)
+  account_hash      = substr(sha256(data.aws_caller_identity.current.account_id), -10, 10)
+  default_namespace = replace(var.service_namespace, "/\\A\\z/", "${local.env_string}.internal")
+
+  efs_subnets = var.efs_enabled ? data.aws_subnet_ids.tenant.ids : []
 }
