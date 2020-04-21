@@ -14,11 +14,6 @@ data "aws_vpc" "tenant" {
 
 data "aws_availability_zones" "available_zones" {}
 
-data "aws_route53_zone" "zone" {
-  name         = "${var.zone_name}."
-  private_zone = var.private_routing == "True"
-}
-
 data "aws_subnet_ids" "tenant" {
   vpc_id = data.aws_vpc.tenant.id
   //  tags {
@@ -39,8 +34,9 @@ resource "aws_cloudformation_stack" "ecs_cluster" {
     HealthCheckPath           = "/"
     CertificateArn            = aws_acm_certificate.ssl_certificate.arn
     ClusterName               = local.cluster_name
-    HostedZoneId              = data.aws_route53_zone.zone.id
+    ServiceDiscoveryName      = local.default_namespace
     RouteName                 = "${local.cluster_name}-${local.account_hash}"
+    ServiceMeshEnabled        = var.servicemesh_enabled ? "true" : "false"
   }
   template_body = file(format("%s/%s.yml", var.cloudformation_path, var.cluster_template))
 }

@@ -28,9 +28,6 @@ Parameters:
   ClusterName:
     Type: String
     Description: The name of the ECS cluster
-  HostedZoneId:
-    Type: AWS::Route53::HostedZone::Id
-    Description: Hosted zone for route53 entry
   RouteName:
     Type: String
     Description: FQDN for the cluster load balancer
@@ -39,15 +36,18 @@ Parameters:
     Description: Indicates whether to enable load balancer support for blue-green deployments
     AllowedValues: [true, false]
     Default: false
-  ServiceDiscoveryEnabled:
+  ServiceMeshEnabled:
     Type: String
-    Description: Indicates whether to create a namespace for service discovery
+    Description: Indicates whether to create a service mesh for the cluster
     AllowedValues: [true, false]
     Default: false
+  ServiceDiscoveryName:
+    Type: String
+    Description: Domain name for service discovery namespace
 
 Conditions:
-  CreateServiceDiscoveryNamespace:
-    !Equals [true, !Ref ServiceDiscoveryEnabled]
+  CreateServiceMesh:
+    !Equals [true, !Ref ServiceMeshEnabled]
 
 Resources:
   EcsCluster:
@@ -63,19 +63,33 @@ Resources:
       VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 433
-          ToPort: 433
+          FromPort: 8443
+          ToPort: 8443
+          CidrIp: !Ref VpcCidrIp
+          Description: Allow connections from within the VPC
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
           CidrIp: !Ref VpcCidrIp
           Description: Allow connections from within the VPC
       Tags:
         - Key: Name
           Value: !Sub '${ClusterName}-NodeSG'
 
+  ServiceMesh:
+    Type: "AWS::AppMesh::Mesh"
+    Condition: CreateServiceMesh
+    Properties:
+      MeshName: !Ref ClusterName
+      Spec:
+        EgressFilter:
+          Type: "ALLOW_ALL"
+
   ServiceDiscoveryNamespace:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
-    Condition: CreateServiceDiscoveryNamespace
+    Condition: CreateServiceMesh
     Properties:
-      Name: !Ref ClusterName
+      Name: !Ref ServiceDiscoveryName
       Vpc: !Ref VpcId
 
 #Outputs:
