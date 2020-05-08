@@ -6,6 +6,9 @@ DEPENDS=.depends.mk
 TAGS?=latest
 BUILD_ARGS?=
 
+TERRAFORM_VERSION=0.12.24
+TERRAFORM=docker run --rm -v "${PWD}:/work" -e AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) -e http_proxy=$(http_proxy) --net=host -w /work hashicorp/terraform:$(TERRAFORM_VERSION)
+
 .PHONY: all clean test tag push docs format $(IMAGES)
 
 all: $(IMAGES)
@@ -27,10 +30,12 @@ ifeq (clean,$(filter clean,$(MAKECMDGOALS)))
 endif
 
 ifeq (test,$(filter test,$(MAKECMDGOALS)))
-	terraform init $(subst -,/,$@) && terraform validate $(subst -,/,$@)
+	$(TERRAFORM) init ./$(subst -,/,$@) && \
+		$(TERRAFORM) get -update && \
+		$(TERRAFORM) validate ./$(subst -,/,$@)
 endif
 
-	docker build ${BUILD_ARGS} --build-arg HTTP_PROXY=${http_proxy} -t $(REGISTRY)/$@ --network=host $(subst -,/,$@)
+	docker build ${BUILD_ARGS} --build-arg TERRAFORM_VERSION=$(TERRAFORM_VERSION) --build-arg HTTP_PROXY=${http_proxy} -t $(REGISTRY)/$@ --network=host $(subst -,/,$@)
 
 ifeq (tag,$(filter tag,$(MAKECMDGOALS)))
 	echo $(TAGS) | tr "/," "-\n" | xargs -n1 -I % docker tag $(REGISTRY)/$@ $(REGISTRY)/$@:%
@@ -45,5 +50,5 @@ ifeq (docs,$(filter docs,$(MAKECMDGOALS)))
 endif
 
 ifeq (format,$(filter format,$(MAKECMDGOALS)))
-	terraform fmt -list=true $(subst -,/,$@)/
+	$(TERRAFORM) fmt -list=true $(subst -,/,$@)/
 endif
