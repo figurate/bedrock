@@ -13,40 +13,25 @@
  */
 data "aws_caller_identity" "current" {}
 
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-      type        = "AWS"
-    }
-  }
+module "iam_policies" {
+  source = "micronode/iam-policies/aws"
+
+  region             = var.region
+  name_prefix        = "bedrock"
+  assume_role_filter = "*-blueprint-role"
 }
 
-resource "aws_iam_role" "blueprintadmin" {
-  name               = "bedrock-blueprint-admin"
-  description        = "Bedrock role used to provision blueprints and blueprint roles"
-  path               = var.role_path
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
-}
+module "blueprintadmin" {
+  source = "micronode/iam-role/aws"
 
-resource "aws_iam_role_policy_attachment" "assumerole" {
-  role       = aws_iam_role.blueprintadmin.id
-  policy_arn = aws_iam_policy.iam_assumerole.arn
-}
-
-resource "aws_iam_role_policy_attachment" "terraform_state" {
-  role       = aws_iam_role.blueprintadmin.id
-  policy_arn = aws_iam_policy.s3_terraform_access.arn
-}
-
-resource "aws_iam_role_policy_attachment" "terraform_lock" {
-  role       = aws_iam_role.blueprintadmin.id
-  policy_arn = aws_iam_policy.dynamodb_terraform_access.arn
-}
-
-// support for aws-ecr-repository import Docker images..
-resource "aws_iam_role_policy_attachment" "ecr_login" {
-  role       = aws_iam_role.blueprintadmin.id
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+  name        = "bedrock-blueprint-admin"
+  description = "Bedrock role used to provision blueprints and blueprint roles"
+  path        = var.role_path
+  principal   = "account"
+  policies = [
+    module.iam_policies.iam_assumerole_arn,
+    module.iam_policies.s3_terraform_access_arn,
+    module.iam_policies.dynamodb_terraform_access_arn,
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser",
+  ]
 }
