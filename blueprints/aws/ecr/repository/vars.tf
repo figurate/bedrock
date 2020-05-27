@@ -12,13 +12,13 @@ variable "image_expiry" {
   default     = 7
 }
 
-//variable "import_enabled" {
-//  description = "Automatic import of images from an external source"
-//  default = false
-//}
+variable "import_frequency" {
+  description = "How often should images be imported from an external source"
+  default     = "never"
+}
 
 variable "source_registry" {
-  description = "The source registry for importing images (note this should include the trailing forward slash (/))"
+  description = "The source registry for importing images (leave blank for Docker Hub)"
   default     = ""
 }
 
