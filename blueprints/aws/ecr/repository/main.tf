@@ -3,33 +3,13 @@
  *
  * Create an ECR repository with lifecycle rules.
  */
-resource "aws_ecr_repository" "repository" {
-  name = var.repository_name
+module "repository" {
+  source = "figurate/ecr-repository/aws"
 
-  image_scanning_configuration {
-    scan_on_push = var.scan_on_push
-  }
-}
-
-resource "aws_ecr_lifecycle_policy" "untagged_images" {
-  repository = aws_ecr_repository.repository.name
-  policy     = <<EOF
-{
-  "rules": [
-    {
-      "rulePriority": 1,
-      "description": "Remove untagged images older than ${var.image_expiry} days",
-      "selection": {
-        "tagStatus": "untagged",
-        "countType": "sinceImagePushed",
-        "countUnit": "days",
-        "countNumber": ${var.image_expiry}
-      },
-      "action": {
-        "type": "expire"
-      }
-    }
-  ]
-}
-EOF
+  name                       = var.repository_name
+  scan_on_push               = var.scan_on_push
+  untagged_image_expiry_days = var.image_expiry
+  source_registry            = var.source_registry
+  source_tags                = var.source_tags
+  import_frequency           = var.import_frequency
 }
