@@ -1,0 +1,7 @@
+site_name: Bedrock User Guide
+theme:
+  name: material
+#  favicon: images/favicon.png
+#  logo: images/logo-50.png
+repo_url: https://github.com/micronode/bedrock
+repo_name: micronode/bedrock
