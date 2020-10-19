@@ -36,8 +36,14 @@
 
 ## Introduction
 
-Bedrock is a collection of managed role-based policies and Terraform-based blueprints to assist with provisioning infrastructure and 
-services. When we design modern computing architectures it is important to consider security, reliability and efficiency as equally 
+Bedrock is a collection of best practices and industry recognised patterns for building and operating public Cloud infrastructure.
+
+Bedrock provides blueprints for configuring Cloud environments, and to assist with provisioning platforms and 
+services. 
+
+### Security
+
+When we design modern computing architectures it is important to consider security, reliability and efficiency as equally 
 important concerns. With public Cloud architectures in particular, security must be addressed throughout the entire architecture, and not
 just at the perimiter.
 
