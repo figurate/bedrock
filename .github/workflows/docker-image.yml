@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: DOCKER_TAGS=$(date +%s),latest make -f blueprints/aws/ecr-repository build
+      run: DOCKER_TAGS=$(date +%s),latest make -f blueprints/aws/ecr-repository/Makefile build
