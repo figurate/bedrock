@@ -40,6 +40,16 @@ Bedrock is a collection of managed role-based policies and Terraform-based bluep
 infrastructure and services. When we design modern computing architectures it is important to consider security, 
 reliability and efficiency as equally important concerns. With public Cloud architectures in particular, security must 
 be addressed throughout the entire architecture, and not just at the perimiter.
+Bedrock is a collection of best practices and industry recognised patterns for building and operating public Cloud infrastructure.
+
+Bedrock provides blueprints for configuring Cloud environments, and to assist with provisioning platforms and 
+services. 
+
+### Security
+
+When we design modern computing architectures it is important to consider security, reliability and efficiency as equally 
+important concerns. With public Cloud architectures in particular, security must be addressed throughout the entire architecture, and not
+just at the perimiter.
 
 Role-based access control (RBAC) allows us to restrict actors to the minimum required permissions, which is commonly 
 referred to as the [principle of least privilege], and is the basis for the architectural blueprints provided by 
