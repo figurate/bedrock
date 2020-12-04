@@ -29,8 +29,8 @@ clean:
 build:
 	 docker build -t $(DOCKER_REGISTRY)/$(DOCKER_IMAGE) ${BUILD_ARGS} --build-arg TERRAFORM_VERSION=$(TERRAFORM_VERSION) --build-arg HTTP_PROXY=${http_proxy} --network=host .
 
-tag:
+tag: build
 	echo $(DOCKER_TAGS) | tr "/," "-\n" | xargs -n1 -I % docker tag $(DOCKER_REGISTRY)/$(DOCKER_IMAGE) $(DOCKER_REGISTRY)/$(DOCKER_IMAGE):%
 
-push:
+push: tag
 	echo $(DOCKER_TAGS) | tr "/," "-\n" | xargs -n1 -I % docker push $(DOCKER_REGISTRY)/$(DOCKER_IMAGE):%

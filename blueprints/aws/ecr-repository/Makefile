@@ -28,10 +28,10 @@ clean:
 build:
 	 docker build -t $(REGISTRY)/aws-ecr-repository ${BUILD_ARGS} --build-arg TERRAFORM_VERSION=$(TERRAFORM_VERSION) --build-arg HTTP_PROXY=${http_proxy} --network=host .
 
-tag:
+tag: build
 	echo $(TAGS) | tr "/," "-\n" | xargs -n1 -I % docker tag $(REGISTRY)/aws-ecr-repository $(REGISTRY)/aws-ecr-repository:%
 
-push:
+push: tag
 	echo $(TAGS) | tr "/," "-\n" | xargs -n1 -I % docker push $(REGISTRY)/aws-ecr-repository:%
 
 #.PHONY: all clean validate test docs format
