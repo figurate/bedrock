@@ -14,5 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: DOCKER_TAGS=$(date +%s),latest make build
+    - name: Build aws/ecr-repository
+      run: cd  blueprints/aws/ecr-repository && DOCKER_TAGS=$(date +%s),latest make build
+    - name: Build aws/ecs-task-definition
+      run: cd  blueprints/aws/ecs-task-definition && DOCKER_TAGS=$(date +%s),latest make build

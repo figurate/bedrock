@@ -1,0 +1,20 @@
+name: Bedrock VPC
+description: Provision a new VPC for Bedrock Constellations
+
+constellations:
+  default:
+    aws-vpc-network:
+      environment: bedrock
+      cidr_block: 10.0.0.0/16
+    aws-vpc-subnets: # public
+      vpc_tags:
+        - "Environment=bedrock"
+      is_public: true
+
+  private:
+    aws-vpc-subnets: # private
+      vpc_tags:
+        - "Environment=bedrock"
+    aws-vpc-natgateway:
+      vpc_tags:
+        - "Environment=bedrock"

@@ -1,0 +1,26 @@
+######
+#  Mandatory configuration: username
+#  Usage: $ br-manifest apply -m iam-user.yml -c username=bedrock
+######
+name: Bedrock IAM
+
+description: |
+  - Provision IAM roles/policies required for provisioning Bedrock blueprints
+  - Provision IAM power user to assume required roles
+  - Provision Lambda to automatically disable old access keys in tenancy
+
+constellations:
+  keyrotation:
+    aws-iam-keyrotation:
+    aws-cloudwatch-trigger:
+      trigger_name: iam-keyrotation-trigger
+      description: Rotate old IAM access keys for specified users
+      trigger_schedule: "0 22 15 * ? *"
+      function_name: IamKeyRotation
+      function_input: |
+        {
+          Group = "iam-keyrotation"
+        }
+
+  bedrock:
+    aws-iam-poweruser:
