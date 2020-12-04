@@ -1,0 +1,99 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Provision SpotFleet for an ECS Cluster
+
+Parameters:
+  ClusterName:
+    Type: String
+    Description: Name of the ECS Cluster
+  AmiId:
+    Type: AWS::EC2::Image::Id
+    Description: SpotFleet EC2 Image
+  InstanceType:
+    Type: String
+    Description: EC2 Instance Type
+  AvailabilityZones:
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+    Description: AZs used to deploy EC2 instances
+  ClusterNodeSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: VPC Subnets used to provision network interfaces for cluster nodes
+  ClusterNodesMin:
+    Type: Number
+    Description: Minimum number of nodes required for the cluster
+  ClusterNodesMax:
+    Type: Number
+    Description: Maximum number of nodes allowed for the cluster
+  ClusterNodesDesired:
+    Type: Number
+    Description: Desired number of nodes suggested for the cluster
+  ClusterNodeSG:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Security Group applied to cluster nodes
+  ClusterNodeInstanceProfile:
+    Type: String
+    Description: EC2 Instance Profile attached to cluster nodes
+  ClusterSpotFleetRole:
+    Type: String
+    Description: IAM Role ARN for cluster SpotFleet
+  ClusterAutoscalingRole:
+    Type: String
+    Description: IAM Role ARN for cluster autoscaling
+
+Resources:
+    LaunchTemplate:
+      Type: AWS::EC2::LaunchTemplate
+      Properties:
+        LaunchTemplateData:
+          ImageId: !Ref AmiId
+          InstanceType: !Ref InstanceType
+          IamInstanceProfile:
+            Arn: !Ref ClusterNodeInstanceProfile
+          SecurityGroupIds:
+            - !Ref ClusterNodeSG
+          TagSpecifications:
+            - ResourceType: instance
+              Tags:
+                - Key: Name
+                  Value: !Ref ClusterName
+          UserData:
+            Fn::Base64: !Sub |
+              #!/bin/bash
+              echo 'ECS_CLUSTER=${ClusterName}' >> /etc/ecs/ecs.config
+
+    SpotFleet:
+      Type: AWS::EC2::SpotFleet
+      Properties:
+        SpotFleetRequestConfigData:
+          IamFleetRole: !Ref ClusterSpotFleetRole
+          TargetCapacity: !Ref ClusterNodesDesired
+          LaunchTemplateConfigs:
+            - LaunchTemplateSpecification:
+                LaunchTemplateId: !Ref LaunchTemplate
+                Version: !GetAtt LaunchTemplate.LatestVersionNumber
+              Overrides:
+                - SubnetId: !Join [',', !Ref ClusterNodeSubnets]
+
+#    AutoscalingTarget:
+#      Type: AWS::ApplicationAutoScaling::ScalableTarget
+#      Properties:
+#
+#    ScaleOutPolicy:
+#      Type: AWS::ApplicationAutoScaling::ScalingPolicy
+#      Properties:
+#
+#    ScaleInPolicy:
+#      Type: AWS::ApplicationAutoScaling::ScalingPolicy
+#      Properties:
+#
+#    CloudWatchAlarmCPUHigh:
+#      Type: AWS::CloudWatch::Alarm
+#      Properties:
+#
+#    CloudWatchAlarmMemoryHigh:
+#      Type: AWS::CloudWatch::Alarm
+#      Properties:
+#
+#    CloudWatchAlarmMetricsLow:
+#      Type: AWS::CloudWatch::Alarm
+#      Properties:
