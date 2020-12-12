@@ -33,7 +33,7 @@ jobs:
 
       - name: Push image
         run: |
-          REGISTRY=docker.pkg.github.com/${{ github.repository }}/
+          export REGISTRY=docker.pkg.github.com/${{ github.repository }}/
 
           # Change all uppercase to lowercase
           #IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
@@ -47,7 +47,7 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "develop" ] && VERSION=latest
           
-          TAGS=$VERSION
+          export TAGS=$VERSION
 
           echo REGISTRY=$REGISTRY
           echo TAGS=$TAGS
