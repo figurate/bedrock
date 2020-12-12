@@ -47,7 +47,7 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "develop" ] && VERSION=latest
           
-          TAGS = $VERSION
+          TAGS=$VERSION
 
           echo REGISTRY=$REGISTRY
           echo TAGS=$TAGS
