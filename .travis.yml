@@ -1,0 +1,31 @@
+language: python
+
+services:
+  - docker
+
+script:
+  - cd blueprints
+  - TAGS="$(git tag --points-at HEAD | tr '\n' ',')latest" make all tag
+  - cd ../roles
+  - TAGS="$(git tag --points-at HEAD | tr '\n' ',')latest" make all tag
+  - cd ..
+
+env:
+  global:
+  - secure: NWjeX+0ZQR/+JlgN9nqforiS9Hd6HfFS5uOLCN9iWphqmhgAhvgaFLSCvELMZSXmuSdGb/3bVP7AR29jXwOpnfnAJkxrQAZDuNj5yB8dqTAa1fnswJHAvFNUi4kn+CuDFJxzyHH/XSZ+vJ1le8HSagI65Z7jOtx6YO6qAav6qzLBBeFme1IMb5/q4ncA3mqplHEcD7zctjKL6y7JJnn49A/KnWNCxBDxWkVLnxG+kwmFsbZblQ+T0Mu3QZljnKD+Ffn1o9nL7usfzQikHzwMBncsegfSbKMG6dSRIaCV4Vwarg1+9KXvTQ8r96ydll/5irrhcbx9mGh4apk5cGhIZm+aeWcd72c/vG6ZFbqHbTBbAtsNV2OcvPhwotpebi91VVM4RFO4TCmZKxPcz/IDHgYMLlFeY3p8L9/Rioa4Da0tfOOhNu0XgBZ5IRW+aCSHFXGr4IZ4PnTFir+OqGKhyR2+dwntCPGWqvPAXGe9KZ58DbqbRYgDH28kyJX+svYTWTTw4XTqreXNevO3qarGXoN5nPJEYjW43VlG9uWFgQFE3V0QaWZppJ8hICJUsVpGuezxed/L15vRQ9ov5PWf1bHZBN5AqHIvIRQ2AYVVDzclDSYhjE1CrJzWZL/x4QXI7bqkbIiss2MkHOe0muS0PpEBazS617YwcyRajAaFy+U=
+  - secure: WOuBlt29AeyVWkZlGIU4nMA3eMMqQDcMIDfHCIdNK0nhdNor9oUeONWqm7o5xgtkfAEyC7zk+Cla3TZd91Af7a2xY0JaWjBiL1YFL2iQH2lPJXQJ+gj9qRHg9fo/FWN4P3u5bKfePbnk9apO7EHDPVOeMOxa1uFGV+XaCznHOncJX0nX7BaTQdMsOHxzxDKKMaaWa3GQZCNSLXUiN8t7UVJCfhd8DcZ0uoG4QfxlrplFf3rXPuuqnM8K0DcVyfLlrlo8REuCCJv7qI9y9l20smySEXk0aGLReVk3HMtNreyc+6vOQZRCf24m7MS1QTxRxuk+6l3qcFgM6NtOXgoD+Szwwom8jP6jF10y7bukt9wPdeI/LUpRSas+nUSHUDuTV/0CA/bs7EyO5gJQfFEJvD3r7wkPTn4KT4CZdxMeGU4aFVR38n4zYJfMFR3yn+r0pYLV5eAzB9FyD/tXVVVraDvRSzcEEeaxgDitaKTzYf7jglHsDBdmW1yoIWThrhOANHSRdayhcn7/hRDwU7fjcziyZPwt2sQruCMkxnPPjluZvhPypgIJKU+A6Pb21kqpcktDOdL2dMSDQDm4uoq1Vi5TF8LPogBQsEdZYt+JXEd8ZH6+DurJmrKZ+exvZy96AnJoaJFDqWfOlKOpFKMbueX1uK4hKL9ErsqIBBkuBas=
+
+deploy:
+  - provider: pypi
+    user: __token__
+    password:
+      secure: SWk9BOzDcgH+TSG6FVvtIhcef30rjTi6AgILAtGPIVoo8yE04xKlgrN1/IJr2yusF6aCAAV96vGDEp4vyA6Lnuaohh01lahkAJeO+u/X20bj8iO4r9dE3KPC2/y65/3VczNwE1tTNYWf4a978lGOmfACtlIy/4g+qFHg6w72dKbIiBVWIbRe4uYItzxIznlRoUEoejIb9XdPdxoYoSL9VGqz54M9S09Ogpf23ZMFqmn1lGDLUV8gbWvngXaSMaZQJK6odM6LpUe/4z5/NhEsOyQx7VzImVQiy07l6560ObTAFmSdldfZWJ9Q4e0aZidXVttcJ7dMmbTyZ5apuzR5EwQYJGggA1nl7jclzYOaDZ7KvnX43r2K+65zugUFh2AmzrCxBlZVKu7i4r8ryap4tyWC+zU+LPX4bhbkbL/o5pD4yPIBirIO669RxBYUBpmU4N2caBIXdz0fIQjZ8fzo0LjBwwiDLQn7PHZnspIosHrutuvTgw8ob50ndMIZb/Wi150GJ79b+aZ33lXEIVEgw7C1Pj7jL2g7Cgs0tJiZUpLZfOdoLkIa0ZXj47yg862yVj9mo+BsSw/ge8ORya9japX6bXK/zRAyA0hORlQhWQ1GY4jo3fDnQ+6weOuDLNlGHHqy8YtVf7sMj/BBQ+pOrlrZXgR7nqCSRfxl64Lby0c=
+    on:
+      tags: true
+  - provider: script
+    script:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - cd blueprints
+      - TAGS="$(git tag --points-at HEAD | tr '\n' ',')latest" make tag push all
+    on:
+      tags: true

@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+
+    # Publish tags as releases.
+    tags: ['*']
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set tags
+      run: echo "DOCKER_TAGS=${GITHUB_REF#refs/*/},latest" >> $GITHUB_ENV
+    - name: Log into registry
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USER }} --password-stdin
+
+    - name: Publish aws/ecr-repository
+      run: cd blueprints/aws/ecr-repository && make push
+
+    - name: Publish aws/ecs-task-definition
+      run: cd blueprints/aws/ecs-task-definition && make push

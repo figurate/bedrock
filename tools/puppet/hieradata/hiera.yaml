@@ -1,0 +1,18 @@
+---
+version: 5
+defaults:
+  datadir: .
+hierarchy:
+  - name: "Encrypted"
+    lookup_key: eyaml_lookup_key # eyaml backend
+    paths:
+      - "common.eyaml"
+    options:
+      pkcs7_private_key: keys/private_key.pkcs7.pem
+      pkcs7_public_key:  keys/public_key.pkcs7.pem
+  - name: "Unencrypted"
+    data_hash: yaml_data # Standard yaml backend
+    paths:
+      - "node/%{trusted.hostname}.yaml"
+      - "group/%{facts.group}.yaml"
+      - "common.yaml"

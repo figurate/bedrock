@@ -1,0 +1,20 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build aws/ecr-repository
+      run: cd  blueprints/aws/ecr-repository && DOCKER_TAGS=$(date +%s),latest make build
+    - name: Build aws/ecs-task-definition
+      run: cd  blueprints/aws/ecs-task-definition && DOCKER_TAGS=$(date +%s),latest make build

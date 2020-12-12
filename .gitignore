@@ -1,2 +1,19 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
+.vagrant/
+.terraform/
+packer/env.json
+*.tfstate*
+puppet/keys/
+*.tfvars
+.depends.mk
+*.zip
+venv/
+.gradle/
+build/
+dist/
+*.egg-info/
+.eggs
+
+plan.binary
+plan.json
