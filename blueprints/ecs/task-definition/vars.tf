@@ -1,11 +1,14 @@
 variable "name" {
-  description = "A name to identify the ECS service"
-  default     = "nginx"
+  description = "ECS service name"
+}
+
+variable "image" {
+  description = "ECR registry name"
 }
 
 variable "namespace" {
   description = "Provides a context for the intended deployment of the Task Definition (e.g. environment, etc.)"
-  default     = "example"
+  default     = null
 }
 
 variable "image_tag" {
@@ -16,9 +19,7 @@ variable "image_tag" {
 variable "ports" {
   description = "A list of port mappings to publish"
   type        = list(tuple([number, number]))
-  default = [
-    [80, 80], [9090, 9090]
-  ]
+  default     = []
 }
 
 variable "network_mode" {
