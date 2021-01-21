@@ -14,9 +14,8 @@ DIAGRAMS=docker run -v "${PWD}:/work" figurate/diagrams python
 
 NAME=$(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
-DOCKER_REGISTRY?=bedrock
-DOCKER_IMAGE?=aws-`basename $(PWD)`
-DOCKER_TAGS?=latest
+REGISTRY?=bedrock
+TAGS?=latest
 BUILD_ARGS?=
 
 .PHONY: all build tag push
@@ -24,13 +23,13 @@ BUILD_ARGS?=
 all: build
 
 clean:
-	docker rmi $(DOCKER_REGISTRY)/$(DOCKER_IMAGE)
+	docker rmi $(REGISTRY)/ecs-task-definition
 
 build:
-	 docker build -t $(DOCKER_REGISTRY)/$(DOCKER_IMAGE) ${BUILD_ARGS} --build-arg TERRAFORM_VERSION=$(TERRAFORM_VERSION) --build-arg HTTP_PROXY=${http_proxy} --network=host .
+	 docker build -t $(REGISTRY)/ecs-task-definition ${BUILD_ARGS} --build-arg TERRAFORM_VERSION=$(TERRAFORM_VERSION) --build-arg HTTP_PROXY=${http_proxy} --network=host .
 
 tag: build
-	echo $(DOCKER_TAGS) | tr "/," "-\n" | xargs -n1 -I % docker tag $(DOCKER_REGISTRY)/$(DOCKER_IMAGE) $(DOCKER_REGISTRY)/$(DOCKER_IMAGE):%
+	echo $(TAGS) | tr "/," "-\n" | xargs -n1 -I % docker tag $(REGISTRY)/ecs-task-definition $(REGISTRY)/ecs-task-definition:%
 
 push: tag
-	echo $(DOCKER_TAGS) | tr "/," "-\n" | xargs -n1 -I % docker push $(DOCKER_REGISTRY)/$(DOCKER_IMAGE):%
+	echo $(TAGS) | tr "/," "-\n" | xargs -n1 -I % docker push $(REGISTRY)/ecs-task-definition:%

@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_log_group" "log" {
-  name              = "ecs/nginx"
+  name              = "ecs/${var.name}"
   retention_in_days = 14
 }
 
@@ -7,7 +7,7 @@ module "task_definition" {
   source = "figurate/ecs-task-definition/aws"
 
   execution_role   = null
-  image            = "nginx"
+  image            = var.image
   image_tag        = var.image_tag
   memory           = 64
   log_group        = aws_cloudwatch_log_group.log.name
