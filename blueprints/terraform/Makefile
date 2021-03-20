@@ -5,7 +5,7 @@ TF_WORKSPACE=$(AWS_ACCOUNT)
 
 ifneq (, $(shell which docker))
 TERRAFORM_VERSION=0.14.7
-TERRAFORM=docker run --rm -v "${PWD}:/work" -v "${HOME}/.ssh:/root/.ssh" -v "${HOME}/.aws:/root/.aws" -e AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) -e http_proxy=$(http_proxy) --net=host -w /work hashicorp/terraform:$(TERRAFORM_VERSION)
+TERRAFORM=docker run --rm -v "${PWD}:/work" -v "${HOME}/.ssh:/root/.ssh" -v "${HOME}/.aws:/root/.aws" -v "${HOME}/.terraformrc:/root/.terraformrc" -e AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) -e http_proxy=$(http_proxy) --net=host -w /work hashicorp/terraform:$(TERRAFORM_VERSION)
 else
 TERRAFORM=terraform
 endif
@@ -60,7 +60,7 @@ workspace:
 	$(TERRAFORM) workspace show
 
 plan:
-	$(TERRAFORM) plan -input=false
+	$(TERRAFORM) plan -input=false -var-file=$(WORKSPACE).tfvars
 
 apply:
-	$(TERRAFORM) apply -input=false $(TF_ARGS)
+	$(TERRAFORM) apply -input=false -var-file=$(WORKSPACE).tfvars $(TF_ARGS)
