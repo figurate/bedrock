@@ -28,7 +28,7 @@ clean:
 	rm -rf .terraform/
 
 init:
-	$(TERRAFORM) init
+	$(TERRAFORM) init -upgrade
 
 validate: init
 	$(TERRAFORM) validate
@@ -45,7 +45,9 @@ docs: diagram
 	$(TERRAFORM_DOCS) markdown ./ >./README.md
 
 format:
-	$(TERRAFORM) fmt -list=true ./
+	$(TERRAFORM) fmt -list=true ./ && \
+	$(TERRAFORM) fmt -list=true ./organization && \
+	$(TERRAFORM) fmt -list=true ./s3-remote-state
 
 list:
 	$(TERRAFORM) workspace list
