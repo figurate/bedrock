@@ -54,4 +54,4 @@ jobs:
 
           #docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           #docker push $IMAGE_ID:$VERSION
-          cd blueprints/aws/ecr-repository && make push
+          cd aws-ecr && make push
