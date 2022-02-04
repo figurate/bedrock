@@ -1,0 +1,54 @@
+#cloud-config
+bootcmd:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+apt:
+  sources:
+    docker:
+      source: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - software-properties-common
+  - unattended-upgrades
+  - docker-ce
+
+timezone: Australia/Melbourne
+
+ntp:
+  enabled: true
+  servers:
+    - 0.au.pool.ntp.org
+    - 1.au.pool.ntp.org
+    - 2.au.pool.ntp.org
+    - 3.au.pool.ntp.org
+
+users:
+  - name: ${AuthorizedUserName}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ${AuthorizedUserSSHKey}
+
+write_files:
+  - path: /etc/log_files.yml
+    content: |
+      files:
+        - /var/log/nginx/access.log
+        - /var/log/nginx/error.log
+      destination:
+        host: ${PapertrailHost}
+        port: ${PapertrailPort}
+        protocol: tls
+      pid_file: /var/run/remote_syslog.pid
+
+runcmd:
+  - docker run -d --restart=unless-stopped -p 8080:8080 rancher/server
+  - "wget --header='X-Papertrail-Token: QHS89ESNb9Q0OGPK9Hu2' https://papertrailapp.com/destinations/2465304/setup.sh"
+  - bash setup.sh
+  - curl -O https://github.com/papertrail/remote_syslog2/releases/download/v0.20/remote-syslog2_0.20_amd64.deb
+  - dpkg --install remote-syslog2_0.20_amd64.deb
+  - remote_syslog

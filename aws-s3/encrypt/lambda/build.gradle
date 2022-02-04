@@ -1,0 +1,19 @@
+plugins {
+    id 'groovy'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.codehaus.groovy:groovy-all:$groovyVersion"
+    compile "com.amazonaws:aws-java-sdk-lambda:$awsSdkVersion"
+}
+
+task buildZip(type: Zip) {
+    from compileGroovy
+    from processResources
+}
+
+build.dependsOn buildZip

@@ -1,9 +1,0 @@
-AWSTemplateFormatVersion: 2010-09-09
-
-Description: A Cloudformation template for provisioning an autoscaling stack.
-
-Parameters:
-
-Resources:
-
-Outputs:
