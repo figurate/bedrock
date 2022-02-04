@@ -22,8 +22,8 @@ jobs:
     - name: Log into registry
       run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USER }} --password-stdin
 
-    - name: Publish aws/ecr-repository
-      run: cd blueprints/aws/ecr-repository && make push
+    - name: Publish aws/ecr
+      run: cd aws-ecr && make push
 
-    - name: Publish aws/ecs-task-definition
-      run: cd blueprints/aws/ecs-task-definition && make push
+    - name: Publish aws/ecs
+      run: cd aws-ecs && make push

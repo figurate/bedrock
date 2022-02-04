@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: A Cloudformation template for provisioning a Config rule.
+
+Parameters:
+  Environment:
+    Type: String
+    Description: The name of the environment represented by the VPC
+  ManagedRuleId:
+    Type: String
+    Description: The identifier for an AWS-managed rule
+
+Resources:
+  Rule:
+    Type: AWS::Config::Rule
+    Properties:
+      ConfigRuleName:
+      Description:
+      InputParameters:
+      Scope:
+        TagKey: 'Environment'
+        TagValue: !Ref Environment
+      Source:
+        Owner: 'AWS'
+        SourceIdentifier: !Ref ManagedRuleId
+
+Outputs:

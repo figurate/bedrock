@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: A Cloudformation template for provisioning a spotfleet cluster.
+
+Parameters:
+
+Resources:
+  SpotFleet:
+    Type: AWS::EC2::SpotFleet
+    Properties:
+      SpotFleetRequestConfigData:
+        AllocationStrategy: 'lowestPrice'
+        IamFleetRole:
+        LaunchSpecifications:
+          -
+        LoadBalancersConfig:
+        ReplaceUnhealthyInstances: 'true'
+        SpotPrice:
+        TargetCapacity: '1'
+
+Outputs:

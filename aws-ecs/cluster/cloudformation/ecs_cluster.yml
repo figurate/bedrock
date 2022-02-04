@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: A Cloudformation template for provisioning an ECS cluster.
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC used to provision cluster
+  VpcCidrIp:
+    Type: String
+    Description: VPC CIDR IP range
+  LoadBalancerName:
+    Type: String
+    Description: Name of the cluster load balancer
+  LoadBalancerSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Applicable subnets for the cluster load balancer
+  TargetDeregistrationDelay:
+    Type: String
+    Description: Delay before target deregistration (seconds)
+  HealthCheckPath:
+    Type: String
+    Description: Path used for health check
+    Default: '/'
+  CertificateArn:
+    Type: String
+    Description: ARN of SSL certificate
+  ClusterName:
+    Type: String
+    Description: The name of the ECS cluster
+  RouteName:
+    Type: String
+    Description: FQDN for the cluster load balancer
+  BlueGreenEnabled:
+    Type: String
+    Description: Indicates whether to enable load balancer support for blue-green deployments
+    AllowedValues: [true, false]
+    Default: false
+  ServiceMeshEnabled:
+    Type: String
+    Description: Indicates whether to create a service mesh for the cluster
+    AllowedValues: [true, false]
+    Default: false
+  ServiceDiscoveryName:
+    Type: String
+    Description: Domain name for service discovery namespace
+
+Conditions:
+  CreateServiceMesh:
+    !Equals [true, !Ref ServiceMeshEnabled]
+
+Resources:
+  EcsCluster:
+    Type: AWS::ECS::Cluster
+    #checkov:skip=CKV_AWS_65:Relaxed requirement for container insights
+    Properties:
+      ClusterName: !Ref ClusterName
+
+  ClusterNodeSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${ClusterName}-NodeSG'
+      GroupDescription: !Sub 'Security Group for ${ClusterName} Cluster Nodes'
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8443
+          ToPort: 8443
+          CidrIp: !Ref VpcCidrIp
+          Description: Allow connections from within the VPC
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: !Ref VpcCidrIp
+          Description: Allow connections from within the VPC
+      Tags:
+        - Key: Name
+          Value: !Sub '${ClusterName}-NodeSG'
+
+  ServiceMesh:
+    Type: "AWS::AppMesh::Mesh"
+    Condition: CreateServiceMesh
+    Properties:
+      MeshName: !Ref ClusterName
+      Spec:
+        EgressFilter:
+          Type: "ALLOW_ALL"
+
+  ServiceDiscoveryNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Condition: CreateServiceMesh
+    Properties:
+      Name: !Ref ServiceDiscoveryName
+      Vpc: !Ref VpcId
+
+#Outputs:
