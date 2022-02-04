@@ -3,8 +3,8 @@ data "aws_vpc" "tenant" {
   tags    = var.vpc_tags
 }
 
-module "cloudmap" {
-  source = "../cloudmap"
+module "dns" {
+  source = "./modules/dns"
 
   name         = "Micronode"
   public_zone  = "mnode.org"
@@ -13,16 +13,16 @@ module "cloudmap" {
 }
 
 module "iam" {
-  source = "../iam"
+  source = "./modules/iam"
 
   aws_account_id                  = var.aws_account_id
   support_iam_role_principal_arns = var.support_iam_role_principal_arns
 }
 
-module "cloudwatch" {
-  source = "../cloudwatch"
+module "monitoring" {
+  source = "./modules/monitoring"
 }
 
-module "ec2" {
-  source = "../ec2"
+module "storage" {
+  source = "./modules/storage"
 }

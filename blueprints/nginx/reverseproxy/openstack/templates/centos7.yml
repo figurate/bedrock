@@ -1,0 +1,13 @@
+#!/bin/sh
+yum install -y epel-release && yum check-update -y
+yum install -y curl python chrony nginx python2-certbot-nginx
+
+printf '\nClientAliveInterval 100\nClientAliveCountMax 0' >> /etc/ssh/sshd_config
+service sshd restart
+
+systemctl start chronyd && systemctl enable chronyd
+
+# NGINX install
+systemctl start nginx && systemctl enable nginx
+curl -sS -L -O https://github.com/nginxinc/nginx-amplify-agent/raw/master/packages/install.sh
+API_KEY="${NginxAmplifyKey}" AMPLIFY_HOSTNAME="${NginxHostname}" sh ./install.sh -y

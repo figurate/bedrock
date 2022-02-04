@@ -1,0 +1,42 @@
+#cloud-config
+apt:
+  sources:
+    certbot:
+      source: ppa:certbot/certbot
+
+packages:
+  - nginx
+  - unattended-upgrades
+  - curl
+  - ntpdate
+  - python
+  - python-certbot-nginx
+
+timezone: Australia/Melbourne
+
+ntp:
+  enabled: true
+  servers:
+    - 0.au.pool.ntp.org
+    - 1.au.pool.ntp.org
+    - 2.au.pool.ntp.org
+    - 3.au.pool.ntp.org
+
+write_files:
+  - content: |
+      server {
+        listen 127.0.0.1:80;
+        server_name 127.0.0.1;
+        location /nginx_status {
+          stub_status on;
+          allow 127.0.0.1;
+          deny all;
+        }
+      }
+    path: /etc/nginx/conf.d/stub_status.conf
+
+runcmd:
+  - export API_KEY="${NginxAmplifyKey}"
+  - curl -L https://github.com/nginxinc/nginx-amplify-agent/raw/master/packages/install.sh | bash
+  - curl -O https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+  - dpkg -i -E ./amazon-cloudwatch-agent.deb
